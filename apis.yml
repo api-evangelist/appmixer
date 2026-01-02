@@ -15,7 +15,7 @@ apis:
       - url: ' https://www.appmixer.com/'
         type: Documentation
     description: >-
-      Let your users build powerful agentic workflowsno code, fully
+      Let your users build powerful agentic workflows no code, fully
       white-labeled, and embedded right in your web app. 
 name: Appmixer
 tags:
@@ -553,7 +553,7 @@ common:
     type: Podcast
     description: 'null'
   - url: https://www.appmixer.com/e-books
-    name: 'Ebooks: Resources to Help You Succeed with Integrations'
+    name: 'E-books: Resources to Help You Succeed with Integrations'
     type: eBooks
     description: 'null'
   - url: https://www.appmixer.com/customer-stories
@@ -580,7 +580,7 @@ created: '2025-06-06T00:00:00.000Z'
 modified: '2025-06-09'
 position: Consumer
 description: >-
-  Let your users build powerful agentic workflowsno code, fully white-labeled,
+  Let your users build powerful agentic workflows no code, fully white-labeled,
   and embedded right in your web app. 
 maintainers:
   - FN: Kin Lane
