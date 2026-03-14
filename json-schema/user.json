@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/api-evangelist/appmixer/blob/main/json-schema/user.json",
+  "title": "Appmixer User",
+  "description": "A User represents an authenticated account in the Appmixer platform with access to flows, files, data stores, and connected third-party accounts.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the user."
+    },
+    "username": {
+      "type": "string",
+      "description": "The user's username, typically an email address."
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "The user's email address."
+    },
+    "token": {
+      "type": "string",
+      "description": "Authentication token for the user session."
+    },
+    "plan": {
+      "type": "string",
+      "description": "The subscription plan associated with the user."
+    }
+  },
+  "required": ["id", "username"]
+}

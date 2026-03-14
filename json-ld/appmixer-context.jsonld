@@ -1,0 +1,82 @@
+{
+  "@context": {
+    "@vocab": "https://schema.org/",
+    "appmixer": "https://api.appmixer.com/",
+    "flowId": {
+      "@id": "appmixer:flowId",
+      "@type": "xsd:string"
+    },
+    "stage": {
+      "@id": "appmixer:stage",
+      "@type": "xsd:string"
+    },
+    "btime": {
+      "@id": "appmixer:btime",
+      "@type": "xsd:dateTime"
+    },
+    "mtime": {
+      "@id": "appmixer:mtime",
+      "@type": "xsd:dateTime"
+    },
+    "customFields": {
+      "@id": "appmixer:customFields",
+      "@type": "@json"
+    },
+    "accountId": {
+      "@id": "appmixer:accountId",
+      "@type": "xsd:string"
+    },
+    "service": {
+      "@id": "appmixer:service",
+      "@type": "xsd:string"
+    },
+    "profileInfo": {
+      "@id": "appmixer:profileInfo",
+      "@type": "@json"
+    },
+    "valid": {
+      "@id": "appmixer:valid",
+      "@type": "xsd:boolean"
+    },
+    "fileId": {
+      "@id": "appmixer:fileId",
+      "@type": "xsd:string"
+    },
+    "filename": {
+      "@id": "appmixer:filename",
+      "@type": "xsd:string"
+    },
+    "contentType": {
+      "@id": "appmixer:contentType",
+      "@type": "xsd:string"
+    },
+    "storeId": {
+      "@id": "appmixer:storeId",
+      "@type": "xsd:string"
+    },
+    "componentId": {
+      "@id": "appmixer:componentId",
+      "@type": "xsd:string"
+    },
+    "messageId": {
+      "@id": "appmixer:messageId",
+      "@type": "xsd:string"
+    },
+    "role": {
+      "@id": "appmixer:role",
+      "@type": "xsd:string"
+    },
+    "plan": {
+      "@id": "appmixer:plan",
+      "@type": "xsd:string"
+    },
+    "token": {
+      "@id": "appmixer:token",
+      "@type": "xsd:string"
+    },
+    "name": "schema:name",
+    "description": "schema:description",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "schema": "https://schema.org/"
+  }
+}
