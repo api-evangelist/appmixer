@@ -1,0 +1,991 @@
+openapi: 3.1.0
+info:
+  title: Appmixer API
+  description: >-
+    The Appmixer REST API provides programmatic access to manage workflows,
+    users, accounts, apps/connectors, files, data stores, insights, and
+    people tasks within the Appmixer embedded iPaaS platform. The API allows
+    you to access all the features that the Appmixer UI works with.
+  version: 6.1.0
+  contact:
+    name: Appmixer
+    url: https://www.appmixer.com/
+  license:
+    name: Proprietary
+    url: https://www.appmixer.com/terms-and-conditions
+servers:
+  - url: https://api.{tenant}.appmixer.cloud
+    description: Appmixer Cloud Tenant API
+    variables:
+      tenant:
+        default: YOUR_TENANT
+        description: Your Appmixer tenant identifier
+security:
+  - bearerAuth: []
+paths:
+  /:
+    get:
+      operationId: getApiInfo
+      summary: Get API information
+      description: >-
+        Basic liveness check that returns basic API information about the
+        Appmixer instance.
+      security: []
+      responses:
+        '200':
+          description: API information returned successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  version:
+                    type: string
+                  status:
+                    type: string
+      tags:
+        - System
+  /user/auth:
+    post:
+      operationId: authenticateUser
+      summary: Authenticate user
+      description: >-
+        Sign in a user with credentials and obtain an access token for
+        authenticating subsequent API requests.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  description: The user's email address or username
+                password:
+                  type: string
+                  description: The user's password
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: Access token for API authentication
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Invalid credentials
+      tags:
+        - Authentication
+  /user:
+    get:
+      operationId: getCurrentUser
+      summary: Get current user
+      description: Get information about the currently authenticated user.
+      responses:
+        '200':
+          description: User information returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+      tags:
+        - Users
+    post:
+      operationId: createUser
+      summary: Create a new user
+      description: >-
+        Create a new Appmixer user account. By default, this endpoint is open
+        and does not require authentication.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  description: The user's email address
+                password:
+                  type: string
+                  description: The user's password
+      responses:
+        '200':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid request
+      tags:
+        - Users
+  /users/{userId}:
+    put:
+      operationId: updateUser
+      summary: Update a user
+      description: Update user information for the specified user.
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: User updated successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: User not found
+      tags:
+        - Users
+    delete:
+      operationId: deleteUser
+      summary: Delete a user
+      description: Delete the specified user account.
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User deleted successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: User not found
+      tags:
+        - Users
+  /flows:
+    get:
+      operationId: listFlows
+      summary: List flows
+      description: >-
+        Get all flows of the authenticated user. Supports filtering, sorting,
+        and pagination.
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          description: Maximum number of flows to return
+        - name: offset
+          in: query
+          schema:
+            type: integer
+          description: Number of flows to skip
+        - name: pattern
+          in: query
+          schema:
+            type: string
+          description: Filter flows by name pattern
+        - name: sort
+          in: query
+          schema:
+            type: string
+          description: Sort field and direction
+        - name: projection
+          in: query
+          schema:
+            type: string
+          description: Comma-separated list of properties to exclude
+        - name: filter
+          in: query
+          schema:
+            type: string
+          description: Filter expression
+      responses:
+        '200':
+          description: List of flows returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Flow'
+        '401':
+          description: Unauthorized
+      tags:
+        - Flows
+    post:
+      operationId: createFlow
+      summary: Create a flow
+      description: Create a new flow in Appmixer.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Name of the flow
+                flow:
+                  type: object
+                  description: Flow definition object
+                customFields:
+                  type: object
+                  description: Custom metadata for the flow
+      responses:
+        '200':
+          description: Flow created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flow'
+        '401':
+          description: Unauthorized
+      tags:
+        - Flows
+  /flows/{flowId}:
+    get:
+      operationId: getFlow
+      summary: Get a flow
+      description: Get details of a specific flow by its ID.
+      parameters:
+        - name: flowId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Flow returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flow'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Flow not found
+      tags:
+        - Flows
+    put:
+      operationId: updateFlow
+      summary: Update a flow
+      description: >-
+        Update an existing flow. A running flow cannot be updated without
+        the forceUpdate query parameter.
+      parameters:
+        - name: flowId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: forceUpdate
+          in: query
+          schema:
+            type: boolean
+          description: Force update a running flow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                flow:
+                  type: object
+                customFields:
+                  type: object
+      responses:
+        '200':
+          description: Flow updated successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Flow not found
+      tags:
+        - Flows
+    delete:
+      operationId: deleteFlow
+      summary: Delete a flow
+      description: Delete an existing flow by its ID.
+      parameters:
+        - name: flowId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Flow deleted successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Flow not found
+      tags:
+        - Flows
+  /flows/{flowId}/start:
+    put:
+      operationId: startFlow
+      summary: Start a flow
+      description: Start a stopped flow.
+      parameters:
+        - name: flowId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Flow started successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Flow not found
+      tags:
+        - Flows
+  /flows/{flowId}/stop:
+    put:
+      operationId: stopFlow
+      summary: Stop a flow
+      description: Stop a running flow.
+      parameters:
+        - name: flowId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Flow stopped successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Flow not found
+      tags:
+        - Flows
+  /apps:
+    get:
+      operationId: listApps
+      summary: List apps
+      description: >-
+        Get all applications (services or modules) available in the
+        Appmixer tenant.
+      responses:
+        '200':
+          description: List of apps returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/App'
+        '401':
+          description: Unauthorized
+      tags:
+        - Apps
+  /components:
+    get:
+      operationId: listComponents
+      summary: List components
+      description: Get all available components (connectors) in the tenant.
+      responses:
+        '200':
+          description: List of components returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    label:
+                      type: string
+                    type:
+                      type: string
+        '401':
+          description: Unauthorized
+      tags:
+        - Apps
+    post:
+      operationId: publishComponent
+      summary: Publish a component
+      description: >-
+        Publish a new component, module, or service to the Appmixer tenant.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Component published successfully
+        '401':
+          description: Unauthorized
+      tags:
+        - Apps
+  /components/{componentId}:
+    delete:
+      operationId: deleteComponent
+      summary: Delete a component
+      description: Delete (uninstall) a component, module, or service.
+      parameters:
+        - name: componentId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Component identifier (e.g. appmixer.myservice)
+      responses:
+        '200':
+          description: Component deleted successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Component not found
+      tags:
+        - Apps
+  /accounts:
+    get:
+      operationId: listAccounts
+      summary: List accounts
+      description: >-
+        Get list of all accounts the user has authenticated with to any
+        component (e.g. OAuth connections to third-party services).
+      responses:
+        '200':
+          description: List of accounts returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Account'
+        '401':
+          description: Unauthorized
+      tags:
+        - Accounts
+  /accounts/{accountId}:
+    get:
+      operationId: getAccount
+      summary: Get an account
+      description: >-
+        Get details for a specific account and check if its credentials
+        (tokens) are still valid.
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Account information returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Account not found
+      tags:
+        - Accounts
+    delete:
+      operationId: deleteAccount
+      summary: Delete an account
+      description: Delete (disconnect) an authenticated account.
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Account deleted successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Account not found
+      tags:
+        - Accounts
+  /files:
+    get:
+      operationId: listFiles
+      summary: List files
+      description: Get all files belonging to the authenticated user.
+      responses:
+        '200':
+          description: List of files returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/File'
+        '401':
+          description: Unauthorized
+      tags:
+        - Files
+    post:
+      operationId: uploadFile
+      summary: Upload a file
+      description: Upload a new file to the Appmixer file management system.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/File'
+        '401':
+          description: Unauthorized
+      tags:
+        - Files
+  /files/{fileId}:
+    get:
+      operationId: getFile
+      summary: Get a file
+      description: Download or get details of a specific file.
+      parameters:
+        - name: fileId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: File returned successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: File not found
+      tags:
+        - Files
+    delete:
+      operationId: deleteFile
+      summary: Delete a file
+      description: Delete a specific file.
+      parameters:
+        - name: fileId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: File deleted successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: File not found
+      tags:
+        - Files
+  /data-stores:
+    get:
+      operationId: listDataStores
+      summary: List data stores
+      description: Get all data stores belonging to the authenticated user.
+      responses:
+        '200':
+          description: List of data stores returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DataStore'
+        '401':
+          description: Unauthorized
+      tags:
+        - Data Stores
+  /data-stores/{storeId}:
+    get:
+      operationId: getDataStore
+      summary: Get a data store
+      description: Get details of a specific data store.
+      parameters:
+        - name: storeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Data store returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataStore'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Data store not found
+      tags:
+        - Data Stores
+    delete:
+      operationId: deleteDataStore
+      summary: Delete a data store
+      description: Delete a specific data store.
+      parameters:
+        - name: storeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Data store deleted successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Data store not found
+      tags:
+        - Data Stores
+  /insights:
+    get:
+      operationId: listInsights
+      summary: List insights
+      description: Get all Insights charts of the authenticated user.
+      responses:
+        '200':
+          description: List of insights returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    type:
+                      type: string
+        '401':
+          description: Unauthorized
+      tags:
+        - Insights
+  /people-task/tasks:
+    get:
+      operationId: listPeopleTasks
+      summary: List people tasks
+      description: >-
+        Get all tasks of the authenticated user. Can filter by role
+        (approver or requester).
+      parameters:
+        - name: role
+          in: query
+          schema:
+            type: string
+            enum:
+              - approver
+              - requester
+          description: Filter tasks by role
+      responses:
+        '200':
+          description: List of tasks returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PeopleTask'
+        '401':
+          description: Unauthorized
+      tags:
+        - People Tasks
+  /logs:
+    get:
+      operationId: getLogs
+      summary: Get logs
+      description: Retrieve logs for the authenticated user's flows.
+      parameters:
+        - name: flowId
+          in: query
+          schema:
+            type: string
+          description: Filter logs by flow ID
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          description: Maximum number of log entries to return
+        - name: offset
+          in: query
+          schema:
+            type: integer
+          description: Number of entries to skip
+      responses:
+        '200':
+          description: Logs returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    timestamp:
+                      type: string
+                      format: date-time
+                    flowId:
+                      type: string
+                    message:
+                      type: string
+                    level:
+                      type: string
+        '401':
+          description: Unauthorized
+      tags:
+        - Logs
+  /unprocessed-messages:
+    get:
+      operationId: listUnprocessedMessages
+      summary: List unprocessed messages
+      description: Get the list of unprocessed messages.
+      responses:
+        '200':
+          description: Unprocessed messages returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UnprocessedMessage'
+        '401':
+          description: Unauthorized
+      tags:
+        - Messages
+  /unprocessed-messages/{messageId}:
+    post:
+      operationId: reprocessMessage
+      summary: Reprocess a message
+      description: Put an unprocessed message back into the Appmixer engine.
+      parameters:
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Message reprocessed successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Message not found
+      tags:
+        - Messages
+    delete:
+      operationId: deleteUnprocessedMessage
+      summary: Delete an unprocessed message
+      description: Delete a specific unprocessed message.
+      parameters:
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Message deleted successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Message not found
+      tags:
+        - Messages
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: >-
+        Access token obtained from the /user/auth endpoint. Pass as
+        Authorization: Bearer {token} header.
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        token:
+          type: string
+        plan:
+          type: string
+    Flow:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        flow:
+          type: object
+          description: Flow definition object
+        stage:
+          type: string
+          enum:
+            - running
+            - stopped
+        btime:
+          type: string
+          format: date-time
+          description: Creation time
+        mtime:
+          type: string
+          format: date-time
+          description: Modification time
+        thumbnail:
+          type: string
+        customFields:
+          type: object
+          description: Custom metadata for the flow
+    App:
+      type: object
+      properties:
+        name:
+          type: string
+        label:
+          type: string
+        icon:
+          type: string
+        description:
+          type: string
+    Account:
+      type: object
+      properties:
+        accountId:
+          type: string
+        name:
+          type: string
+        service:
+          type: string
+        profileInfo:
+          type: object
+        valid:
+          type: boolean
+          description: Whether the account credentials are still valid
+    File:
+      type: object
+      properties:
+        fileId:
+          type: string
+        filename:
+          type: string
+        length:
+          type: integer
+        contentType:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+    DataStore:
+      type: object
+      properties:
+        storeId:
+          type: string
+        name:
+          type: string
+    PeopleTask:
+      type: object
+      properties:
+        id:
+          type: string
+        flowId:
+          type: string
+        role:
+          type: string
+          enum:
+            - approver
+            - requester
+        status:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+    UnprocessedMessage:
+      type: object
+      properties:
+        messageId:
+          type: string
+        flowId:
+          type: string
+        componentId:
+          type: string
+        data:
+          type: object
+        createdAt:
+          type: string
+          format: date-time
+tags:
+  - name: System
+    description: System health and information
+  - name: Authentication
+    description: User authentication and token management
+  - name: Users
+    description: User account management
+  - name: Flows
+    description: Workflow flow management
+  - name: Apps
+    description: Applications and connectors management
+  - name: Accounts
+    description: Connected third-party account management
+  - name: Files
+    description: File management
+  - name: Data Stores
+    description: Data store management
+  - name: Insights
+    description: Analytics and insights
+  - name: People Tasks
+    description: Human-in-the-loop task management
+  - name: Logs
+    description: Flow execution logs
+  - name: Messages
+    description: Unprocessed message management

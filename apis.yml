@@ -2,21 +2,26 @@ aid: appmixer
 url: >-
   https://raw.githubusercontent.com/api-evangelist/appmixer/refs/heads/main/apis.yml
 apis:
-  - aid: appmixer:appmixer
-    name: Appmixer
+  - aid: appmixer:appmixer-api
+    name: Appmixer API
     tags:
       - Integrations
       - Low-code
       - Automation
       - Agentic
       - Workflows
-    humanURL: ' https://www.appmixer.com/'
+    humanURL: https://docs.appmixer.com/getting-started/api
     properties:
-      - url: ' https://www.appmixer.com/'
+      - url: https://docs.appmixer.com/getting-started/api
         type: Documentation
+      - url: https://docs.appmixer.com/api/authentication
+        type: Documentation
+      - url: openapi/appmixer-api-openapi.yml
+        type: OpenAPI
     description: >-
-      Let your users build powerful agentic workflowsno code, fully
-      white-labeled, and embedded right in your web app. 
+      The Appmixer REST API provides programmatic access to manage workflows,
+      users, accounts, apps/connectors, files, data stores, insights, and
+      people tasks within the Appmixer embedded iPaaS platform.
 name: Appmixer
 tags:
   - Integrations
@@ -578,7 +583,7 @@ common:
     type: TermsOfService
     description: 'null'
 created: '2025-06-06T00:00:00.000Z'
-modified: '2026-01-02'
+modified: '2026-03-14'
 position: Consumer
 description: >-
   Let your users build powerful agentic workflowsno code, fully white-labeled,
