@@ -965,27 +965,27 @@ components:
           type: string
           format: date-time
 tags:
-  - name: System
-    description: System health and information
-  - name: Authentication
-    description: User authentication and token management
-  - name: Users
-    description: User account management
-  - name: Flows
-    description: Workflow flow management
-  - name: Apps
-    description: Applications and connectors management
   - name: Accounts
     description: Connected third-party account management
-  - name: Files
-    description: File management
+  - name: Apps
+    description: Applications and connectors management
+  - name: Authentication
+    description: User authentication and token management
   - name: Data Stores
     description: Data store management
+  - name: Files
+    description: File management
+  - name: Flows
+    description: Workflow flow management
   - name: Insights
     description: Analytics and insights
-  - name: People Tasks
-    description: Human-in-the-loop task management
   - name: Logs
     description: Flow execution logs
   - name: Messages
     description: Unprocessed message management
+  - name: People Tasks
+    description: Human-in-the-loop task management
+  - name: System
+    description: System health and information
+  - name: Users
+    description: User account management

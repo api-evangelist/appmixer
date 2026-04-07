@@ -5,10 +5,10 @@ apis:
   - aid: appmixer:appmixer-api
     name: Appmixer API
     tags:
-      - Integrations
-      - Low-code
-      - Automation
       - Agentic
+      - Automation
+      - Integrations
+      - Low-Code
       - Workflows
     humanURL: https://docs.appmixer.com/getting-started/api
     properties:
@@ -38,12 +38,12 @@ apis:
       people tasks within the Appmixer embedded iPaaS platform.
 name: Appmixer
 tags:
-  - Integrations
-  - Low-code
-  - Automation
   - Agentic
-  - Workflows
+  - Automation
   - Embedded iPaaS
+  - Integrations
+  - Low-Code
+  - Workflows
 type: Index
 image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
 access: 3rd-Party
