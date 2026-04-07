@@ -581,7 +581,7 @@ common:
     type: Customers
     description: 'null'
   - url: https://www.appmixer.com/pricing
-    name: "Pricing: Hosted &\_Self-Hosted Plans"
+    name: "Pricing: Hosted & Self-Hosted Plans"
     type: Pricing
     description: 'null'
   - url: https://www.appmixer.com/solutions-pages/cybersecurity
@@ -600,8 +600,8 @@ created: '2025-06-06T00:00:00.000Z'
 modified: '2026-03-14'
 position: Consumer
 description: >-
-  Let your users build powerful agentic workflowsno code, fully white-labeled,
-  and embedded right in your web app. 
+  Let your users build powerful agentic workflowsno code, fully white-labeled, and
+  embedded right in your web app.
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com

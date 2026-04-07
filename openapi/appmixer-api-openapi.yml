@@ -26,7 +26,7 @@ paths:
   /:
     get:
       operationId: getApiInfo
-      summary: Get API information
+      summary: Appmixer Get API information
       description: >-
         Basic liveness check that returns basic API information about the
         Appmixer instance.
@@ -48,7 +48,7 @@ paths:
   /user/auth:
     post:
       operationId: authenticateUser
-      summary: Authenticate user
+      summary: Appmixer Authenticate user
       description: >-
         Sign in a user with credentials and obtain an access token for
         authenticating subsequent API requests.
@@ -89,7 +89,7 @@ paths:
   /user:
     get:
       operationId: getCurrentUser
-      summary: Get current user
+      summary: Appmixer Get current user
       description: Get information about the currently authenticated user.
       responses:
         '200':
@@ -104,7 +104,7 @@ paths:
         - Users
     post:
       operationId: createUser
-      summary: Create a new user
+      summary: Appmixer Create a new user
       description: >-
         Create a new Appmixer user account. By default, this endpoint is open
         and does not require authentication.
@@ -139,7 +139,7 @@ paths:
   /users/{userId}:
     put:
       operationId: updateUser
-      summary: Update a user
+      summary: Appmixer Update a user
       description: Update user information for the specified user.
       parameters:
         - name: userId
@@ -169,7 +169,7 @@ paths:
         - Users
     delete:
       operationId: deleteUser
-      summary: Delete a user
+      summary: Appmixer Delete a user
       description: Delete the specified user account.
       parameters:
         - name: userId
@@ -189,7 +189,7 @@ paths:
   /flows:
     get:
       operationId: listFlows
-      summary: List flows
+      summary: Appmixer List flows
       description: >-
         Get all flows of the authenticated user. Supports filtering, sorting,
         and pagination.
@@ -239,7 +239,7 @@ paths:
         - Flows
     post:
       operationId: createFlow
-      summary: Create a flow
+      summary: Appmixer Create a flow
       description: Create a new flow in Appmixer.
       requestBody:
         required: true
@@ -271,7 +271,7 @@ paths:
   /flows/{flowId}:
     get:
       operationId: getFlow
-      summary: Get a flow
+      summary: Appmixer Get a flow
       description: Get details of a specific flow by its ID.
       parameters:
         - name: flowId
@@ -294,7 +294,7 @@ paths:
         - Flows
     put:
       operationId: updateFlow
-      summary: Update a flow
+      summary: Appmixer Update a flow
       description: >-
         Update an existing flow. A running flow cannot be updated without
         the forceUpdate query parameter.
@@ -333,7 +333,7 @@ paths:
         - Flows
     delete:
       operationId: deleteFlow
-      summary: Delete a flow
+      summary: Appmixer Delete a flow
       description: Delete an existing flow by its ID.
       parameters:
         - name: flowId
@@ -353,7 +353,7 @@ paths:
   /flows/{flowId}/start:
     put:
       operationId: startFlow
-      summary: Start a flow
+      summary: Appmixer Start a flow
       description: Start a stopped flow.
       parameters:
         - name: flowId
@@ -373,7 +373,7 @@ paths:
   /flows/{flowId}/stop:
     put:
       operationId: stopFlow
-      summary: Stop a flow
+      summary: Appmixer Stop a flow
       description: Stop a running flow.
       parameters:
         - name: flowId
@@ -393,7 +393,7 @@ paths:
   /apps:
     get:
       operationId: listApps
-      summary: List apps
+      summary: Appmixer List apps
       description: >-
         Get all applications (services or modules) available in the
         Appmixer tenant.
@@ -413,7 +413,7 @@ paths:
   /components:
     get:
       operationId: listComponents
-      summary: List components
+      summary: Appmixer List components
       description: Get all available components (connectors) in the tenant.
       responses:
         '200':
@@ -437,7 +437,7 @@ paths:
         - Apps
     post:
       operationId: publishComponent
-      summary: Publish a component
+      summary: Appmixer Publish a component
       description: >-
         Publish a new component, module, or service to the Appmixer tenant.
       requestBody:
@@ -456,7 +456,7 @@ paths:
   /components/{componentId}:
     delete:
       operationId: deleteComponent
-      summary: Delete a component
+      summary: Appmixer Delete a component
       description: Delete (uninstall) a component, module, or service.
       parameters:
         - name: componentId
@@ -477,7 +477,7 @@ paths:
   /accounts:
     get:
       operationId: listAccounts
-      summary: List accounts
+      summary: Appmixer List accounts
       description: >-
         Get list of all accounts the user has authenticated with to any
         component (e.g. OAuth connections to third-party services).
@@ -497,7 +497,7 @@ paths:
   /accounts/{accountId}:
     get:
       operationId: getAccount
-      summary: Get an account
+      summary: Appmixer Get an account
       description: >-
         Get details for a specific account and check if its credentials
         (tokens) are still valid.
@@ -522,7 +522,7 @@ paths:
         - Accounts
     delete:
       operationId: deleteAccount
-      summary: Delete an account
+      summary: Appmixer Delete an account
       description: Delete (disconnect) an authenticated account.
       parameters:
         - name: accountId
@@ -542,7 +542,7 @@ paths:
   /files:
     get:
       operationId: listFiles
-      summary: List files
+      summary: Appmixer List files
       description: Get all files belonging to the authenticated user.
       responses:
         '200':
@@ -559,7 +559,7 @@ paths:
         - Files
     post:
       operationId: uploadFile
-      summary: Upload a file
+      summary: Appmixer Upload a file
       description: Upload a new file to the Appmixer file management system.
       requestBody:
         required: true
@@ -585,7 +585,7 @@ paths:
   /files/{fileId}:
     get:
       operationId: getFile
-      summary: Get a file
+      summary: Appmixer Get a file
       description: Download or get details of a specific file.
       parameters:
         - name: fileId
@@ -604,7 +604,7 @@ paths:
         - Files
     delete:
       operationId: deleteFile
-      summary: Delete a file
+      summary: Appmixer Delete a file
       description: Delete a specific file.
       parameters:
         - name: fileId
@@ -624,7 +624,7 @@ paths:
   /data-stores:
     get:
       operationId: listDataStores
-      summary: List data stores
+      summary: Appmixer List data stores
       description: Get all data stores belonging to the authenticated user.
       responses:
         '200':
@@ -642,7 +642,7 @@ paths:
   /data-stores/{storeId}:
     get:
       operationId: getDataStore
-      summary: Get a data store
+      summary: Appmixer Get a data store
       description: Get details of a specific data store.
       parameters:
         - name: storeId
@@ -665,7 +665,7 @@ paths:
         - Data Stores
     delete:
       operationId: deleteDataStore
-      summary: Delete a data store
+      summary: Appmixer Delete a data store
       description: Delete a specific data store.
       parameters:
         - name: storeId
@@ -685,7 +685,7 @@ paths:
   /insights:
     get:
       operationId: listInsights
-      summary: List insights
+      summary: Appmixer List insights
       description: Get all Insights charts of the authenticated user.
       responses:
         '200':
@@ -710,7 +710,7 @@ paths:
   /people-task/tasks:
     get:
       operationId: listPeopleTasks
-      summary: List people tasks
+      summary: Appmixer List people tasks
       description: >-
         Get all tasks of the authenticated user. Can filter by role
         (approver or requester).
@@ -739,7 +739,7 @@ paths:
   /logs:
     get:
       operationId: getLogs
-      summary: Get logs
+      summary: Appmixer Get logs
       description: Retrieve logs for the authenticated user's flows.
       parameters:
         - name: flowId
@@ -783,7 +783,7 @@ paths:
   /unprocessed-messages:
     get:
       operationId: listUnprocessedMessages
-      summary: List unprocessed messages
+      summary: Appmixer List unprocessed messages
       description: Get the list of unprocessed messages.
       responses:
         '200':
@@ -801,7 +801,7 @@ paths:
   /unprocessed-messages/{messageId}:
     post:
       operationId: reprocessMessage
-      summary: Reprocess a message
+      summary: Appmixer Reprocess a message
       description: Put an unprocessed message back into the Appmixer engine.
       parameters:
         - name: messageId
@@ -820,7 +820,7 @@ paths:
         - Messages
     delete:
       operationId: deleteUnprocessedMessage
-      summary: Delete an unprocessed message
+      summary: Appmixer Delete an unprocessed message
       description: Delete a specific unprocessed message.
       parameters:
         - name: messageId
