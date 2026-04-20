@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-structure.org/meta/core/v0/#",
+  "name": "Appmixer Data Store",
+  "description": "A Data Store is a key-value storage mechanism in Appmixer that allows flows to persist and share data across executions.",
+  "type": "object",
+  "properties": {
+    "storeId": {
+      "type": "string",
+      "description": "Unique identifier for the data store."
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable name of the data store."
+    }
+  },
+  "required": [
+    "storeId"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-structure.org/meta/core/v0/#",
+  "name": "Appmixer Flow",
+  "description": "A Flow represents an automation workflow in Appmixer, consisting of connected components that define integration logic between services.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the flow."
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable name of the flow."
+    },
+    "flow": {
+      "type": "object",
+      "description": "Flow definition object containing the workflow graph and component configurations."
+    },
+    "stage": {
+      "type": "string",
+      "enum": [
+        "running",
+        "stopped"
+      ],
+      "description": "Current execution state of the flow."
+    },
+    "btime": {
+      "type": "datetime",
+      "description": "Creation timestamp of the flow."
+    },
+    "mtime": {
+      "type": "datetime",
+      "description": "Last modification timestamp of the flow."
+    },
+    "thumbnail": {
+      "type": "string",
+      "description": "URL or data URI of the flow thumbnail image."
+    },
+    "customFields": {
+      "type": "object",
+      "description": "Custom metadata key-value pairs associated with the flow.",
+      "additionalProperties": true
+    }
+  },
+  "required": [
+    "id"
+  ]
+}

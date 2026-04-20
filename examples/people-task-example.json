@@ -1,0 +1,7 @@
+{
+  "id": "task-001",
+  "title": "Review and Approve",
+  "status": "pending",
+  "assignee": "jsmith@example.com",
+  "createdAt": "2025-03-15T14:30:00Z"
+}

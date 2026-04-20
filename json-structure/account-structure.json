@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-structure.org/meta/core/v0/#",
+  "name": "Appmixer Account",
+  "description": "An Account represents an authenticated connection to a third-party service (e.g. OAuth credentials for Slack, Google, etc.) belonging to an Appmixer user.",
+  "type": "object",
+  "properties": {
+    "accountId": {
+      "type": "string",
+      "description": "Unique identifier for the connected account."
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name for the connected account."
+    },
+    "service": {
+      "type": "string",
+      "description": "The service or connector this account is associated with (e.g. appmixer.google)."
+    },
+    "profileInfo": {
+      "type": "object",
+      "description": "Profile information retrieved from the third-party service.",
+      "additionalProperties": true
+    },
+    "valid": {
+      "type": "boolean",
+      "description": "Whether the account credentials (tokens) are still valid."
+    }
+  },
+  "required": [
+    "accountId",
+    "service"
+  ]
+}

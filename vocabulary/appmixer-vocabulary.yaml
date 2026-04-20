@@ -1,0 +1,214 @@
+vocabulary: "1.0.0"
+
+info:
+  provider: Appmixer
+  description: >-
+    Vocabulary for the Appmixer embedded iPaaS platform, covering flow lifecycle
+    management, user provisioning, connector integrations, data storage, file
+    management, and human-in-the-loop people tasks for SaaS developers embedding
+    white-labeled automation into their products.
+  created: "2026-04-19"
+  modified: "2026-04-19"
+
+operational:
+  apis:
+    - name: Appmixer API
+      namespace: appmixer
+      version: "1.0.0"
+      baseUrl: "https://api.appmixer.com/v1"
+      status: active
+
+  resources:
+    - name: flows
+      description: Automation workflow definitions and instances
+      api: Appmixer API
+      actions:
+        - list
+        - create
+        - get
+        - update
+        - delete
+        - start
+        - stop
+    - name: users
+      description: Appmixer platform users with authentication credentials
+      api: Appmixer API
+      actions:
+        - list
+        - create
+        - get
+        - update
+        - delete
+    - name: accounts
+      description: Connected third-party service accounts and credentials
+      api: Appmixer API
+      actions:
+        - list
+        - get
+        - delete
+    - name: files
+      description: Files uploaded and managed within automation flows
+      api: Appmixer API
+      actions:
+        - list
+        - upload
+        - get
+        - delete
+    - name: data-stores
+      description: Key-value data storage for flow state and shared data
+      api: Appmixer API
+      actions:
+        - list
+        - create
+        - get
+        - set
+        - delete
+    - name: people-tasks
+      description: Human-in-the-loop tasks requiring user approval or input
+      api: Appmixer API
+      actions:
+        - list
+        - get
+        - complete
+
+  actions:
+    - name: list
+      httpMethod: GET
+      pattern: read
+    - name: create
+      httpMethod: POST
+      pattern: write
+    - name: get
+      httpMethod: GET
+      pattern: read
+    - name: update
+      httpMethod: PUT
+      pattern: write
+    - name: delete
+      httpMethod: DELETE
+      pattern: destructive
+    - name: start
+      httpMethod: POST
+      pattern: write
+    - name: stop
+      httpMethod: POST
+      pattern: write
+    - name: upload
+      httpMethod: POST
+      pattern: write
+    - name: set
+      httpMethod: PUT
+      pattern: write
+    - name: complete
+      httpMethod: POST
+      pattern: write
+
+  schemas:
+    core:
+      - name: Flow
+        description: Automation workflow with trigger, steps, and connections
+      - name: User
+        description: Appmixer platform user with authentication and profile data
+      - name: Account
+        description: Connected external service account with OAuth credentials
+      - name: File
+        description: Binary file managed within the automation platform
+      - name: DataStore
+        description: Key-value store for persisting data across flow executions
+      - name: PeopleTask
+        description: Human review or approval task in an automation workflow
+
+  parameters:
+    identifiers:
+      - name: flowId
+        description: Unique identifier for an automation flow
+      - name: userId
+        description: Unique identifier for an Appmixer user
+      - name: accountId
+        description: Unique identifier for a connected service account
+      - name: fileId
+        description: Unique identifier for a managed file
+      - name: taskId
+        description: Unique identifier for a people task
+    filters:
+      - name: status
+        description: Filter by flow or task status
+      - name: componentId
+        description: Filter by connector component identifier
+
+  enums:
+    flowStatuses:
+      - running
+      - stopped
+      - error
+      - draft
+    taskStatuses:
+      - pending
+      - completed
+      - cancelled
+    authTypes:
+      - oauth2
+      - apikey
+      - basic
+
+  authentication:
+    schemes:
+      - type: bearer
+        description: Bearer JWT token authentication for API access
+
+capability:
+  workflows:
+    - name: Embedded Automation
+      description: End-to-end workflow for embedding automation in SaaS products
+      resources:
+        - flows
+        - users
+        - people-tasks
+  personas:
+    - name: SaaS Developer
+      description: Developer embedding white-labeled automation into a product
+    - name: End User
+      description: Product user interacting with embedded automation workflows
+  domains:
+    - name: Flow Lifecycle
+      description: Creating, running, and managing automation flows
+      resources:
+        - flows
+    - name: User Management
+      description: Provisioning and managing automation platform users
+      resources:
+        - users
+    - name: Data Storage
+      description: Persisting and retrieving workflow state and data
+      resources:
+        - data-stores
+    - name: Human-in-the-Loop
+      description: Managing tasks requiring human review or approval
+      resources:
+        - people-tasks
+
+  namespaces: []
+  binds: []
+
+crossReference:
+  - resource: flows
+    operations:
+      - listFlows
+      - createFlow
+      - getFlow
+      - startFlow
+      - stopFlow
+      - deleteFlow
+    workflows:
+      - Embedded Automation
+    personas:
+      - SaaS Developer
+  - resource: people-tasks
+    operations:
+      - listPeopleTasks
+      - getPeopleTask
+      - completeTask
+    workflows:
+      - Embedded Automation
+    personas:
+      - End User

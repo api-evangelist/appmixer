@@ -1,0 +1,246 @@
+naftiko: "1.0.0-alpha1"
+
+info:
+  label: Appmixer API
+  description: >-
+    The Appmixer REST API for managing flows, users, accounts, files, data stores,
+    and people tasks within the Appmixer embedded iPaaS platform.
+  tags:
+    - Appmixer
+    - Automation
+    - Embedded iPaaS
+    - Workflows
+    - Integrations
+  created: "2026-04-19"
+  modified: "2026-04-19"
+
+binds:
+  - namespace: env
+    keys:
+      APPMIXER_API_TOKEN: APPMIXER_API_TOKEN
+
+capability:
+  consumes:
+    - type: http
+      namespace: appmixer
+      baseUri: "https://api.appmixer.com/v1"
+      description: Appmixer REST API for workflow and integration management
+      authentication:
+        type: bearer
+        token: "{{APPMIXER_API_TOKEN}}"
+      resources:
+        - name: flows
+          path: /flows
+          description: Workflow (flow) lifecycle management
+          operations:
+            - name: list-flows
+              method: GET
+              description: Returns a list of automation flows
+              outputRawFormat: json
+              outputParameters:
+                - name: result
+                  type: object
+                  value: "$."
+            - name: create-flow
+              method: POST
+              description: Creates a new automation flow
+              outputRawFormat: json
+              outputParameters:
+                - name: result
+                  type: object
+                  value: "$."
+              body:
+                type: json
+                data:
+                  name: "{{tools.name}}"
+
+        - name: flow
+          path: /flows/{flowId}
+          description: Single flow operations
+          operations:
+            - name: get-flow
+              method: GET
+              description: Returns a specific automation flow
+              inputParameters:
+                - name: flowId
+                  in: path
+                  type: string
+                  required: true
+                  description: Flow identifier
+              outputRawFormat: json
+              outputParameters:
+                - name: result
+                  type: object
+                  value: "$."
+            - name: start-flow
+              method: POST
+              description: Starts/runs a flow
+              inputParameters:
+                - name: flowId
+                  in: path
+                  type: string
+                  required: true
+                  description: Flow identifier
+              outputRawFormat: json
+              outputParameters:
+                - name: result
+                  type: object
+                  value: "$."
+
+        - name: users
+          path: /users
+          description: User management
+          operations:
+            - name: list-users
+              method: GET
+              description: Returns a list of Appmixer users
+              outputRawFormat: json
+              outputParameters:
+                - name: result
+                  type: object
+                  value: "$."
+            - name: create-user
+              method: POST
+              description: Creates a new Appmixer user
+              outputRawFormat: json
+              outputParameters:
+                - name: result
+                  type: object
+                  value: "$."
+              body:
+                type: json
+                data:
+                  username: "{{tools.username}}"
+                  email: "{{tools.email}}"
+
+        - name: data-stores
+          path: /data-stores
+          description: Data store (key-value storage) management
+          operations:
+            - name: list-data-stores
+              method: GET
+              description: Returns a list of data stores
+              outputRawFormat: json
+              outputParameters:
+                - name: result
+                  type: object
+                  value: "$."
+
+        - name: people-tasks
+          path: /people-tasks
+          description: Human-in-the-loop task management
+          operations:
+            - name: list-people-tasks
+              method: GET
+              description: Returns a list of people tasks pending human action
+              outputRawFormat: json
+              outputParameters:
+                - name: result
+                  type: object
+                  value: "$."
+            - name: complete-task
+              method: POST
+              description: Completes a people task with a human decision
+              inputParameters:
+                - name: taskId
+                  in: path
+                  type: string
+                  required: true
+                  description: Task identifier
+              outputRawFormat: json
+              outputParameters:
+                - name: result
+                  type: object
+                  value: "$."
+              body:
+                type: json
+                data:
+                  decision: "{{tools.decision}}"
+
+  exposes:
+    - type: rest
+      port: 8100
+      namespace: appmixer-api
+      resources:
+        - path: /v1/flows
+          name: flows
+          description: Appmixer workflow management
+          operations:
+            - method: GET
+              name: list-flows
+              description: List automation flows
+              call: "appmixer.list-flows"
+              outputParameters:
+                - type: object
+                  mapping: "$."
+            - method: POST
+              name: create-flow
+              description: Create an automation flow
+              call: "appmixer.create-flow"
+              with:
+                name: "rest.name"
+              outputParameters:
+                - type: object
+                  mapping: "$."
+
+    - type: mcp
+      port: 9100
+      namespace: appmixer-mcp
+      transport: http
+      tools:
+        - name: list-flows
+          description: Lists automation workflows in Appmixer
+          hints:
+            readOnly: true
+            idempotent: true
+          call: "appmixer.list-flows"
+          outputParameters:
+            - type: object
+              mapping: "$."
+
+        - name: create-flow
+          description: Creates a new automation flow in Appmixer
+          hints:
+            readOnly: false
+            destructive: false
+          call: "appmixer.create-flow"
+          with:
+            name: "tools.name"
+          outputParameters:
+            - type: object
+              mapping: "$."
+
+        - name: start-flow
+          description: Starts/runs an existing automation flow
+          hints:
+            readOnly: false
+            destructive: false
+          call: "appmixer.start-flow"
+          with:
+            flowId: "tools.flowId"
+          outputParameters:
+            - type: object
+              mapping: "$."
+
+        - name: list-people-tasks
+          description: Lists pending human-in-the-loop tasks awaiting action
+          hints:
+            readOnly: true
+            idempotent: true
+          call: "appmixer.list-people-tasks"
+          outputParameters:
+            - type: object
+              mapping: "$."
+
+        - name: complete-task
+          description: Completes a people task with a human decision or approval
+          hints:
+            readOnly: false
+            destructive: false
+          call: "appmixer.complete-task"
+          with:
+            taskId: "tools.taskId"
+            decision: "tools.decision"
+          outputParameters:
+            - type: object
+              mapping: "$."

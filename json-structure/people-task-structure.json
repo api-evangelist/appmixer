@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-structure.org/meta/core/v0/#",
+  "name": "Appmixer People Task",
+  "description": "A People Task represents a human-in-the-loop task within an Appmixer flow that requires manual approval or action before the workflow can proceed.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the task."
+    },
+    "flowId": {
+      "type": "string",
+      "description": "The flow that generated this task."
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "approver",
+        "requester"
+      ],
+      "description": "The role of the user in relation to this task."
+    },
+    "status": {
+      "type": "string",
+      "description": "Current status of the task."
+    },
+    "createdAt": {
+      "type": "datetime",
+      "description": "Timestamp when the task was created."
+    }
+  },
+  "required": [
+    "id",
+    "flowId"
+  ]
+}

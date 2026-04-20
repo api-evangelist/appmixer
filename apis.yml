@@ -32,6 +32,38 @@ apis:
         type: JSONSchema
       - url: json-ld/appmixer-context.jsonld
         type: JSONLD
+      - url: json-structure/flow-structure.json
+        type: JSONStructure
+      - url: json-structure/user-structure.json
+        type: JSONStructure
+      - url: json-structure/account-structure.json
+        type: JSONStructure
+      - url: json-structure/file-structure.json
+        type: JSONStructure
+      - url: json-structure/data-store-structure.json
+        type: JSONStructure
+      - url: json-structure/people-task-structure.json
+        type: JSONStructure
+      - url: examples/flow-example.json
+        type: Example
+      - url: examples/user-example.json
+        type: Example
+      - url: examples/account-example.json
+        type: Example
+      - url: examples/file-example.json
+        type: Example
+      - url: examples/data-store-example.json
+        type: Example
+      - url: examples/people-task-example.json
+        type: Example
+      - url: rules/appmixer-spectral-rules.yml
+        type: SpectralRules
+      - url: capabilities/shared/appmixer-api.yaml
+        type: NaftikoCapability
+      - url: capabilities/embedded-automation.yaml
+        type: NaftikoCapability
+      - url: vocabulary/appmixer-vocabulary.yaml
+        type: Vocabulary
     description: >-
       The Appmixer REST API provides programmatic access to manage workflows,
       users, accounts, apps/connectors, files, data stores, insights, and

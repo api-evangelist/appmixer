@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-structure.org/meta/core/v0/#",
+  "name": "Appmixer File",
+  "description": "A File represents a stored file in the Appmixer file management system, which can be used by flows and components.",
+  "type": "object",
+  "properties": {
+    "fileId": {
+      "type": "string",
+      "description": "Unique identifier for the file."
+    },
+    "filename": {
+      "type": "string",
+      "description": "Original filename of the uploaded file."
+    },
+    "length": {
+      "type": "int32",
+      "description": "File size in bytes."
+    },
+    "contentType": {
+      "type": "string",
+      "description": "MIME type of the file."
+    },
+    "createdAt": {
+      "type": "datetime",
+      "description": "Timestamp when the file was uploaded."
+    }
+  },
+  "required": [
+    "fileId"
+  ]
+}

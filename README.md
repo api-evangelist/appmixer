@@ -1,62 +1,71 @@
 # Appmixer (appmixer)
-Let your users build powerful agentic workflowsno code, fully white-labeled, and embedded right in your web app. 
+
+Low-code platform to ship AI-powered automation. Appmixer is an embedded iPaaS that lets SaaS developers add white-labeled automation to their products — giving users a no-code workflow builder with hundreds of pre-built connectors, data storage, file management, and human-in-the-loop people tasks.
 
 **URL:** [Visit APIs.json URL](https://raw.githubusercontent.com/api-evangelist/appmixer/refs/heads/main/apis.yml)
 
-## Scope
+## Scope of Coverage
 
-- **Type:** Index 
-- **Position:** Consumer 
-- **Access:** 3rd-Party 
+| Item | Count |
+|------|-------|
+| APIs | 1 |
+| OpenAPI Specs | 1 |
+| JSON Schemas | 6 |
+| JSON Structures | 6 |
+| Examples | 6 |
+| JSON-LD Contexts | 1 |
+| Spectral Rulesets | 1 |
+| Naftiko Capabilities | 2 |
+| Vocabularies | 1 |
 
-## Tags:
+## APIs Covered
 
- - Integrations, Low-code, Automation, Agentic, Workflows
+- **Appmixer API** — REST API for managing flows, users, accounts, files, data stores, and people tasks within the embedded iPaaS platform.
 
-## Timestamps
+## Artifacts
 
-- **Created:** 2025-06-06 
-- **Modified:** 2025-06-09 
+### OpenAPI Specifications
+- [openapi/appmixer-api-openapi.yml](openapi/appmixer-api-openapi.yml)
 
-## APIs
+### JSON Schemas
+- [json-schema/flow.json](json-schema/flow.json)
+- [json-schema/user.json](json-schema/user.json)
+- [json-schema/account.json](json-schema/account.json)
+- [json-schema/file.json](json-schema/file.json)
+- [json-schema/data-store.json](json-schema/data-store.json)
+- [json-schema/people-task.json](json-schema/people-task.json)
 
-### Appmixer
-Let your users build powerful agentic workflowsno code, fully white-labeled, and embedded right in your web app. 
+### JSON Structures
+- [json-structure/flow-structure.json](json-structure/flow-structure.json)
+- [json-structure/user-structure.json](json-structure/user-structure.json)
+- [json-structure/account-structure.json](json-structure/account-structure.json)
+- [json-structure/file-structure.json](json-structure/file-structure.json)
+- [json-structure/data-store-structure.json](json-structure/data-store-structure.json)
+- [json-structure/people-task-structure.json](json-structure/people-task-structure.json)
 
-**Human URL:** [ https://www.appmixer.com/]( https://www.appmixer.com/)
+### Examples
+- [examples/flow-example.json](examples/flow-example.json)
+- [examples/user-example.json](examples/user-example.json)
+- [examples/account-example.json](examples/account-example.json)
+- [examples/file-example.json](examples/file-example.json)
+- [examples/data-store-example.json](examples/data-store-example.json)
+- [examples/people-task-example.json](examples/people-task-example.json)
 
+### JSON-LD
+- [json-ld/appmixer-context.jsonld](json-ld/appmixer-context.jsonld)
 
-#### Tags:
+### Spectral Rules
+- [rules/appmixer-spectral-rules.yml](rules/appmixer-spectral-rules.yml)
 
- - Integrations, Low-code, Automation, Agentic, Workflows
+### Naftiko Capabilities
+- [capabilities/shared/appmixer-api.yaml](capabilities/shared/appmixer-api.yaml)
+- [capabilities/embedded-automation.yaml](capabilities/embedded-automation.yaml)
 
-#### Properties
-
-- [Documentation]( https://www.appmixer.com/)
-
-## Common Properties
-
-- [Website](undefined)
-- [Website](https://www.appmixer.com/)
-- [Integrations](https://www.appmixer.com/connectors)
-- [Documentation](https://docs.appmixer.com/?_gl=1*r2dl5*_gcl_au*MTE0OTMzNzAwOC4xNzQ5MTU5NDE1*_ga*NTEwNzE5MjYuMTc0OTE1OTQxNQ..*_ga_60B263RRK5*czE3NDk1MDc4NjAkbzIkZzEkdDE3NDk1MDgzOTckajYwJGwwJGgw)
-- [Authentication](https://docs.appmixer.com/api/authentication)
-- [GettingStarted](https://docs.appmixer.com/kb)
-- [ChangeLog](https://docs.appmixer.com/changelog)
-- [SDKs](https://docs.appmixer.com/6.0/6.1/getting-started/embed)
-- [CLI](https://docs.appmixer.com/appmixer-cli/appmixer-cli?_gl=1*jj6vs6*_gcl_au*MTE0OTMzNzAwOC4xNzQ5MTU5NDE1*_ga*NTEwNzE5MjYuMTc0OTE1OTQxNQ..*_ga_60B263RRK5*czE3NDk1MDc4NjAkbzIkZzEkdDE3NDk1MDg1ODQkajMkbDAkaDA.)
-- [Blog](https://www.appmixer.com/blog)
-- [Podcast](https://www.appmixer.com/podcast)
-- [eBooks](https://www.appmixer.com/e-books)
-- [Customers](https://www.appmixer.com/customer-stories)
-- [Pricing](https://www.appmixer.com/pricing)
-- [Security](https://www.appmixer.com/solutions-pages/cybersecurity)
-- [PrivacyPolicy](https://www.appmixer.com/privacy-policy)
-- [TermsOfService](https://www.appmixer.com/terms-and-conditions)
+### Vocabulary
+- [vocabulary/appmixer-vocabulary.yaml](vocabulary/appmixer-vocabulary.yaml)
 
 ## Maintainers
 
-**FN:** Kin Lane
+**FN:** API Evangelist
 
 **Email:** info@apievangelist.com
-
