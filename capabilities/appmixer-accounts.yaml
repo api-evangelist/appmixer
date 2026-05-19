@@ -1,0 +1,145 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Appmixer API — Accounts
+  description: 'Appmixer API — Accounts. 3 operations. Lead operation: Appmixer List accounts. Self-contained Naftiko capability
+    covering one Appmixer business surface.'
+  tags:
+  - Appmixer
+  - Accounts
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    APPMIXER_API_KEY: APPMIXER_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: appmixer-accounts
+    baseUri: https://api.{tenant}.appmixer.cloud
+    description: Appmixer API — Accounts business capability. Self-contained, no shared references.
+    resources:
+    - name: accounts
+      path: /accounts
+      operations:
+      - name: listaccounts
+        method: GET
+        description: Appmixer List accounts
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    - name: accounts-accountId
+      path: /accounts/{accountId}
+      operations:
+      - name: getaccount
+        method: GET
+        description: Appmixer Get an account
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: accountId
+          in: path
+          type: string
+          required: true
+      - name: deleteaccount
+        method: DELETE
+        description: Appmixer Delete an account
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: accountId
+          in: path
+          type: string
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.APPMIXER_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: appmixer-accounts-rest
+    port: 8080
+    description: REST adapter for Appmixer API — Accounts. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/accounts
+      name: accounts
+      description: REST surface for accounts.
+      operations:
+      - method: GET
+        name: listaccounts
+        description: Appmixer List accounts
+        call: appmixer-accounts.listaccounts
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/accounts/{accountid}
+      name: accounts-accountid
+      description: REST surface for accounts-accountId.
+      operations:
+      - method: GET
+        name: getaccount
+        description: Appmixer Get an account
+        call: appmixer-accounts.getaccount
+        with:
+          accountId: rest.accountId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deleteaccount
+        description: Appmixer Delete an account
+        call: appmixer-accounts.deleteaccount
+        with:
+          accountId: rest.accountId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: appmixer-accounts-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Appmixer API — Accounts. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: appmixer-list-accounts
+      description: Appmixer List accounts
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: appmixer-accounts.listaccounts
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: appmixer-get-account
+      description: Appmixer Get an account
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: appmixer-accounts.getaccount
+      with:
+        accountId: tools.accountId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: appmixer-delete-account
+      description: Appmixer Delete an account
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: appmixer-accounts.deleteaccount
+      with:
+        accountId: tools.accountId
+      outputParameters:
+      - type: object
+        mapping: $.

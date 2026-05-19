@@ -1,0 +1,70 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Appmixer API — System
+  description: 'Appmixer API — System. 1 operations. Lead operation: Appmixer Get API information. Self-contained Naftiko
+    capability covering one Appmixer business surface.'
+  tags:
+  - Appmixer
+  - System
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    APPMIXER_API_KEY: APPMIXER_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: appmixer-system
+    baseUri: https://api.{tenant}.appmixer.cloud
+    description: Appmixer API — System business capability. Self-contained, no shared references.
+    resources:
+    - name: root
+      path: /
+      operations:
+      - name: getapiinfo
+        method: GET
+        description: Appmixer Get API information
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    authentication:
+      type: bearer
+      token: '{{env.APPMIXER_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: appmixer-system-rest
+    port: 8080
+    description: REST adapter for Appmixer API — System. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1
+      name: root
+      description: REST surface for root.
+      operations:
+      - method: GET
+        name: getapiinfo
+        description: Appmixer Get API information
+        call: appmixer-system.getapiinfo
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: appmixer-system-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Appmixer API — System. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: appmixer-get-api-information
+      description: Appmixer Get API information
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: appmixer-system.getapiinfo
+      outputParameters:
+      - type: object
+        mapping: $.

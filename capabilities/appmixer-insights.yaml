@@ -1,0 +1,70 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Appmixer API — Insights
+  description: 'Appmixer API — Insights. 1 operations. Lead operation: Appmixer List insights. Self-contained Naftiko capability
+    covering one Appmixer business surface.'
+  tags:
+  - Appmixer
+  - Insights
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    APPMIXER_API_KEY: APPMIXER_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: appmixer-insights
+    baseUri: https://api.{tenant}.appmixer.cloud
+    description: Appmixer API — Insights business capability. Self-contained, no shared references.
+    resources:
+    - name: insights
+      path: /insights
+      operations:
+      - name: listinsights
+        method: GET
+        description: Appmixer List insights
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+    authentication:
+      type: bearer
+      token: '{{env.APPMIXER_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: appmixer-insights-rest
+    port: 8080
+    description: REST adapter for Appmixer API — Insights. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/insights
+      name: insights
+      description: REST surface for insights.
+      operations:
+      - method: GET
+        name: listinsights
+        description: Appmixer List insights
+        call: appmixer-insights.listinsights
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: appmixer-insights-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Appmixer API — Insights. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: appmixer-list-insights
+      description: Appmixer List insights
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: appmixer-insights.listinsights
+      outputParameters:
+      - type: object
+        mapping: $.

@@ -1,0 +1,79 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Appmixer API — People Tasks
+  description: 'Appmixer API — People Tasks. 1 operations. Lead operation: Appmixer List people tasks. Self-contained Naftiko
+    capability covering one Appmixer business surface.'
+  tags:
+  - Appmixer
+  - People Tasks
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    APPMIXER_API_KEY: APPMIXER_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: appmixer-people-tasks
+    baseUri: https://api.{tenant}.appmixer.cloud
+    description: Appmixer API — People Tasks business capability. Self-contained, no shared references.
+    resources:
+    - name: people-task-tasks
+      path: /people-task/tasks
+      operations:
+      - name: listpeopletasks
+        method: GET
+        description: Appmixer List people tasks
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: role
+          in: query
+          type: string
+          description: Filter tasks by role
+    authentication:
+      type: bearer
+      token: '{{env.APPMIXER_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: appmixer-people-tasks-rest
+    port: 8080
+    description: REST adapter for Appmixer API — People Tasks. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/people-task/tasks
+      name: people-task-tasks
+      description: REST surface for people-task-tasks.
+      operations:
+      - method: GET
+        name: listpeopletasks
+        description: Appmixer List people tasks
+        call: appmixer-people-tasks.listpeopletasks
+        with:
+          role: rest.role
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: appmixer-people-tasks-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Appmixer API — People Tasks. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: appmixer-list-people-tasks
+      description: Appmixer List people tasks
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: appmixer-people-tasks.listpeopletasks
+      with:
+        role: tools.role
+      outputParameters:
+      - type: object
+        mapping: $.

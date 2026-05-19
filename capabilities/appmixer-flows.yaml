@@ -1,0 +1,348 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Appmixer API — Flows
+  description: 'Appmixer API — Flows. 7 operations. Lead operation: Appmixer List flows. Self-contained Naftiko capability
+    covering one Appmixer business surface.'
+  tags:
+  - Appmixer
+  - Flows
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    APPMIXER_API_KEY: APPMIXER_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: appmixer-flows
+    baseUri: https://api.{tenant}.appmixer.cloud
+    description: Appmixer API — Flows business capability. Self-contained, no shared references.
+    resources:
+    - name: flows
+      path: /flows
+      operations:
+      - name: listflows
+        method: GET
+        description: Appmixer List flows
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: limit
+          in: query
+          type: integer
+          description: Maximum number of flows to return
+        - name: offset
+          in: query
+          type: integer
+          description: Number of flows to skip
+        - name: pattern
+          in: query
+          type: string
+          description: Filter flows by name pattern
+        - name: sort
+          in: query
+          type: string
+          description: Sort field and direction
+        - name: projection
+          in: query
+          type: string
+          description: Comma-separated list of properties to exclude
+        - name: filter
+          in: query
+          type: string
+          description: Filter expression
+      - name: createflow
+        method: POST
+        description: Appmixer Create a flow
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    - name: flows-flowId
+      path: /flows/{flowId}
+      operations:
+      - name: getflow
+        method: GET
+        description: Appmixer Get a flow
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: flowId
+          in: path
+          type: string
+          required: true
+      - name: updateflow
+        method: PUT
+        description: Appmixer Update a flow
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: flowId
+          in: path
+          type: string
+          required: true
+        - name: forceUpdate
+          in: query
+          type: boolean
+          description: Force update a running flow
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+      - name: deleteflow
+        method: DELETE
+        description: Appmixer Delete a flow
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: flowId
+          in: path
+          type: string
+          required: true
+    - name: flows-flowId-start
+      path: /flows/{flowId}/start
+      operations:
+      - name: startflow
+        method: PUT
+        description: Appmixer Start a flow
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: flowId
+          in: path
+          type: string
+          required: true
+    - name: flows-flowId-stop
+      path: /flows/{flowId}/stop
+      operations:
+      - name: stopflow
+        method: PUT
+        description: Appmixer Stop a flow
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: flowId
+          in: path
+          type: string
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.APPMIXER_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: appmixer-flows-rest
+    port: 8080
+    description: REST adapter for Appmixer API — Flows. One Spectral-compliant resource per consumed operation, prefixed with
+      /v1.
+    resources:
+    - path: /v1/flows
+      name: flows
+      description: REST surface for flows.
+      operations:
+      - method: GET
+        name: listflows
+        description: Appmixer List flows
+        call: appmixer-flows.listflows
+        with:
+          limit: rest.limit
+          offset: rest.offset
+          pattern: rest.pattern
+          sort: rest.sort
+          projection: rest.projection
+          filter: rest.filter
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: POST
+        name: createflow
+        description: Appmixer Create a flow
+        call: appmixer-flows.createflow
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/flows/{flowid}
+      name: flows-flowid
+      description: REST surface for flows-flowId.
+      operations:
+      - method: GET
+        name: getflow
+        description: Appmixer Get a flow
+        call: appmixer-flows.getflow
+        with:
+          flowId: rest.flowId
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: PUT
+        name: updateflow
+        description: Appmixer Update a flow
+        call: appmixer-flows.updateflow
+        with:
+          flowId: rest.flowId
+          forceUpdate: rest.forceUpdate
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+      - method: DELETE
+        name: deleteflow
+        description: Appmixer Delete a flow
+        call: appmixer-flows.deleteflow
+        with:
+          flowId: rest.flowId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/flows/{flowid}/start
+      name: flows-flowid-start
+      description: REST surface for flows-flowId-start.
+      operations:
+      - method: PUT
+        name: startflow
+        description: Appmixer Start a flow
+        call: appmixer-flows.startflow
+        with:
+          flowId: rest.flowId
+        outputParameters:
+        - type: object
+          mapping: $.
+    - path: /v1/flows/{flowid}/stop
+      name: flows-flowid-stop
+      description: REST surface for flows-flowId-stop.
+      operations:
+      - method: PUT
+        name: stopflow
+        description: Appmixer Stop a flow
+        call: appmixer-flows.stopflow
+        with:
+          flowId: rest.flowId
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: appmixer-flows-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Appmixer API — Flows. One tool per consumed operation, routed inline through this capability's
+      consumes block.
+    tools:
+    - name: appmixer-list-flows
+      description: Appmixer List flows
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: appmixer-flows.listflows
+      with:
+        limit: tools.limit
+        offset: tools.offset
+        pattern: tools.pattern
+        sort: tools.sort
+        projection: tools.projection
+        filter: tools.filter
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: appmixer-create-flow
+      description: Appmixer Create a flow
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: appmixer-flows.createflow
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: appmixer-get-flow
+      description: Appmixer Get a flow
+      hints:
+        readOnly: true
+        destructive: false
+        idempotent: true
+      call: appmixer-flows.getflow
+      with:
+        flowId: tools.flowId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: appmixer-update-flow
+      description: Appmixer Update a flow
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: appmixer-flows.updateflow
+      with:
+        flowId: tools.flowId
+        forceUpdate: tools.forceUpdate
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: appmixer-delete-flow
+      description: Appmixer Delete a flow
+      hints:
+        readOnly: false
+        destructive: true
+        idempotent: true
+      call: appmixer-flows.deleteflow
+      with:
+        flowId: tools.flowId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: appmixer-start-flow
+      description: Appmixer Start a flow
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: appmixer-flows.startflow
+      with:
+        flowId: tools.flowId
+      outputParameters:
+      - type: object
+        mapping: $.
+    - name: appmixer-stop-flow
+      description: Appmixer Stop a flow
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: true
+      call: appmixer-flows.stopflow
+      with:
+        flowId: tools.flowId
+      outputParameters:
+      - type: object
+        mapping: $.

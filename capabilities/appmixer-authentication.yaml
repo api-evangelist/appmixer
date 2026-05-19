@@ -1,0 +1,80 @@
+naftiko: 1.0.0-alpha2
+info:
+  label: Appmixer API — Authentication
+  description: 'Appmixer API — Authentication. 1 operations. Lead operation: Appmixer Authenticate user. Self-contained Naftiko
+    capability covering one Appmixer business surface.'
+  tags:
+  - Appmixer
+  - Authentication
+  created: '2026-05-19'
+  modified: '2026-05-19'
+binds:
+- namespace: env
+  keys:
+    APPMIXER_API_KEY: APPMIXER_API_KEY
+capability:
+  consumes:
+  - type: http
+    namespace: appmixer-authentication
+    baseUri: https://api.{tenant}.appmixer.cloud
+    description: Appmixer API — Authentication business capability. Self-contained, no shared references.
+    resources:
+    - name: user-auth
+      path: /user/auth
+      operations:
+      - name: authenticateuser
+        method: POST
+        description: Appmixer Authenticate user
+        outputRawFormat: json
+        outputParameters:
+        - name: result
+          type: object
+          value: $.
+        inputParameters:
+        - name: body
+          in: body
+          type: object
+          description: Request body (JSON).
+          required: true
+    authentication:
+      type: bearer
+      token: '{{env.APPMIXER_API_KEY}}'
+  exposes:
+  - type: rest
+    namespace: appmixer-authentication-rest
+    port: 8080
+    description: REST adapter for Appmixer API — Authentication. One Spectral-compliant resource per consumed operation, prefixed
+      with /v1.
+    resources:
+    - path: /v1/user/auth
+      name: user-auth
+      description: REST surface for user-auth.
+      operations:
+      - method: POST
+        name: authenticateuser
+        description: Appmixer Authenticate user
+        call: appmixer-authentication.authenticateuser
+        with:
+          body: rest.body
+        outputParameters:
+        - type: object
+          mapping: $.
+  - type: mcp
+    namespace: appmixer-authentication-mcp
+    port: 9090
+    transport: http
+    description: MCP adapter for Appmixer API — Authentication. One tool per consumed operation, routed inline through this
+      capability's consumes block.
+    tools:
+    - name: appmixer-authenticate-user
+      description: Appmixer Authenticate user
+      hints:
+        readOnly: false
+        destructive: false
+        idempotent: false
+      call: appmixer-authentication.authenticateuser
+      with:
+        body: tools.body
+      outputParameters:
+      - type: object
+        mapping: $.
