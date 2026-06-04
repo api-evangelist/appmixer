@@ -1,0 +1,72 @@
+arazzo: 1.0.1
+info:
+  title: Appmixer Clone an Existing Flow
+  summary: Read an existing flow's definition and create a copy of it under a new name.
+  description: >-
+    A duplication pattern for the Appmixer iPaaS. The workflow reads an existing
+    flow to capture its definition and custom fields, then creates a new flow
+    that reuses that definition under a new name. The result is an independent
+    copy that can be edited and started without touching the original.
+  version: 1.0.0
+sourceDescriptions:
+- name: appmixerApi
+  url: ../openapi/appmixer-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: clone-flow
+  summary: Duplicate an existing flow into a new flow.
+  description: >-
+    Fetches the source flow's definition and custom fields and posts them as a
+    brand new flow under the supplied name.
+  inputs:
+    type: object
+    required:
+    - token
+    - sourceFlowId
+    - newName
+    properties:
+      token:
+        type: string
+        description: Appmixer access token obtained from /user/auth.
+      sourceFlowId:
+        type: string
+        description: The identifier of the flow to clone.
+      newName:
+        type: string
+        description: Name for the newly created clone.
+  steps:
+  - stepId: getSourceFlow
+    description: Read the source flow to capture its definition and metadata.
+    operationId: getFlow
+    parameters:
+    - name: Authorization
+      in: header
+      value: Bearer $inputs.token
+    - name: flowId
+      in: path
+      value: $inputs.sourceFlowId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      flowDefinition: $response.body#/flow
+      customFields: $response.body#/customFields
+  - stepId: createClone
+    description: Create a new flow reusing the source definition under a new name.
+    operationId: createFlow
+    parameters:
+    - name: Authorization
+      in: header
+      value: Bearer $inputs.token
+    requestBody:
+      contentType: application/json
+      payload:
+        name: $inputs.newName
+        flow: $steps.getSourceFlow.outputs.flowDefinition
+        customFields: $steps.getSourceFlow.outputs.customFields
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      cloneFlowId: $response.body#/id
+      stage: $response.body#/stage
+  outputs:
+    cloneFlowId: $steps.createClone.outputs.cloneFlowId

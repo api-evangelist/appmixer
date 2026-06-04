@@ -1,0 +1,71 @@
+arazzo: 1.0.1
+info:
+  title: Appmixer Replay an Unprocessed Message
+  summary: List unprocessed messages and put the first one back into the engine.
+  description: >-
+    A dead-letter recovery pattern for the Appmixer engine. The workflow lists
+    the unprocessed messages that failed to be handled, takes the first message
+    in the backlog, and reprocesses it by putting it back into the Appmixer
+    engine so the flow run can complete. This lets operators replay stuck
+    messages without manual reconstruction.
+  version: 1.0.0
+sourceDescriptions:
+- name: appmixerApi
+  url: ../openapi/appmixer-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: replay-unprocessed-message
+  summary: Reprocess the first message in the unprocessed backlog.
+  description: >-
+    Retrieves the list of unprocessed messages and, when at least one exists,
+    reprocesses the first message back through the engine.
+  inputs:
+    type: object
+    required:
+    - token
+    properties:
+      token:
+        type: string
+        description: Appmixer access token obtained from /user/auth.
+  steps:
+  - stepId: listUnprocessedMessages
+    description: List the messages that failed to be processed by the engine.
+    operationId: listUnprocessedMessages
+    parameters:
+    - name: Authorization
+      in: header
+      value: Bearer $inputs.token
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      firstMessageId: $response.body#/0/messageId
+    onSuccess:
+    - name: hasMessages
+      type: goto
+      stepId: reprocessMessage
+      criteria:
+      - context: $response.body
+        condition: $.length > 0
+        type: jsonpath
+    - name: noMessages
+      type: end
+      criteria:
+      - context: $response.body
+        condition: $.length == 0
+        type: jsonpath
+  - stepId: reprocessMessage
+    description: Put the first unprocessed message back into the Appmixer engine.
+    operationId: reprocessMessage
+    parameters:
+    - name: Authorization
+      in: header
+      value: Bearer $inputs.token
+    - name: messageId
+      in: path
+      value: $steps.listUnprocessedMessages.outputs.firstMessageId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      reprocessedMessageId: $steps.listUnprocessedMessages.outputs.firstMessageId
+  outputs:
+    reprocessedMessageId: $steps.reprocessMessage.outputs.reprocessedMessageId

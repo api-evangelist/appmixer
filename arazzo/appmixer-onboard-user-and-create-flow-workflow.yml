@@ -1,0 +1,86 @@
+arazzo: 1.0.1
+info:
+  title: Appmixer Onboard a User and Create Their First Flow
+  summary: Create a user, authenticate to obtain a token, then create a flow for them.
+  description: >-
+    The embedded-iPaaS onboarding pattern. The workflow registers a brand new
+    Appmixer user, signs that user in to obtain an access token, and uses the
+    token to create the user's first flow. Because user creation and
+    authentication are open endpoints, only the flow-creation step carries an
+    inline bearer authorization derived from the freshly issued token.
+  version: 1.0.0
+sourceDescriptions:
+- name: appmixerApi
+  url: ../openapi/appmixer-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: onboard-user-and-create-flow
+  summary: Register a user, authenticate, and create their first flow.
+  description: >-
+    Creates a new user account, authenticates with the same credentials to
+    receive a token, and creates an initial flow scoped to that user.
+  inputs:
+    type: object
+    required:
+    - username
+    - password
+    - flowName
+    properties:
+      username:
+        type: string
+        description: The new user's email address or username.
+      password:
+        type: string
+        description: The new user's password.
+      flowName:
+        type: string
+        description: Name of the first flow to create for the user.
+      flow:
+        type: object
+        description: Optional flow definition object for the first flow.
+  steps:
+  - stepId: createUser
+    description: Register a new Appmixer user account (open endpoint).
+    operationId: createUser
+    requestBody:
+      contentType: application/json
+      payload:
+        username: $inputs.username
+        password: $inputs.password
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      userId: $response.body#/id
+  - stepId: authenticate
+    description: Sign the new user in to obtain an access token.
+    operationId: authenticateUser
+    requestBody:
+      contentType: application/json
+      payload:
+        username: $inputs.username
+        password: $inputs.password
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      token: $response.body#/token
+  - stepId: createFirstFlow
+    description: Create the user's first flow using the issued token.
+    operationId: createFlow
+    parameters:
+    - name: Authorization
+      in: header
+      value: Bearer $steps.authenticate.outputs.token
+    requestBody:
+      contentType: application/json
+      payload:
+        name: $inputs.flowName
+        flow: $inputs.flow
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      flowId: $response.body#/id
+      stage: $response.body#/stage
+  outputs:
+    userId: $steps.createUser.outputs.userId
+    token: $steps.authenticate.outputs.token
+    flowId: $steps.createFirstFlow.outputs.flowId

@@ -1,0 +1,102 @@
+arazzo: 1.0.1
+info:
+  title: Appmixer Update a Flow Safely by Stage
+  summary: Read a flow, then stop it before updating if it is running, otherwise update directly.
+  description: >-
+    Appmixer refuses to update a running flow unless forced. This workflow reads
+    the target flow, inspects its stage, and branches: a running flow is stopped
+    first and then updated, while a stopped flow is updated directly. Both
+    branches converge on the same update operation so the new definition is
+    applied without losing data on a live flow.
+  version: 1.0.0
+sourceDescriptions:
+- name: appmixerApi
+  url: ../openapi/appmixer-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: update-flow-safely
+  summary: Stop a running flow if needed, then apply an updated definition.
+  description: >-
+    Fetches the flow, branches on whether it is running, stops it when running,
+    and applies the supplied name and definition update.
+  inputs:
+    type: object
+    required:
+    - token
+    - flowId
+    properties:
+      token:
+        type: string
+        description: Appmixer access token obtained from /user/auth.
+      flowId:
+        type: string
+        description: The identifier of the flow to update.
+      name:
+        type: string
+        description: The new name for the flow.
+      flow:
+        type: object
+        description: The updated flow definition object.
+  steps:
+  - stepId: getFlow
+    description: Read the flow to determine its current stage before updating.
+    operationId: getFlow
+    parameters:
+    - name: Authorization
+      in: header
+      value: Bearer $inputs.token
+    - name: flowId
+      in: path
+      value: $inputs.flowId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      stage: $response.body#/stage
+    onSuccess:
+    - name: flowRunning
+      type: goto
+      stepId: stopFlow
+      criteria:
+      - context: $response.body
+        condition: $.stage == "running"
+        type: jsonpath
+    - name: flowStopped
+      type: goto
+      stepId: updateFlow
+      criteria:
+      - context: $response.body
+        condition: $.stage != "running"
+        type: jsonpath
+  - stepId: stopFlow
+    description: Stop the running flow so it can be safely updated.
+    operationId: stopFlow
+    parameters:
+    - name: Authorization
+      in: header
+      value: Bearer $inputs.token
+    - name: flowId
+      in: path
+      value: $inputs.flowId
+    successCriteria:
+    - condition: $statusCode == 200
+  - stepId: updateFlow
+    description: Apply the new name and definition to the flow.
+    operationId: updateFlow
+    parameters:
+    - name: Authorization
+      in: header
+      value: Bearer $inputs.token
+    - name: flowId
+      in: path
+      value: $inputs.flowId
+    requestBody:
+      contentType: application/json
+      payload:
+        name: $inputs.name
+        flow: $inputs.flow
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      updatedFlowId: $inputs.flowId
+  outputs:
+    updatedFlowId: $steps.updateFlow.outputs.updatedFlowId

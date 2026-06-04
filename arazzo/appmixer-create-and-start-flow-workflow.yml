@@ -1,0 +1,91 @@
+arazzo: 1.0.1
+info:
+  title: Appmixer Create and Start a Flow
+  summary: Create a new flow, confirm it persisted, and start it running.
+  description: >-
+    The core build-and-activate pattern for the Appmixer embedded iPaaS. The
+    workflow creates a new flow from a supplied flow definition, reads the
+    created flow back to confirm it was persisted, and then starts the flow so
+    it begins executing. Every step inlines its bearer authorization, request
+    body, and success criteria so the flow can be read and executed without
+    opening the underlying OpenAPI description.
+  version: 1.0.0
+sourceDescriptions:
+- name: appmixerApi
+  url: ../openapi/appmixer-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: create-and-start-flow
+  summary: Create an Appmixer flow then start it.
+  description: >-
+    Posts a new flow definition, retrieves the created flow to confirm its
+    stored state, and transitions it to the running stage.
+  inputs:
+    type: object
+    required:
+    - token
+    - name
+    properties:
+      token:
+        type: string
+        description: Appmixer access token obtained from /user/auth.
+      name:
+        type: string
+        description: Name of the flow to create.
+      flow:
+        type: object
+        description: The flow definition object (components and wiring).
+      customFields:
+        type: object
+        description: Optional custom metadata to attach to the flow.
+  steps:
+  - stepId: createFlow
+    description: Create a new flow from the supplied name and definition.
+    operationId: createFlow
+    parameters:
+    - name: Authorization
+      in: header
+      value: Bearer $inputs.token
+    requestBody:
+      contentType: application/json
+      payload:
+        name: $inputs.name
+        flow: $inputs.flow
+        customFields: $inputs.customFields
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      flowId: $response.body#/id
+      stage: $response.body#/stage
+  - stepId: confirmFlow
+    description: Read the created flow back to confirm it was persisted.
+    operationId: getFlow
+    parameters:
+    - name: Authorization
+      in: header
+      value: Bearer $inputs.token
+    - name: flowId
+      in: path
+      value: $steps.createFlow.outputs.flowId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      flowId: $response.body#/id
+      name: $response.body#/name
+  - stepId: startFlow
+    description: Start the newly created flow so it begins executing.
+    operationId: startFlow
+    parameters:
+    - name: Authorization
+      in: header
+      value: Bearer $inputs.token
+    - name: flowId
+      in: path
+      value: $steps.confirmFlow.outputs.flowId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      startedFlowId: $steps.confirmFlow.outputs.flowId
+  outputs:
+    flowId: $steps.confirmFlow.outputs.flowId
+    flowName: $steps.confirmFlow.outputs.name

@@ -1,0 +1,79 @@
+arazzo: 1.0.1
+info:
+  title: Appmixer Disconnect an Invalid Account
+  summary: Check a connected account's validity and delete it when its credentials have expired.
+  description: >-
+    A connection-hygiene pattern for the Appmixer iPaaS. The workflow reads a
+    connected third-party account and inspects whether its stored credentials
+    are still valid. When the account is no longer valid it is disconnected
+    (deleted); when it is still valid it is left in place. This keeps the
+    user's account list free of broken OAuth connections.
+  version: 1.0.0
+sourceDescriptions:
+- name: appmixerApi
+  url: ../openapi/appmixer-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: disconnect-invalid-account
+  summary: Delete a connected account only when its credentials are invalid.
+  description: >-
+    Fetches an account, branches on its validity flag, and disconnects it when
+    the credentials are no longer valid.
+  inputs:
+    type: object
+    required:
+    - token
+    - accountId
+    properties:
+      token:
+        type: string
+        description: Appmixer access token obtained from /user/auth.
+      accountId:
+        type: string
+        description: The identifier of the connected account to check.
+  steps:
+  - stepId: getAccount
+    description: Read the account and check whether its credentials are valid.
+    operationId: getAccount
+    parameters:
+    - name: Authorization
+      in: header
+      value: Bearer $inputs.token
+    - name: accountId
+      in: path
+      value: $inputs.accountId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      valid: $response.body#/valid
+      service: $response.body#/service
+    onSuccess:
+    - name: accountInvalid
+      type: goto
+      stepId: deleteAccount
+      criteria:
+      - context: $response.body
+        condition: $.valid == false
+        type: jsonpath
+    - name: accountValid
+      type: end
+      criteria:
+      - context: $response.body
+        condition: $.valid == true
+        type: jsonpath
+  - stepId: deleteAccount
+    description: Disconnect the account because its credentials are no longer valid.
+    operationId: deleteAccount
+    parameters:
+    - name: Authorization
+      in: header
+      value: Bearer $inputs.token
+    - name: accountId
+      in: path
+      value: $inputs.accountId
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      disconnectedAccountId: $inputs.accountId
+  outputs:
+    disconnectedAccountId: $steps.deleteAccount.outputs.disconnectedAccountId

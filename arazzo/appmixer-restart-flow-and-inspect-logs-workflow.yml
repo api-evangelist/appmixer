@@ -1,0 +1,81 @@
+arazzo: 1.0.1
+info:
+  title: Appmixer Restart a Flow and Inspect Its Logs
+  summary: Stop a flow, start it again, and pull its recent execution logs.
+  description: >-
+    An operational restart pattern for the Appmixer iPaaS. The workflow stops a
+    running flow, starts it again to apply a clean restart, and then retrieves
+    the recent execution logs scoped to that flow so an operator can confirm it
+    came back up cleanly. Every step inlines its bearer authorization and
+    success criteria.
+  version: 1.0.0
+sourceDescriptions:
+- name: appmixerApi
+  url: ../openapi/appmixer-api-openapi.yml
+  type: openapi
+workflows:
+- workflowId: restart-flow-and-inspect-logs
+  summary: Cycle a flow off and on, then read its logs.
+  description: >-
+    Stops the target flow, starts it again, and fetches the most recent log
+    entries filtered to that flow.
+  inputs:
+    type: object
+    required:
+    - token
+    - flowId
+    properties:
+      token:
+        type: string
+        description: Appmixer access token obtained from /user/auth.
+      flowId:
+        type: string
+        description: The identifier of the flow to restart.
+      limit:
+        type: integer
+        description: Maximum number of log entries to return.
+  steps:
+  - stepId: stopFlow
+    description: Stop the flow to begin the restart cycle.
+    operationId: stopFlow
+    parameters:
+    - name: Authorization
+      in: header
+      value: Bearer $inputs.token
+    - name: flowId
+      in: path
+      value: $inputs.flowId
+    successCriteria:
+    - condition: $statusCode == 200
+  - stepId: startFlow
+    description: Start the flow again to complete the restart.
+    operationId: startFlow
+    parameters:
+    - name: Authorization
+      in: header
+      value: Bearer $inputs.token
+    - name: flowId
+      in: path
+      value: $inputs.flowId
+    successCriteria:
+    - condition: $statusCode == 200
+  - stepId: getLogs
+    description: Retrieve recent execution logs for the restarted flow.
+    operationId: getLogs
+    parameters:
+    - name: Authorization
+      in: header
+      value: Bearer $inputs.token
+    - name: flowId
+      in: query
+      value: $inputs.flowId
+    - name: limit
+      in: query
+      value: $inputs.limit
+    successCriteria:
+    - condition: $statusCode == 200
+    outputs:
+      latestLogTimestamp: $response.body#/0/timestamp
+  outputs:
+    flowId: $inputs.flowId
+    latestLogTimestamp: $steps.getLogs.outputs.latestLogTimestamp

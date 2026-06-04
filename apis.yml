@@ -97,6 +97,36 @@ type: Index
 image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
 access: 3rd-Party
 common:
+  - type: ArazzoWorkflows
+    url: arazzo/
+    workflows:
+    - url: arazzo/appmixer-authenticate-and-list-flows-workflow.yml
+      name: Appmixer Authenticate and List Flows
+      summary: Sign a user in, confirm the session, and list their flows.
+    - url: arazzo/appmixer-clone-flow-workflow.yml
+      name: Appmixer Clone an Existing Flow
+      summary: Read an existing flow's definition and create a copy of it under a new name.
+    - url: arazzo/appmixer-create-and-start-flow-workflow.yml
+      name: Appmixer Create and Start a Flow
+      summary: Create a new flow, confirm it persisted, and start it running.
+    - url: arazzo/appmixer-disconnect-invalid-account-workflow.yml
+      name: Appmixer Disconnect an Invalid Account
+      summary: Check a connected account's validity and delete it when its credentials have expired.
+    - url: arazzo/appmixer-onboard-user-and-create-flow-workflow.yml
+      name: Appmixer Onboard a User and Create Their First Flow
+      summary: Create a user, authenticate to obtain a token, then create a flow for them.
+    - url: arazzo/appmixer-reprocess-unprocessed-message-workflow.yml
+      name: Appmixer Replay an Unprocessed Message
+      summary: List unprocessed messages and put the first one back into the engine.
+    - url: arazzo/appmixer-restart-flow-and-inspect-logs-workflow.yml
+      name: Appmixer Restart a Flow and Inspect Its Logs
+      summary: Stop a flow, start it again, and pull its recent execution logs.
+    - url: arazzo/appmixer-stop-and-delete-flow-workflow.yml
+      name: Appmixer Decommission a Flow
+      summary: Read a flow, stop it if it is running, then delete it.
+    - url: arazzo/appmixer-update-running-flow-workflow.yml
+      name: Appmixer Update a Flow Safely by Stage
+      summary: Read a flow, then stop it before updating if it is running, otherwise update directly.
   - type: GitHubOrganization
     url: https://github.com/Appmixer-ai
   - type: LinkedIn
