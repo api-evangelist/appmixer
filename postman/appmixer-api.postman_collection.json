@@ -1,0 +1,5012 @@
+{
+  "info": {
+    "_postman_id": "7dfa7695-a266-46c0-82fb-54fd61770720",
+    "name": "Appmixer API",
+    "description": "The Appmixer REST API provides programmatic access to manage workflows, users, accounts, apps/connectors, files, data stores, insights, and people tasks within the Appmixer embedded iPaaS platform. The API allows you to access all the features that the Appmixer UI works with.\n\nContact Support:\n Name: Appmixer",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "createdAt": "2026-06-05T15:05:26.000Z",
+    "updatedAt": "2026-06-05T15:05:26.000Z",
+    "lastUpdatedBy": "35240",
+    "uid": "35240-7dfa7695-a266-46c0-82fb-54fd61770720"
+  },
+  "item": [
+    {
+      "name": "/",
+      "item": [
+        {
+          "name": "Appmixer Get API information",
+          "id": "cd550456-052a-4072-8338-98fea35780aa",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ""
+              ]
+            },
+            "description": "Basic liveness check that returns basic API information about the Appmixer instance."
+          },
+          "response": [
+            {
+              "id": "1341f9ad-0725-4002-a9df-9dcb921b0812",
+              "name": "API information returned successfully",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    ""
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"version\": \"<string>\",\n  \"status\": \"<string>\"\n}",
+              "createdAt": "2026-06-05T15:05:27.000Z",
+              "updatedAt": "2026-06-05T15:05:27.000Z",
+              "uid": "35240-1341f9ad-0725-4002-a9df-9dcb921b0812"
+            }
+          ],
+          "createdAt": "2026-06-05T15:05:26.000Z",
+          "updatedAt": "2026-06-05T15:05:26.000Z",
+          "uid": "35240-cd550456-052a-4072-8338-98fea35780aa"
+        }
+      ],
+      "id": "d2539149-cf17-411f-a6cd-08b1bdc834b9",
+      "createdAt": "2026-06-05T15:05:26.000Z",
+      "updatedAt": "2026-06-05T15:05:26.000Z",
+      "uid": "35240-d2539149-cf17-411f-a6cd-08b1bdc834b9"
+    },
+    {
+      "name": "user",
+      "item": [
+        {
+          "name": "auth",
+          "item": [
+            {
+              "name": "Appmixer Authenticate user",
+              "id": "55aee296-7294-423d-b0d0-e1234a938bbb",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"<string>\",\n  \"password\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/user/auth",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "user",
+                    "auth"
+                  ]
+                },
+                "description": "Sign in a user with credentials and obtain an access token for authenticating subsequent API requests."
+              },
+              "response": [
+                {
+                  "id": "440826f0-079f-4bed-807a-f22c66e39ad3",
+                  "name": "Authentication successful",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"username\": \"<string>\",\n  \"password\": \"<string>\"\n}",
+                      "options": {
+                        "raw": {
+                          "headerFamily": "json",
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/user/auth",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "user",
+                        "auth"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": "{\n  \"token\": \"<string>\",\n  \"user\": {\n    \"id\": \"<string>\",\n    \"username\": \"<string>\",\n    \"email\": \"<string>\",\n    \"token\": \"<string>\",\n    \"plan\": \"<string>\"\n  }\n}",
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-440826f0-079f-4bed-807a-f22c66e39ad3"
+                },
+                {
+                  "id": "1552d80f-884d-4a3d-9de7-7be69668933b",
+                  "name": "Invalid credentials",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"username\": \"<string>\",\n  \"password\": \"<string>\"\n}",
+                      "options": {
+                        "raw": {
+                          "headerFamily": "json",
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/user/auth",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "user",
+                        "auth"
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-1552d80f-884d-4a3d-9de7-7be69668933b"
+                }
+              ],
+              "createdAt": "2026-06-05T15:05:26.000Z",
+              "updatedAt": "2026-06-05T15:05:26.000Z",
+              "uid": "35240-55aee296-7294-423d-b0d0-e1234a938bbb"
+            }
+          ],
+          "id": "d0abb481-8583-4295-a858-48fa83606589",
+          "createdAt": "2026-06-05T15:05:26.000Z",
+          "updatedAt": "2026-06-05T15:05:26.000Z",
+          "uid": "35240-d0abb481-8583-4295-a858-48fa83606589"
+        },
+        {
+          "name": "Appmixer Get current user",
+          "id": "7fc08be6-d1b3-4bef-9e57-37ed46e3e431",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user"
+              ]
+            },
+            "description": "Get information about the currently authenticated user."
+          },
+          "response": [
+            {
+              "id": "4fd25b14-eafc-46e3-af00-25a290389610",
+              "name": "User information returned successfully",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/user",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "user"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"id\": \"<string>\",\n  \"username\": \"<string>\",\n  \"email\": \"<string>\",\n  \"token\": \"<string>\",\n  \"plan\": \"<string>\"\n}",
+              "createdAt": "2026-06-05T15:05:27.000Z",
+              "updatedAt": "2026-06-05T15:05:27.000Z",
+              "uid": "35240-4fd25b14-eafc-46e3-af00-25a290389610"
+            },
+            {
+              "id": "d506a23f-e4e9-4f1c-acee-048a7a833021",
+              "name": "Unauthorized",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/user",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "user"
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "responseTime": null,
+              "body": null,
+              "createdAt": "2026-06-05T15:05:27.000Z",
+              "updatedAt": "2026-06-05T15:05:27.000Z",
+              "uid": "35240-d506a23f-e4e9-4f1c-acee-048a7a833021"
+            }
+          ],
+          "createdAt": "2026-06-05T15:05:26.000Z",
+          "updatedAt": "2026-06-05T15:05:26.000Z",
+          "uid": "35240-7fc08be6-d1b3-4bef-9e57-37ed46e3e431"
+        },
+        {
+          "name": "Appmixer Create a new user",
+          "id": "9e98e58c-b02d-4808-b11a-1c61841c51ef",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"<string>\",\n  \"password\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user"
+              ]
+            },
+            "description": "Create a new Appmixer user account. By default, this endpoint is open and does not require authentication."
+          },
+          "response": [
+            {
+              "id": "3c4af933-1f39-42cd-b89e-db29b0d130a7",
+              "name": "User created successfully",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"<string>\",\n  \"password\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/user",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "user"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"id\": \"<string>\",\n  \"username\": \"<string>\",\n  \"email\": \"<string>\",\n  \"token\": \"<string>\",\n  \"plan\": \"<string>\"\n}",
+              "createdAt": "2026-06-05T15:05:27.000Z",
+              "updatedAt": "2026-06-05T15:05:27.000Z",
+              "uid": "35240-3c4af933-1f39-42cd-b89e-db29b0d130a7"
+            },
+            {
+              "id": "9ab861c4-4e9e-4cd5-88a9-6fe24cdede81",
+              "name": "Invalid request",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"<string>\",\n  \"password\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/user",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "user"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "responseTime": null,
+              "body": null,
+              "createdAt": "2026-06-05T15:05:27.000Z",
+              "updatedAt": "2026-06-05T15:05:27.000Z",
+              "uid": "35240-9ab861c4-4e9e-4cd5-88a9-6fe24cdede81"
+            }
+          ],
+          "createdAt": "2026-06-05T15:05:26.000Z",
+          "updatedAt": "2026-06-05T15:05:26.000Z",
+          "uid": "35240-9e98e58c-b02d-4808-b11a-1c61841c51ef"
+        }
+      ],
+      "id": "08bc3df9-721a-41bc-9e44-6bd8a338acbb",
+      "createdAt": "2026-06-05T15:05:26.000Z",
+      "updatedAt": "2026-06-05T15:05:26.000Z",
+      "uid": "35240-08bc3df9-721a-41bc-9e44-6bd8a338acbb"
+    },
+    {
+      "name": "users",
+      "item": [
+        {
+          "name": "{userId}",
+          "item": [
+            {
+              "name": "Appmixer Update a user",
+              "id": "b27dae98-52b6-4068-86fd-9fb91e89a653",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"<string>\",\n  \"password\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/users/:userId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "users",
+                    ":userId"
+                  ],
+                  "variable": [
+                    {
+                      "id": "4222fdab-09d2-41c8-aa71-edd22c94816c",
+                      "key": "userId",
+                      "value": "<string>",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "description": "Update user information for the specified user."
+              },
+              "response": [
+                {
+                  "id": "9c3aa44b-9a3b-4aec-b275-8747db5d32b7",
+                  "name": "User updated successfully",
+                  "originalRequest": {
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"username\": \"<string>\",\n  \"password\": \"<string>\"\n}",
+                      "options": {
+                        "raw": {
+                          "headerFamily": "json",
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/users/:userId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "users",
+                        ":userId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "userId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-9c3aa44b-9a3b-4aec-b275-8747db5d32b7"
+                },
+                {
+                  "id": "efdc3168-44a7-4b92-ae26-c4ad95e3eea0",
+                  "name": "Unauthorized",
+                  "originalRequest": {
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"username\": \"<string>\",\n  \"password\": \"<string>\"\n}",
+                      "options": {
+                        "raw": {
+                          "headerFamily": "json",
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/users/:userId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "users",
+                        ":userId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "userId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-efdc3168-44a7-4b92-ae26-c4ad95e3eea0"
+                },
+                {
+                  "id": "5a9b2c6a-c554-465a-ad59-1fee17560c86",
+                  "name": "User not found",
+                  "originalRequest": {
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"username\": \"<string>\",\n  \"password\": \"<string>\"\n}",
+                      "options": {
+                        "raw": {
+                          "headerFamily": "json",
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/users/:userId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "users",
+                        ":userId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "userId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-5a9b2c6a-c554-465a-ad59-1fee17560c86"
+                }
+              ],
+              "createdAt": "2026-06-05T15:05:26.000Z",
+              "updatedAt": "2026-06-05T15:05:26.000Z",
+              "uid": "35240-b27dae98-52b6-4068-86fd-9fb91e89a653"
+            },
+            {
+              "name": "Appmixer Delete a user",
+              "id": "ff96c6e8-4eb7-4c8a-bd35-ebb8248ca75b",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/users/:userId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "users",
+                    ":userId"
+                  ],
+                  "variable": [
+                    {
+                      "id": "4b5969b3-bc6b-444b-bea6-659cfb89991d",
+                      "key": "userId",
+                      "value": "<string>",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "description": "Delete the specified user account."
+              },
+              "response": [
+                {
+                  "id": "0a86bbe9-4de6-4804-bb98-f6dc966db2f3",
+                  "name": "User deleted successfully",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/users/:userId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "users",
+                        ":userId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "userId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-0a86bbe9-4de6-4804-bb98-f6dc966db2f3"
+                },
+                {
+                  "id": "a531450a-7097-47bd-be78-34895d040b3d",
+                  "name": "Unauthorized",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/users/:userId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "users",
+                        ":userId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "userId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-a531450a-7097-47bd-be78-34895d040b3d"
+                },
+                {
+                  "id": "acad041f-118f-43e4-bd41-5c5f22b4944f",
+                  "name": "User not found",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/users/:userId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "users",
+                        ":userId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "userId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-acad041f-118f-43e4-bd41-5c5f22b4944f"
+                }
+              ],
+              "createdAt": "2026-06-05T15:05:26.000Z",
+              "updatedAt": "2026-06-05T15:05:26.000Z",
+              "uid": "35240-ff96c6e8-4eb7-4c8a-bd35-ebb8248ca75b"
+            }
+          ],
+          "id": "8283aee2-5eaf-4fc4-9eb7-2c2e7328a280",
+          "createdAt": "2026-06-05T15:05:26.000Z",
+          "updatedAt": "2026-06-05T15:05:26.000Z",
+          "uid": "35240-8283aee2-5eaf-4fc4-9eb7-2c2e7328a280"
+        }
+      ],
+      "id": "1f83f235-42e6-4323-ac40-dfd1062ebaae",
+      "createdAt": "2026-06-05T15:05:26.000Z",
+      "updatedAt": "2026-06-05T15:05:26.000Z",
+      "uid": "35240-1f83f235-42e6-4323-ac40-dfd1062ebaae"
+    },
+    {
+      "name": "flows",
+      "item": [
+        {
+          "name": "{flowId}",
+          "item": [
+            {
+              "name": "start",
+              "item": [
+                {
+                  "name": "Appmixer Start a flow",
+                  "id": "b7db3998-58d8-4221-9bef-7696d4f2a5e7",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "method": "PUT",
+                    "header": [],
+                    "url": {
+                      "raw": "{{baseUrl}}/flows/:flowId/start",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "flows",
+                        ":flowId",
+                        "start"
+                      ],
+                      "variable": [
+                        {
+                          "id": "c1054703-5f3e-4177-a851-07707fa924e4",
+                          "key": "flowId",
+                          "value": "<string>",
+                          "description": "(Required) "
+                        }
+                      ]
+                    },
+                    "description": "Start a stopped flow."
+                  },
+                  "response": [
+                    {
+                      "id": "3ec4b3d9-d981-47f9-9671-fc3c7040c398",
+                      "name": "Flow started successfully",
+                      "originalRequest": {
+                        "method": "PUT",
+                        "header": [
+                          {
+                            "description": "Added as a part of security scheme: bearer",
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/flows/:flowId/start",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "flows",
+                            ":flowId",
+                            "start"
+                          ],
+                          "variable": [
+                            {
+                              "key": "flowId"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": "text",
+                      "header": [],
+                      "cookie": [],
+                      "responseTime": null,
+                      "body": null,
+                      "createdAt": "2026-06-05T15:05:27.000Z",
+                      "updatedAt": "2026-06-05T15:05:27.000Z",
+                      "uid": "35240-3ec4b3d9-d981-47f9-9671-fc3c7040c398"
+                    },
+                    {
+                      "id": "baa83123-c402-4ad4-9052-e2dfe894f5d2",
+                      "name": "Unauthorized",
+                      "originalRequest": {
+                        "method": "PUT",
+                        "header": [
+                          {
+                            "description": "Added as a part of security scheme: bearer",
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/flows/:flowId/start",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "flows",
+                            ":flowId",
+                            "start"
+                          ],
+                          "variable": [
+                            {
+                              "key": "flowId"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "Unauthorized",
+                      "code": 401,
+                      "_postman_previewlanguage": "text",
+                      "header": [],
+                      "cookie": [],
+                      "responseTime": null,
+                      "body": null,
+                      "createdAt": "2026-06-05T15:05:27.000Z",
+                      "updatedAt": "2026-06-05T15:05:27.000Z",
+                      "uid": "35240-baa83123-c402-4ad4-9052-e2dfe894f5d2"
+                    },
+                    {
+                      "id": "178a9be2-e723-4e97-958d-54320a6bf080",
+                      "name": "Flow not found",
+                      "originalRequest": {
+                        "method": "PUT",
+                        "header": [
+                          {
+                            "description": "Added as a part of security scheme: bearer",
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/flows/:flowId/start",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "flows",
+                            ":flowId",
+                            "start"
+                          ],
+                          "variable": [
+                            {
+                              "key": "flowId"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "Not Found",
+                      "code": 404,
+                      "_postman_previewlanguage": "text",
+                      "header": [],
+                      "cookie": [],
+                      "responseTime": null,
+                      "body": null,
+                      "createdAt": "2026-06-05T15:05:27.000Z",
+                      "updatedAt": "2026-06-05T15:05:27.000Z",
+                      "uid": "35240-178a9be2-e723-4e97-958d-54320a6bf080"
+                    }
+                  ],
+                  "createdAt": "2026-06-05T15:05:26.000Z",
+                  "updatedAt": "2026-06-05T15:05:26.000Z",
+                  "uid": "35240-b7db3998-58d8-4221-9bef-7696d4f2a5e7"
+                }
+              ],
+              "id": "8ebb1fee-5957-47fa-a51d-776df8c20f23",
+              "createdAt": "2026-06-05T15:05:26.000Z",
+              "updatedAt": "2026-06-05T15:05:26.000Z",
+              "uid": "35240-8ebb1fee-5957-47fa-a51d-776df8c20f23"
+            },
+            {
+              "name": "stop",
+              "item": [
+                {
+                  "name": "Appmixer Stop a flow",
+                  "id": "6c5ca8e5-b5de-45b7-9251-39ebc53f104b",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "method": "PUT",
+                    "header": [],
+                    "url": {
+                      "raw": "{{baseUrl}}/flows/:flowId/stop",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "flows",
+                        ":flowId",
+                        "stop"
+                      ],
+                      "variable": [
+                        {
+                          "id": "b2521aa8-0a41-444e-8d7b-2a736a2467cf",
+                          "key": "flowId",
+                          "value": "<string>",
+                          "description": "(Required) "
+                        }
+                      ]
+                    },
+                    "description": "Stop a running flow."
+                  },
+                  "response": [
+                    {
+                      "id": "7d9c8d9e-87e2-441b-bd58-e2857326f70c",
+                      "name": "Flow stopped successfully",
+                      "originalRequest": {
+                        "method": "PUT",
+                        "header": [
+                          {
+                            "description": "Added as a part of security scheme: bearer",
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/flows/:flowId/stop",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "flows",
+                            ":flowId",
+                            "stop"
+                          ],
+                          "variable": [
+                            {
+                              "key": "flowId"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": "text",
+                      "header": [],
+                      "cookie": [],
+                      "responseTime": null,
+                      "body": null,
+                      "createdAt": "2026-06-05T15:05:27.000Z",
+                      "updatedAt": "2026-06-05T15:05:27.000Z",
+                      "uid": "35240-7d9c8d9e-87e2-441b-bd58-e2857326f70c"
+                    },
+                    {
+                      "id": "8b8ad401-a210-47a1-8220-c521b8769fee",
+                      "name": "Unauthorized",
+                      "originalRequest": {
+                        "method": "PUT",
+                        "header": [
+                          {
+                            "description": "Added as a part of security scheme: bearer",
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/flows/:flowId/stop",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "flows",
+                            ":flowId",
+                            "stop"
+                          ],
+                          "variable": [
+                            {
+                              "key": "flowId"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "Unauthorized",
+                      "code": 401,
+                      "_postman_previewlanguage": "text",
+                      "header": [],
+                      "cookie": [],
+                      "responseTime": null,
+                      "body": null,
+                      "createdAt": "2026-06-05T15:05:27.000Z",
+                      "updatedAt": "2026-06-05T15:05:27.000Z",
+                      "uid": "35240-8b8ad401-a210-47a1-8220-c521b8769fee"
+                    },
+                    {
+                      "id": "b6e2bc32-201f-4841-8144-6b335809d8f9",
+                      "name": "Flow not found",
+                      "originalRequest": {
+                        "method": "PUT",
+                        "header": [
+                          {
+                            "description": "Added as a part of security scheme: bearer",
+                            "key": "Authorization",
+                            "value": "Bearer <token>"
+                          }
+                        ],
+                        "url": {
+                          "raw": "{{baseUrl}}/flows/:flowId/stop",
+                          "host": [
+                            "{{baseUrl}}"
+                          ],
+                          "path": [
+                            "flows",
+                            ":flowId",
+                            "stop"
+                          ],
+                          "variable": [
+                            {
+                              "key": "flowId"
+                            }
+                          ]
+                        }
+                      },
+                      "status": "Not Found",
+                      "code": 404,
+                      "_postman_previewlanguage": "text",
+                      "header": [],
+                      "cookie": [],
+                      "responseTime": null,
+                      "body": null,
+                      "createdAt": "2026-06-05T15:05:27.000Z",
+                      "updatedAt": "2026-06-05T15:05:27.000Z",
+                      "uid": "35240-b6e2bc32-201f-4841-8144-6b335809d8f9"
+                    }
+                  ],
+                  "createdAt": "2026-06-05T15:05:26.000Z",
+                  "updatedAt": "2026-06-05T15:05:26.000Z",
+                  "uid": "35240-6c5ca8e5-b5de-45b7-9251-39ebc53f104b"
+                }
+              ],
+              "id": "349214fe-4d28-4c8a-abf1-72c224190fe9",
+              "createdAt": "2026-06-05T15:05:26.000Z",
+              "updatedAt": "2026-06-05T15:05:26.000Z",
+              "uid": "35240-349214fe-4d28-4c8a-abf1-72c224190fe9"
+            },
+            {
+              "name": "Appmixer Get a flow",
+              "id": "eaf7cc1b-2d19-4a7e-8a14-259d85b62a12",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/flows/:flowId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "flows",
+                    ":flowId"
+                  ],
+                  "variable": [
+                    {
+                      "id": "18257c45-1745-4102-b98f-eede2b82278f",
+                      "key": "flowId",
+                      "value": "<string>",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "description": "Get details of a specific flow by its ID."
+              },
+              "response": [
+                {
+                  "id": "2ab0abe3-c938-450c-af1f-4765bdecb5c8",
+                  "name": "Flow returned successfully",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/flows/:flowId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "flows",
+                        ":flowId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "flowId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": "{\n  \"id\": \"<string>\",\n  \"name\": \"<string>\",\n  \"flow\": {},\n  \"stage\": \"running\",\n  \"btime\": \"<dateTime>\",\n  \"mtime\": \"<dateTime>\",\n  \"thumbnail\": \"<string>\",\n  \"customFields\": {}\n}",
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-2ab0abe3-c938-450c-af1f-4765bdecb5c8"
+                },
+                {
+                  "id": "f7531655-267d-4022-9dfd-706066cd9d83",
+                  "name": "Unauthorized",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/flows/:flowId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "flows",
+                        ":flowId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "flowId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-f7531655-267d-4022-9dfd-706066cd9d83"
+                },
+                {
+                  "id": "f8e8c30e-b1b3-4dd5-a2dc-2d15620b2cbe",
+                  "name": "Flow not found",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/flows/:flowId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "flows",
+                        ":flowId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "flowId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-f8e8c30e-b1b3-4dd5-a2dc-2d15620b2cbe"
+                }
+              ],
+              "createdAt": "2026-06-05T15:05:26.000Z",
+              "updatedAt": "2026-06-05T15:05:26.000Z",
+              "uid": "35240-eaf7cc1b-2d19-4a7e-8a14-259d85b62a12"
+            },
+            {
+              "name": "Appmixer Update a flow",
+              "id": "1ef22d52-611a-4352-a16d-7d9c56973baf",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"<string>\",\n  \"flow\": {},\n  \"customFields\": {}\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/flows/:flowId?forceUpdate=<boolean>",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "flows",
+                    ":flowId"
+                  ],
+                  "query": [
+                    {
+                      "description": "Force update a running flow",
+                      "key": "forceUpdate",
+                      "value": "<boolean>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "id": "bac9d8a7-73bb-4f44-b195-a68fcc5dfc67",
+                      "key": "flowId",
+                      "value": "<string>",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "description": "Update an existing flow. A running flow cannot be updated without the forceUpdate query parameter."
+              },
+              "response": [
+                {
+                  "id": "2066e5b6-7b0d-4978-ac9f-f6e7ff2643ae",
+                  "name": "Flow updated successfully",
+                  "originalRequest": {
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"name\": \"<string>\",\n  \"flow\": {},\n  \"customFields\": {}\n}",
+                      "options": {
+                        "raw": {
+                          "headerFamily": "json",
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/flows/:flowId?forceUpdate=<boolean>",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "flows",
+                        ":flowId"
+                      ],
+                      "query": [
+                        {
+                          "description": "Force update a running flow",
+                          "key": "forceUpdate",
+                          "value": "<boolean>"
+                        }
+                      ],
+                      "variable": [
+                        {
+                          "key": "flowId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-2066e5b6-7b0d-4978-ac9f-f6e7ff2643ae"
+                },
+                {
+                  "id": "53894f6e-d1c1-4ff8-a336-8950ed20d906",
+                  "name": "Unauthorized",
+                  "originalRequest": {
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"name\": \"<string>\",\n  \"flow\": {},\n  \"customFields\": {}\n}",
+                      "options": {
+                        "raw": {
+                          "headerFamily": "json",
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/flows/:flowId?forceUpdate=<boolean>",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "flows",
+                        ":flowId"
+                      ],
+                      "query": [
+                        {
+                          "description": "Force update a running flow",
+                          "key": "forceUpdate",
+                          "value": "<boolean>"
+                        }
+                      ],
+                      "variable": [
+                        {
+                          "key": "flowId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-53894f6e-d1c1-4ff8-a336-8950ed20d906"
+                },
+                {
+                  "id": "e12ea7ec-1555-4aa9-8fb2-eaaa17b5475e",
+                  "name": "Flow not found",
+                  "originalRequest": {
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"name\": \"<string>\",\n  \"flow\": {},\n  \"customFields\": {}\n}",
+                      "options": {
+                        "raw": {
+                          "headerFamily": "json",
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/flows/:flowId?forceUpdate=<boolean>",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "flows",
+                        ":flowId"
+                      ],
+                      "query": [
+                        {
+                          "description": "Force update a running flow",
+                          "key": "forceUpdate",
+                          "value": "<boolean>"
+                        }
+                      ],
+                      "variable": [
+                        {
+                          "key": "flowId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-e12ea7ec-1555-4aa9-8fb2-eaaa17b5475e"
+                }
+              ],
+              "createdAt": "2026-06-05T15:05:26.000Z",
+              "updatedAt": "2026-06-05T15:05:26.000Z",
+              "uid": "35240-1ef22d52-611a-4352-a16d-7d9c56973baf"
+            },
+            {
+              "name": "Appmixer Delete a flow",
+              "id": "a9c90e04-8436-4089-a63c-4fb5a8f42d70",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/flows/:flowId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "flows",
+                    ":flowId"
+                  ],
+                  "variable": [
+                    {
+                      "id": "ae0dbe7e-a8ed-41d2-b2b6-ad1a928ffda0",
+                      "key": "flowId",
+                      "value": "<string>",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "description": "Delete an existing flow by its ID."
+              },
+              "response": [
+                {
+                  "id": "55346d87-a777-438c-ae51-7eee7d637ebe",
+                  "name": "Flow deleted successfully",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/flows/:flowId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "flows",
+                        ":flowId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "flowId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-55346d87-a777-438c-ae51-7eee7d637ebe"
+                },
+                {
+                  "id": "048ae31e-27e7-41d0-a972-3570731b40d9",
+                  "name": "Unauthorized",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/flows/:flowId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "flows",
+                        ":flowId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "flowId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-048ae31e-27e7-41d0-a972-3570731b40d9"
+                },
+                {
+                  "id": "2fbf3f39-4284-43ec-89e7-b55ddf7b0477",
+                  "name": "Flow not found",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/flows/:flowId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "flows",
+                        ":flowId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "flowId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-2fbf3f39-4284-43ec-89e7-b55ddf7b0477"
+                }
+              ],
+              "createdAt": "2026-06-05T15:05:26.000Z",
+              "updatedAt": "2026-06-05T15:05:26.000Z",
+              "uid": "35240-a9c90e04-8436-4089-a63c-4fb5a8f42d70"
+            }
+          ],
+          "id": "276bf5cb-2013-4bca-88fd-ee636bad47da",
+          "createdAt": "2026-06-05T15:05:26.000Z",
+          "updatedAt": "2026-06-05T15:05:26.000Z",
+          "uid": "35240-276bf5cb-2013-4bca-88fd-ee636bad47da"
+        },
+        {
+          "name": "Appmixer List flows",
+          "id": "04505a47-1848-4e13-b740-1544e9881bda",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/flows?limit=<integer>&offset=<integer>&pattern=<string>&sort=<string>&projection=<string>&filter=<string>",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "flows"
+              ],
+              "query": [
+                {
+                  "description": "Maximum number of flows to return",
+                  "key": "limit",
+                  "value": "<integer>"
+                },
+                {
+                  "description": "Number of flows to skip",
+                  "key": "offset",
+                  "value": "<integer>"
+                },
+                {
+                  "description": "Filter flows by name pattern",
+                  "key": "pattern",
+                  "value": "<string>"
+                },
+                {
+                  "description": "Sort field and direction",
+                  "key": "sort",
+                  "value": "<string>"
+                },
+                {
+                  "description": "Comma-separated list of properties to exclude",
+                  "key": "projection",
+                  "value": "<string>"
+                },
+                {
+                  "description": "Filter expression",
+                  "key": "filter",
+                  "value": "<string>"
+                }
+              ]
+            },
+            "description": "Get all flows of the authenticated user. Supports filtering, sorting, and pagination."
+          },
+          "response": [
+            {
+              "id": "67a58166-7fe5-46f8-bcbf-9d8040ceecac",
+              "name": "List of flows returned successfully",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/flows?limit=<integer>&offset=<integer>&pattern=<string>&sort=<string>&projection=<string>&filter=<string>",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "flows"
+                  ],
+                  "query": [
+                    {
+                      "description": "Maximum number of flows to return",
+                      "key": "limit",
+                      "value": "<integer>"
+                    },
+                    {
+                      "description": "Number of flows to skip",
+                      "key": "offset",
+                      "value": "<integer>"
+                    },
+                    {
+                      "description": "Filter flows by name pattern",
+                      "key": "pattern",
+                      "value": "<string>"
+                    },
+                    {
+                      "description": "Sort field and direction",
+                      "key": "sort",
+                      "value": "<string>"
+                    },
+                    {
+                      "description": "Comma-separated list of properties to exclude",
+                      "key": "projection",
+                      "value": "<string>"
+                    },
+                    {
+                      "description": "Filter expression",
+                      "key": "filter",
+                      "value": "<string>"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "[\n  {\n    \"id\": \"<string>\",\n    \"name\": \"<string>\",\n    \"flow\": {},\n    \"stage\": \"stopped\",\n    \"btime\": \"<dateTime>\",\n    \"mtime\": \"<dateTime>\",\n    \"thumbnail\": \"<string>\",\n    \"customFields\": {}\n  },\n  {\n    \"id\": \"<string>\",\n    \"name\": \"<string>\",\n    \"flow\": {},\n    \"stage\": \"running\",\n    \"btime\": \"<dateTime>\",\n    \"mtime\": \"<dateTime>\",\n    \"thumbnail\": \"<string>\",\n    \"customFields\": {}\n  }\n]",
+              "createdAt": "2026-06-05T15:05:27.000Z",
+              "updatedAt": "2026-06-05T15:05:27.000Z",
+              "uid": "35240-67a58166-7fe5-46f8-bcbf-9d8040ceecac"
+            },
+            {
+              "id": "1e305fe0-ff2e-4ff1-af95-6411593f6dac",
+              "name": "Unauthorized",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/flows?limit=<integer>&offset=<integer>&pattern=<string>&sort=<string>&projection=<string>&filter=<string>",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "flows"
+                  ],
+                  "query": [
+                    {
+                      "description": "Maximum number of flows to return",
+                      "key": "limit",
+                      "value": "<integer>"
+                    },
+                    {
+                      "description": "Number of flows to skip",
+                      "key": "offset",
+                      "value": "<integer>"
+                    },
+                    {
+                      "description": "Filter flows by name pattern",
+                      "key": "pattern",
+                      "value": "<string>"
+                    },
+                    {
+                      "description": "Sort field and direction",
+                      "key": "sort",
+                      "value": "<string>"
+                    },
+                    {
+                      "description": "Comma-separated list of properties to exclude",
+                      "key": "projection",
+                      "value": "<string>"
+                    },
+                    {
+                      "description": "Filter expression",
+                      "key": "filter",
+                      "value": "<string>"
+                    }
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "responseTime": null,
+              "body": null,
+              "createdAt": "2026-06-05T15:05:27.000Z",
+              "updatedAt": "2026-06-05T15:05:27.000Z",
+              "uid": "35240-1e305fe0-ff2e-4ff1-af95-6411593f6dac"
+            }
+          ],
+          "createdAt": "2026-06-05T15:05:26.000Z",
+          "updatedAt": "2026-06-05T15:05:26.000Z",
+          "uid": "35240-04505a47-1848-4e13-b740-1544e9881bda"
+        },
+        {
+          "name": "Appmixer Create a flow",
+          "id": "6d989f3b-41df-4f41-b5ac-55ffafa98155",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"<string>\",\n  \"flow\": {},\n  \"customFields\": {}\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/flows",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "flows"
+              ]
+            },
+            "description": "Create a new flow in Appmixer."
+          },
+          "response": [
+            {
+              "id": "d6dce4c7-c2d9-4a1a-ac8d-4ee6f3be02db",
+              "name": "Flow created successfully",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"<string>\",\n  \"flow\": {},\n  \"customFields\": {}\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/flows",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "flows"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"id\": \"<string>\",\n  \"name\": \"<string>\",\n  \"flow\": {},\n  \"stage\": \"running\",\n  \"btime\": \"<dateTime>\",\n  \"mtime\": \"<dateTime>\",\n  \"thumbnail\": \"<string>\",\n  \"customFields\": {}\n}",
+              "createdAt": "2026-06-05T15:05:27.000Z",
+              "updatedAt": "2026-06-05T15:05:27.000Z",
+              "uid": "35240-d6dce4c7-c2d9-4a1a-ac8d-4ee6f3be02db"
+            },
+            {
+              "id": "aa705975-e1c0-46e5-a05f-3f2144e679b1",
+              "name": "Unauthorized",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"<string>\",\n  \"flow\": {},\n  \"customFields\": {}\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/flows",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "flows"
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "responseTime": null,
+              "body": null,
+              "createdAt": "2026-06-05T15:05:27.000Z",
+              "updatedAt": "2026-06-05T15:05:27.000Z",
+              "uid": "35240-aa705975-e1c0-46e5-a05f-3f2144e679b1"
+            }
+          ],
+          "createdAt": "2026-06-05T15:05:26.000Z",
+          "updatedAt": "2026-06-05T15:05:26.000Z",
+          "uid": "35240-6d989f3b-41df-4f41-b5ac-55ffafa98155"
+        }
+      ],
+      "id": "fecba68d-2319-4fa1-bb00-63fc562a059a",
+      "createdAt": "2026-06-05T15:05:26.000Z",
+      "updatedAt": "2026-06-05T15:05:26.000Z",
+      "uid": "35240-fecba68d-2319-4fa1-bb00-63fc562a059a"
+    },
+    {
+      "name": "apps",
+      "item": [
+        {
+          "name": "Appmixer List apps",
+          "id": "fdb2bc8c-7aa9-4b4c-b8d4-7496903b1d9b",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/apps",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "apps"
+              ]
+            },
+            "description": "Get all applications (services or modules) available in the Appmixer tenant."
+          },
+          "response": [
+            {
+              "id": "2353f6be-56c6-4aa8-8055-00f09e98e83b",
+              "name": "List of apps returned successfully",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/apps",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "apps"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "[\n  {\n    \"name\": \"<string>\",\n    \"label\": \"<string>\",\n    \"icon\": \"<string>\",\n    \"description\": \"<string>\"\n  },\n  {\n    \"name\": \"<string>\",\n    \"label\": \"<string>\",\n    \"icon\": \"<string>\",\n    \"description\": \"<string>\"\n  }\n]",
+              "createdAt": "2026-06-05T15:05:27.000Z",
+              "updatedAt": "2026-06-05T15:05:27.000Z",
+              "uid": "35240-2353f6be-56c6-4aa8-8055-00f09e98e83b"
+            },
+            {
+              "id": "86a561be-57bb-4071-9756-7b8f956ef546",
+              "name": "Unauthorized",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/apps",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "apps"
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "responseTime": null,
+              "body": null,
+              "createdAt": "2026-06-05T15:05:27.000Z",
+              "updatedAt": "2026-06-05T15:05:27.000Z",
+              "uid": "35240-86a561be-57bb-4071-9756-7b8f956ef546"
+            }
+          ],
+          "createdAt": "2026-06-05T15:05:26.000Z",
+          "updatedAt": "2026-06-05T15:05:26.000Z",
+          "uid": "35240-fdb2bc8c-7aa9-4b4c-b8d4-7496903b1d9b"
+        }
+      ],
+      "id": "a2089a31-ab47-47e2-8c99-622300b01f51",
+      "createdAt": "2026-06-05T15:05:26.000Z",
+      "updatedAt": "2026-06-05T15:05:26.000Z",
+      "uid": "35240-a2089a31-ab47-47e2-8c99-622300b01f51"
+    },
+    {
+      "name": "components",
+      "item": [
+        {
+          "name": "{componentId}",
+          "item": [
+            {
+              "name": "Appmixer Delete a component",
+              "id": "96a274c7-2559-47c1-bae5-89405f58bf7f",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/components/:componentId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "components",
+                    ":componentId"
+                  ],
+                  "variable": [
+                    {
+                      "id": "4b732d3e-d9d7-4a2d-89a5-62ff0d24a61b",
+                      "key": "componentId",
+                      "value": "<string>",
+                      "description": "(Required) Component identifier (e.g. appmixer.myservice)"
+                    }
+                  ]
+                },
+                "description": "Delete (uninstall) a component, module, or service."
+              },
+              "response": [
+                {
+                  "id": "f93c2bd6-1691-4d4a-ae43-6d8ab09a3f98",
+                  "name": "Component deleted successfully",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/components/:componentId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "components",
+                        ":componentId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "componentId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-f93c2bd6-1691-4d4a-ae43-6d8ab09a3f98"
+                },
+                {
+                  "id": "6bcce772-f2e5-47d6-a5f4-8e1d99e6376d",
+                  "name": "Unauthorized",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/components/:componentId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "components",
+                        ":componentId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "componentId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-6bcce772-f2e5-47d6-a5f4-8e1d99e6376d"
+                },
+                {
+                  "id": "54d18f1b-1ad0-4685-98e7-a274310fb37c",
+                  "name": "Component not found",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/components/:componentId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "components",
+                        ":componentId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "componentId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-54d18f1b-1ad0-4685-98e7-a274310fb37c"
+                }
+              ],
+              "createdAt": "2026-06-05T15:05:26.000Z",
+              "updatedAt": "2026-06-05T15:05:26.000Z",
+              "uid": "35240-96a274c7-2559-47c1-bae5-89405f58bf7f"
+            }
+          ],
+          "id": "08041c1a-2c7c-4ac1-90e8-fa1f6cb76c68",
+          "createdAt": "2026-06-05T15:05:26.000Z",
+          "updatedAt": "2026-06-05T15:05:26.000Z",
+          "uid": "35240-08041c1a-2c7c-4ac1-90e8-fa1f6cb76c68"
+        },
+        {
+          "name": "Appmixer List components",
+          "id": "6adfd478-7b66-4c84-bdae-daacfd351d86",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/components",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "components"
+              ]
+            },
+            "description": "Get all available components (connectors) in the tenant."
+          },
+          "response": [
+            {
+              "id": "40630079-ed84-4eff-a61f-96c6c829a7fc",
+              "name": "List of components returned successfully",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/components",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "components"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "[\n  {\n    \"name\": \"<string>\",\n    \"label\": \"<string>\",\n    \"type\": \"<string>\"\n  },\n  {\n    \"name\": \"<string>\",\n    \"label\": \"<string>\",\n    \"type\": \"<string>\"\n  }\n]",
+              "createdAt": "2026-06-05T15:05:27.000Z",
+              "updatedAt": "2026-06-05T15:05:27.000Z",
+              "uid": "35240-40630079-ed84-4eff-a61f-96c6c829a7fc"
+            },
+            {
+              "id": "3f3ce5d3-5e11-4113-bf9b-17caa56cfe03",
+              "name": "Unauthorized",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/components",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "components"
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "responseTime": null,
+              "body": null,
+              "createdAt": "2026-06-05T15:05:27.000Z",
+              "updatedAt": "2026-06-05T15:05:27.000Z",
+              "uid": "35240-3f3ce5d3-5e11-4113-bf9b-17caa56cfe03"
+            }
+          ],
+          "createdAt": "2026-06-05T15:05:26.000Z",
+          "updatedAt": "2026-06-05T15:05:26.000Z",
+          "uid": "35240-6adfd478-7b66-4c84-bdae-daacfd351d86"
+        },
+        {
+          "name": "Appmixer Publish a component",
+          "id": "b1376d34-5bc6-4a90-aded-0c0ad06c94b4",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/components",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "components"
+              ]
+            },
+            "description": "Publish a new component, module, or service to the Appmixer tenant."
+          },
+          "response": [
+            {
+              "id": "9bb8316a-147f-4757-8221-8f92507ddfb2",
+              "name": "Component published successfully",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/components",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "components"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "responseTime": null,
+              "body": null,
+              "createdAt": "2026-06-05T15:05:27.000Z",
+              "updatedAt": "2026-06-05T15:05:27.000Z",
+              "uid": "35240-9bb8316a-147f-4757-8221-8f92507ddfb2"
+            },
+            {
+              "id": "8a741bdf-5d19-4da0-8a05-e9b4245658e4",
+              "name": "Unauthorized",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/components",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "components"
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "responseTime": null,
+              "body": null,
+              "createdAt": "2026-06-05T15:05:27.000Z",
+              "updatedAt": "2026-06-05T15:05:27.000Z",
+              "uid": "35240-8a741bdf-5d19-4da0-8a05-e9b4245658e4"
+            }
+          ],
+          "createdAt": "2026-06-05T15:05:26.000Z",
+          "updatedAt": "2026-06-05T15:05:26.000Z",
+          "uid": "35240-b1376d34-5bc6-4a90-aded-0c0ad06c94b4"
+        }
+      ],
+      "id": "a6774c32-dcab-4df7-85fe-7702f04bb6c6",
+      "createdAt": "2026-06-05T15:05:26.000Z",
+      "updatedAt": "2026-06-05T15:05:26.000Z",
+      "uid": "35240-a6774c32-dcab-4df7-85fe-7702f04bb6c6"
+    },
+    {
+      "name": "accounts",
+      "item": [
+        {
+          "name": "{accountId}",
+          "item": [
+            {
+              "name": "Appmixer Get an account",
+              "id": "e9a110db-d7f6-4240-b130-28759fcbd30d",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/accounts/:accountId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "accounts",
+                    ":accountId"
+                  ],
+                  "variable": [
+                    {
+                      "id": "229f177c-51a8-489a-a240-b1e35388bf7c",
+                      "key": "accountId",
+                      "value": "<string>",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "description": "Get details for a specific account and check if its credentials (tokens) are still valid."
+              },
+              "response": [
+                {
+                  "id": "9d986af3-b66b-4239-8d48-1991d4279339",
+                  "name": "Account information returned successfully",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/accounts/:accountId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "accounts",
+                        ":accountId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "accountId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": "{\n  \"accountId\": \"<string>\",\n  \"name\": \"<string>\",\n  \"service\": \"<string>\",\n  \"profileInfo\": {},\n  \"valid\": \"<boolean>\"\n}",
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-9d986af3-b66b-4239-8d48-1991d4279339"
+                },
+                {
+                  "id": "348caa41-7cf7-460d-92de-8b72e4a0c29b",
+                  "name": "Unauthorized",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/accounts/:accountId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "accounts",
+                        ":accountId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "accountId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-348caa41-7cf7-460d-92de-8b72e4a0c29b"
+                },
+                {
+                  "id": "1e924b70-0911-4912-a861-9fc7cccd42c4",
+                  "name": "Account not found",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/accounts/:accountId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "accounts",
+                        ":accountId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "accountId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-1e924b70-0911-4912-a861-9fc7cccd42c4"
+                }
+              ],
+              "createdAt": "2026-06-05T15:05:26.000Z",
+              "updatedAt": "2026-06-05T15:05:26.000Z",
+              "uid": "35240-e9a110db-d7f6-4240-b130-28759fcbd30d"
+            },
+            {
+              "name": "Appmixer Delete an account",
+              "id": "4d9fef69-eea2-4ed4-a48c-8b3d5e3289ee",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/accounts/:accountId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "accounts",
+                    ":accountId"
+                  ],
+                  "variable": [
+                    {
+                      "id": "96a33d67-7d21-4433-b354-e85b18695970",
+                      "key": "accountId",
+                      "value": "<string>",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "description": "Delete (disconnect) an authenticated account."
+              },
+              "response": [
+                {
+                  "id": "671c0216-7c3f-412d-ad71-092b795075a7",
+                  "name": "Account deleted successfully",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/accounts/:accountId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "accounts",
+                        ":accountId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "accountId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-671c0216-7c3f-412d-ad71-092b795075a7"
+                },
+                {
+                  "id": "17542d59-8ab0-46d9-9de7-807578f00264",
+                  "name": "Unauthorized",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/accounts/:accountId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "accounts",
+                        ":accountId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "accountId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-17542d59-8ab0-46d9-9de7-807578f00264"
+                },
+                {
+                  "id": "9170f56e-4acd-4d69-b077-a061abbf7394",
+                  "name": "Account not found",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/accounts/:accountId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "accounts",
+                        ":accountId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "accountId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-9170f56e-4acd-4d69-b077-a061abbf7394"
+                }
+              ],
+              "createdAt": "2026-06-05T15:05:26.000Z",
+              "updatedAt": "2026-06-05T15:05:26.000Z",
+              "uid": "35240-4d9fef69-eea2-4ed4-a48c-8b3d5e3289ee"
+            }
+          ],
+          "id": "9aeb177b-436c-476b-839b-435ad18424b8",
+          "createdAt": "2026-06-05T15:05:26.000Z",
+          "updatedAt": "2026-06-05T15:05:26.000Z",
+          "uid": "35240-9aeb177b-436c-476b-839b-435ad18424b8"
+        },
+        {
+          "name": "Appmixer List accounts",
+          "id": "9c32debf-993b-46c7-9d69-622468aa24db",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/accounts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "accounts"
+              ]
+            },
+            "description": "Get list of all accounts the user has authenticated with to any component (e.g. OAuth connections to third-party services)."
+          },
+          "response": [
+            {
+              "id": "5116be68-274d-4839-860c-e2c1808f0d7f",
+              "name": "List of accounts returned successfully",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/accounts",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "accounts"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "[\n  {\n    \"accountId\": \"<string>\",\n    \"name\": \"<string>\",\n    \"service\": \"<string>\",\n    \"profileInfo\": {},\n    \"valid\": \"<boolean>\"\n  },\n  {\n    \"accountId\": \"<string>\",\n    \"name\": \"<string>\",\n    \"service\": \"<string>\",\n    \"profileInfo\": {},\n    \"valid\": \"<boolean>\"\n  }\n]",
+              "createdAt": "2026-06-05T15:05:27.000Z",
+              "updatedAt": "2026-06-05T15:05:27.000Z",
+              "uid": "35240-5116be68-274d-4839-860c-e2c1808f0d7f"
+            },
+            {
+              "id": "f18c0d2e-a792-4ce3-b94f-4f6cb4461b50",
+              "name": "Unauthorized",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/accounts",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "accounts"
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "responseTime": null,
+              "body": null,
+              "createdAt": "2026-06-05T15:05:27.000Z",
+              "updatedAt": "2026-06-05T15:05:27.000Z",
+              "uid": "35240-f18c0d2e-a792-4ce3-b94f-4f6cb4461b50"
+            }
+          ],
+          "createdAt": "2026-06-05T15:05:26.000Z",
+          "updatedAt": "2026-06-05T15:05:26.000Z",
+          "uid": "35240-9c32debf-993b-46c7-9d69-622468aa24db"
+        }
+      ],
+      "id": "a89b26bf-7c2b-45f9-938a-5b75363c0d83",
+      "createdAt": "2026-06-05T15:05:26.000Z",
+      "updatedAt": "2026-06-05T15:05:26.000Z",
+      "uid": "35240-a89b26bf-7c2b-45f9-938a-5b75363c0d83"
+    },
+    {
+      "name": "files",
+      "item": [
+        {
+          "name": "{fileId}",
+          "item": [
+            {
+              "name": "Appmixer Get a file",
+              "id": "dd9afccb-1584-4c02-9537-d1b3e8b70101",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/files/:fileId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "files",
+                    ":fileId"
+                  ],
+                  "variable": [
+                    {
+                      "id": "5d507d57-2ad4-42cc-88da-52296300a6dd",
+                      "key": "fileId",
+                      "value": "<string>",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "description": "Download or get details of a specific file."
+              },
+              "response": [
+                {
+                  "id": "e4c3ec98-b369-42f6-b221-05f6c3436624",
+                  "name": "File returned successfully",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/files/:fileId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "files",
+                        ":fileId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "fileId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-e4c3ec98-b369-42f6-b221-05f6c3436624"
+                },
+                {
+                  "id": "84416dd3-86bf-4d72-8ff1-b6a94b440965",
+                  "name": "Unauthorized",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/files/:fileId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "files",
+                        ":fileId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "fileId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-84416dd3-86bf-4d72-8ff1-b6a94b440965"
+                },
+                {
+                  "id": "5a3c143d-e476-4558-be94-f9de8fb958ac",
+                  "name": "File not found",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/files/:fileId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "files",
+                        ":fileId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "fileId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-5a3c143d-e476-4558-be94-f9de8fb958ac"
+                }
+              ],
+              "createdAt": "2026-06-05T15:05:26.000Z",
+              "updatedAt": "2026-06-05T15:05:26.000Z",
+              "uid": "35240-dd9afccb-1584-4c02-9537-d1b3e8b70101"
+            },
+            {
+              "name": "Appmixer Delete a file",
+              "id": "bd17f693-617f-4448-a7eb-09a6c1ec9c03",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/files/:fileId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "files",
+                    ":fileId"
+                  ],
+                  "variable": [
+                    {
+                      "id": "3bd17c12-8723-4b87-8637-ce7fee11c120",
+                      "key": "fileId",
+                      "value": "<string>",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "description": "Delete a specific file."
+              },
+              "response": [
+                {
+                  "id": "9e16f093-f447-4585-8f0d-25b7f4912d74",
+                  "name": "File deleted successfully",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/files/:fileId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "files",
+                        ":fileId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "fileId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-9e16f093-f447-4585-8f0d-25b7f4912d74"
+                },
+                {
+                  "id": "008b650b-d458-45b4-b979-9206f003f3c7",
+                  "name": "Unauthorized",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/files/:fileId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "files",
+                        ":fileId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "fileId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-008b650b-d458-45b4-b979-9206f003f3c7"
+                },
+                {
+                  "id": "926c1c35-673f-4869-89f1-d1cde7a8877d",
+                  "name": "File not found",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/files/:fileId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "files",
+                        ":fileId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "fileId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-926c1c35-673f-4869-89f1-d1cde7a8877d"
+                }
+              ],
+              "createdAt": "2026-06-05T15:05:26.000Z",
+              "updatedAt": "2026-06-05T15:05:26.000Z",
+              "uid": "35240-bd17f693-617f-4448-a7eb-09a6c1ec9c03"
+            }
+          ],
+          "id": "4989bf62-cba0-4a4b-a08f-84f17a915ca4",
+          "createdAt": "2026-06-05T15:05:26.000Z",
+          "updatedAt": "2026-06-05T15:05:26.000Z",
+          "uid": "35240-4989bf62-cba0-4a4b-a08f-84f17a915ca4"
+        },
+        {
+          "name": "Appmixer List files",
+          "id": "d5e293e4-a312-4f99-b6d8-876de36652c4",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/files",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "files"
+              ]
+            },
+            "description": "Get all files belonging to the authenticated user."
+          },
+          "response": [
+            {
+              "id": "f9ae442b-6652-44a1-bec9-5deb00679cca",
+              "name": "List of files returned successfully",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/files",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "files"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "[\n  {\n    \"fileId\": \"<string>\",\n    \"filename\": \"<string>\",\n    \"length\": \"<integer>\",\n    \"contentType\": \"<string>\",\n    \"createdAt\": \"<dateTime>\"\n  },\n  {\n    \"fileId\": \"<string>\",\n    \"filename\": \"<string>\",\n    \"length\": \"<integer>\",\n    \"contentType\": \"<string>\",\n    \"createdAt\": \"<dateTime>\"\n  }\n]",
+              "createdAt": "2026-06-05T15:05:27.000Z",
+              "updatedAt": "2026-06-05T15:05:27.000Z",
+              "uid": "35240-f9ae442b-6652-44a1-bec9-5deb00679cca"
+            },
+            {
+              "id": "d4755bd5-666b-4366-94ff-fa1017bda7d9",
+              "name": "Unauthorized",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/files",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "files"
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "responseTime": null,
+              "body": null,
+              "createdAt": "2026-06-05T15:05:27.000Z",
+              "updatedAt": "2026-06-05T15:05:27.000Z",
+              "uid": "35240-d4755bd5-666b-4366-94ff-fa1017bda7d9"
+            }
+          ],
+          "createdAt": "2026-06-05T15:05:26.000Z",
+          "updatedAt": "2026-06-05T15:05:26.000Z",
+          "uid": "35240-d5e293e4-a312-4f99-b6d8-876de36652c4"
+        },
+        {
+          "name": "Appmixer Upload a file",
+          "id": "70e57327-2837-474e-b957-bc9e2cb71d5d",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "multipart/form-data"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "value": null
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/files",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "files"
+              ]
+            },
+            "description": "Upload a new file to the Appmixer file management system."
+          },
+          "response": [
+            {
+              "id": "9c7ebe91-69d9-41b9-b851-a7086979dd9c",
+              "name": "File uploaded successfully",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "multipart/form-data"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "type": "file"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/files",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "files"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "{\n  \"fileId\": \"<string>\",\n  \"filename\": \"<string>\",\n  \"length\": \"<integer>\",\n  \"contentType\": \"<string>\",\n  \"createdAt\": \"<dateTime>\"\n}",
+              "createdAt": "2026-06-05T15:05:27.000Z",
+              "updatedAt": "2026-06-05T15:05:27.000Z",
+              "uid": "35240-9c7ebe91-69d9-41b9-b851-a7086979dd9c"
+            },
+            {
+              "id": "402c7785-523a-4583-a228-9f26318d28e7",
+              "name": "Unauthorized",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "multipart/form-data"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "type": "file"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/files",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "files"
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "responseTime": null,
+              "body": null,
+              "createdAt": "2026-06-05T15:05:27.000Z",
+              "updatedAt": "2026-06-05T15:05:27.000Z",
+              "uid": "35240-402c7785-523a-4583-a228-9f26318d28e7"
+            }
+          ],
+          "createdAt": "2026-06-05T15:05:26.000Z",
+          "updatedAt": "2026-06-05T15:05:26.000Z",
+          "uid": "35240-70e57327-2837-474e-b957-bc9e2cb71d5d"
+        }
+      ],
+      "id": "6ba5da00-3c41-4cca-9297-1730b4f9ad07",
+      "createdAt": "2026-06-05T15:05:26.000Z",
+      "updatedAt": "2026-06-05T15:05:26.000Z",
+      "uid": "35240-6ba5da00-3c41-4cca-9297-1730b4f9ad07"
+    },
+    {
+      "name": "data-stores",
+      "item": [
+        {
+          "name": "{storeId}",
+          "item": [
+            {
+              "name": "Appmixer Get a data store",
+              "id": "9814ca8b-667f-4deb-8be9-47c6bcee76e0",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/data-stores/:storeId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "data-stores",
+                    ":storeId"
+                  ],
+                  "variable": [
+                    {
+                      "id": "22680fe4-d842-4a9b-9505-4f5683e0410a",
+                      "key": "storeId",
+                      "value": "<string>",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "description": "Get details of a specific data store."
+              },
+              "response": [
+                {
+                  "id": "a8ead8a7-23fd-439b-9f99-422934ff6d5c",
+                  "name": "Data store returned successfully",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/data-stores/:storeId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "data-stores",
+                        ":storeId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "storeId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": "{\n  \"storeId\": \"<string>\",\n  \"name\": \"<string>\"\n}",
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-a8ead8a7-23fd-439b-9f99-422934ff6d5c"
+                },
+                {
+                  "id": "26fc75a3-da14-4257-bff8-2a875f404499",
+                  "name": "Unauthorized",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/data-stores/:storeId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "data-stores",
+                        ":storeId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "storeId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-26fc75a3-da14-4257-bff8-2a875f404499"
+                },
+                {
+                  "id": "3e89ddd6-18c6-43a6-a370-664a35316e79",
+                  "name": "Data store not found",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/data-stores/:storeId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "data-stores",
+                        ":storeId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "storeId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-3e89ddd6-18c6-43a6-a370-664a35316e79"
+                }
+              ],
+              "createdAt": "2026-06-05T15:05:26.000Z",
+              "updatedAt": "2026-06-05T15:05:26.000Z",
+              "uid": "35240-9814ca8b-667f-4deb-8be9-47c6bcee76e0"
+            },
+            {
+              "name": "Appmixer Delete a data store",
+              "id": "a6a688c4-c1f6-435c-858d-de31bbeb3cd8",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/data-stores/:storeId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "data-stores",
+                    ":storeId"
+                  ],
+                  "variable": [
+                    {
+                      "id": "4643239c-a2ee-466f-b3d6-c6253797e8a4",
+                      "key": "storeId",
+                      "value": "<string>",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "description": "Delete a specific data store."
+              },
+              "response": [
+                {
+                  "id": "61deca08-3a71-4a89-b051-d889159d8973",
+                  "name": "Data store deleted successfully",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/data-stores/:storeId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "data-stores",
+                        ":storeId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "storeId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-61deca08-3a71-4a89-b051-d889159d8973"
+                },
+                {
+                  "id": "9e997bcb-1481-497d-9371-0dbb5c669aae",
+                  "name": "Unauthorized",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/data-stores/:storeId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "data-stores",
+                        ":storeId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "storeId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-9e997bcb-1481-497d-9371-0dbb5c669aae"
+                },
+                {
+                  "id": "89f28498-635b-4269-89cf-dddf52c997d4",
+                  "name": "Data store not found",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/data-stores/:storeId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "data-stores",
+                        ":storeId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "storeId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-89f28498-635b-4269-89cf-dddf52c997d4"
+                }
+              ],
+              "createdAt": "2026-06-05T15:05:26.000Z",
+              "updatedAt": "2026-06-05T15:05:26.000Z",
+              "uid": "35240-a6a688c4-c1f6-435c-858d-de31bbeb3cd8"
+            }
+          ],
+          "id": "fa02b37d-356a-40c2-9bd2-97b925eb2a36",
+          "createdAt": "2026-06-05T15:05:26.000Z",
+          "updatedAt": "2026-06-05T15:05:26.000Z",
+          "uid": "35240-fa02b37d-356a-40c2-9bd2-97b925eb2a36"
+        },
+        {
+          "name": "Appmixer List data stores",
+          "id": "724bca35-686f-4e67-9e70-b4eeab7f49d4",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/data-stores",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "data-stores"
+              ]
+            },
+            "description": "Get all data stores belonging to the authenticated user."
+          },
+          "response": [
+            {
+              "id": "b56b972a-8b6e-42f7-8c12-4916cb56182b",
+              "name": "List of data stores returned successfully",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/data-stores",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "data-stores"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "[\n  {\n    \"storeId\": \"<string>\",\n    \"name\": \"<string>\"\n  },\n  {\n    \"storeId\": \"<string>\",\n    \"name\": \"<string>\"\n  }\n]",
+              "createdAt": "2026-06-05T15:05:27.000Z",
+              "updatedAt": "2026-06-05T15:05:27.000Z",
+              "uid": "35240-b56b972a-8b6e-42f7-8c12-4916cb56182b"
+            },
+            {
+              "id": "630d1c59-d84a-4235-9be8-33d876cb439d",
+              "name": "Unauthorized",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/data-stores",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "data-stores"
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "responseTime": null,
+              "body": null,
+              "createdAt": "2026-06-05T15:05:27.000Z",
+              "updatedAt": "2026-06-05T15:05:27.000Z",
+              "uid": "35240-630d1c59-d84a-4235-9be8-33d876cb439d"
+            }
+          ],
+          "createdAt": "2026-06-05T15:05:26.000Z",
+          "updatedAt": "2026-06-05T15:05:26.000Z",
+          "uid": "35240-724bca35-686f-4e67-9e70-b4eeab7f49d4"
+        }
+      ],
+      "id": "5d4bf4cf-1803-4a65-8f2e-ccc61ac64909",
+      "createdAt": "2026-06-05T15:05:26.000Z",
+      "updatedAt": "2026-06-05T15:05:26.000Z",
+      "uid": "35240-5d4bf4cf-1803-4a65-8f2e-ccc61ac64909"
+    },
+    {
+      "name": "insights",
+      "item": [
+        {
+          "name": "Appmixer List insights",
+          "id": "79309c06-249e-475c-90e0-285f673c3127",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/insights",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "insights"
+              ]
+            },
+            "description": "Get all Insights charts of the authenticated user."
+          },
+          "response": [
+            {
+              "id": "79918010-e266-4890-a18c-8bb6efe15ffd",
+              "name": "List of insights returned successfully",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/insights",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "insights"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "[\n  {\n    \"id\": \"<string>\",\n    \"name\": \"<string>\",\n    \"type\": \"<string>\"\n  },\n  {\n    \"id\": \"<string>\",\n    \"name\": \"<string>\",\n    \"type\": \"<string>\"\n  }\n]",
+              "createdAt": "2026-06-05T15:05:27.000Z",
+              "updatedAt": "2026-06-05T15:05:27.000Z",
+              "uid": "35240-79918010-e266-4890-a18c-8bb6efe15ffd"
+            },
+            {
+              "id": "b5504061-20ba-4bad-bc63-ebdaef3f3968",
+              "name": "Unauthorized",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/insights",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "insights"
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "responseTime": null,
+              "body": null,
+              "createdAt": "2026-06-05T15:05:27.000Z",
+              "updatedAt": "2026-06-05T15:05:27.000Z",
+              "uid": "35240-b5504061-20ba-4bad-bc63-ebdaef3f3968"
+            }
+          ],
+          "createdAt": "2026-06-05T15:05:26.000Z",
+          "updatedAt": "2026-06-05T15:05:26.000Z",
+          "uid": "35240-79309c06-249e-475c-90e0-285f673c3127"
+        }
+      ],
+      "id": "52c1b9c9-2784-4d11-85a1-5fb3c469f0d0",
+      "createdAt": "2026-06-05T15:05:26.000Z",
+      "updatedAt": "2026-06-05T15:05:26.000Z",
+      "uid": "35240-52c1b9c9-2784-4d11-85a1-5fb3c469f0d0"
+    },
+    {
+      "name": "people-task",
+      "item": [
+        {
+          "name": "tasks",
+          "item": [
+            {
+              "name": "Appmixer List people tasks",
+              "id": "68fb1809-23ca-4a4c-9483-63705604abd5",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/people-task/tasks?role=requester",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "people-task",
+                    "tasks"
+                  ],
+                  "query": [
+                    {
+                      "description": "Filter tasks by role",
+                      "key": "role",
+                      "value": "requester"
+                    }
+                  ]
+                },
+                "description": "Get all tasks of the authenticated user. Can filter by role (approver or requester)."
+              },
+              "response": [
+                {
+                  "id": "a2c24348-027c-4a0b-b33c-d36b222808a1",
+                  "name": "List of tasks returned successfully",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      },
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/people-task/tasks?role=requester",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "people-task",
+                        "tasks"
+                      ],
+                      "query": [
+                        {
+                          "description": "Filter tasks by role",
+                          "key": "role",
+                          "value": "requester"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    }
+                  ],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": "[\n  {\n    \"id\": \"<string>\",\n    \"flowId\": \"<string>\",\n    \"role\": \"approver\",\n    \"status\": \"<string>\",\n    \"createdAt\": \"<dateTime>\"\n  },\n  {\n    \"id\": \"<string>\",\n    \"flowId\": \"<string>\",\n    \"role\": \"requester\",\n    \"status\": \"<string>\",\n    \"createdAt\": \"<dateTime>\"\n  }\n]",
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-a2c24348-027c-4a0b-b33c-d36b222808a1"
+                },
+                {
+                  "id": "78057e0b-72cd-43b9-8d8f-4efe0f2ba308",
+                  "name": "Unauthorized",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/people-task/tasks?role=requester",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "people-task",
+                        "tasks"
+                      ],
+                      "query": [
+                        {
+                          "description": "Filter tasks by role",
+                          "key": "role",
+                          "value": "requester"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-78057e0b-72cd-43b9-8d8f-4efe0f2ba308"
+                }
+              ],
+              "createdAt": "2026-06-05T15:05:26.000Z",
+              "updatedAt": "2026-06-05T15:05:26.000Z",
+              "uid": "35240-68fb1809-23ca-4a4c-9483-63705604abd5"
+            }
+          ],
+          "id": "0e624933-f5dd-4550-b1d4-015dbec002b4",
+          "createdAt": "2026-06-05T15:05:26.000Z",
+          "updatedAt": "2026-06-05T15:05:26.000Z",
+          "uid": "35240-0e624933-f5dd-4550-b1d4-015dbec002b4"
+        }
+      ],
+      "id": "fdd3b2a8-ee61-423f-836f-948f76931c55",
+      "createdAt": "2026-06-05T15:05:26.000Z",
+      "updatedAt": "2026-06-05T15:05:26.000Z",
+      "uid": "35240-fdd3b2a8-ee61-423f-836f-948f76931c55"
+    },
+    {
+      "name": "logs",
+      "item": [
+        {
+          "name": "Appmixer Get logs",
+          "id": "b2cdfd53-d3a5-4534-8715-dd039a29c4c5",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/logs?flowId=<string>&limit=<integer>&offset=<integer>",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "logs"
+              ],
+              "query": [
+                {
+                  "description": "Filter logs by flow ID",
+                  "key": "flowId",
+                  "value": "<string>"
+                },
+                {
+                  "description": "Maximum number of log entries to return",
+                  "key": "limit",
+                  "value": "<integer>"
+                },
+                {
+                  "description": "Number of entries to skip",
+                  "key": "offset",
+                  "value": "<integer>"
+                }
+              ]
+            },
+            "description": "Retrieve logs for the authenticated user's flows."
+          },
+          "response": [
+            {
+              "id": "9fd52bda-8759-44eb-9fc5-356890c1e773",
+              "name": "Logs returned successfully",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/logs?flowId=<string>&limit=<integer>&offset=<integer>",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "logs"
+                  ],
+                  "query": [
+                    {
+                      "description": "Filter logs by flow ID",
+                      "key": "flowId",
+                      "value": "<string>"
+                    },
+                    {
+                      "description": "Maximum number of log entries to return",
+                      "key": "limit",
+                      "value": "<integer>"
+                    },
+                    {
+                      "description": "Number of entries to skip",
+                      "key": "offset",
+                      "value": "<integer>"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "[\n  {\n    \"timestamp\": \"<dateTime>\",\n    \"flowId\": \"<string>\",\n    \"message\": \"<string>\",\n    \"level\": \"<string>\"\n  },\n  {\n    \"timestamp\": \"<dateTime>\",\n    \"flowId\": \"<string>\",\n    \"message\": \"<string>\",\n    \"level\": \"<string>\"\n  }\n]",
+              "createdAt": "2026-06-05T15:05:27.000Z",
+              "updatedAt": "2026-06-05T15:05:27.000Z",
+              "uid": "35240-9fd52bda-8759-44eb-9fc5-356890c1e773"
+            },
+            {
+              "id": "494e375b-8e80-4cbd-9d16-0cd83529cfe4",
+              "name": "Unauthorized",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/logs?flowId=<string>&limit=<integer>&offset=<integer>",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "logs"
+                  ],
+                  "query": [
+                    {
+                      "description": "Filter logs by flow ID",
+                      "key": "flowId",
+                      "value": "<string>"
+                    },
+                    {
+                      "description": "Maximum number of log entries to return",
+                      "key": "limit",
+                      "value": "<integer>"
+                    },
+                    {
+                      "description": "Number of entries to skip",
+                      "key": "offset",
+                      "value": "<integer>"
+                    }
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "responseTime": null,
+              "body": null,
+              "createdAt": "2026-06-05T15:05:27.000Z",
+              "updatedAt": "2026-06-05T15:05:27.000Z",
+              "uid": "35240-494e375b-8e80-4cbd-9d16-0cd83529cfe4"
+            }
+          ],
+          "createdAt": "2026-06-05T15:05:26.000Z",
+          "updatedAt": "2026-06-05T15:05:26.000Z",
+          "uid": "35240-b2cdfd53-d3a5-4534-8715-dd039a29c4c5"
+        }
+      ],
+      "id": "ba84a48b-0f10-4de6-a891-279f680c5325",
+      "createdAt": "2026-06-05T15:05:26.000Z",
+      "updatedAt": "2026-06-05T15:05:26.000Z",
+      "uid": "35240-ba84a48b-0f10-4de6-a891-279f680c5325"
+    },
+    {
+      "name": "unprocessed-messages",
+      "item": [
+        {
+          "name": "{messageId}",
+          "item": [
+            {
+              "name": "Appmixer Reprocess a message",
+              "id": "a9a5c72f-fa89-454f-9a49-35091eed30b6",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/unprocessed-messages/:messageId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "unprocessed-messages",
+                    ":messageId"
+                  ],
+                  "variable": [
+                    {
+                      "id": "cc31b3cc-5ec6-4c39-8de1-193429e1c7d6",
+                      "key": "messageId",
+                      "value": "<string>",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "description": "Put an unprocessed message back into the Appmixer engine."
+              },
+              "response": [
+                {
+                  "id": "be569e5e-0b9d-4627-a733-c0eef0629f90",
+                  "name": "Message reprocessed successfully",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/unprocessed-messages/:messageId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "unprocessed-messages",
+                        ":messageId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "messageId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-be569e5e-0b9d-4627-a733-c0eef0629f90"
+                },
+                {
+                  "id": "7a347310-bb09-4fc9-a34b-1b756af0aa6b",
+                  "name": "Unauthorized",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/unprocessed-messages/:messageId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "unprocessed-messages",
+                        ":messageId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "messageId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-7a347310-bb09-4fc9-a34b-1b756af0aa6b"
+                },
+                {
+                  "id": "863c284b-195a-40cc-946f-15597f80b7a4",
+                  "name": "Message not found",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/unprocessed-messages/:messageId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "unprocessed-messages",
+                        ":messageId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "messageId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-863c284b-195a-40cc-946f-15597f80b7a4"
+                }
+              ],
+              "createdAt": "2026-06-05T15:05:26.000Z",
+              "updatedAt": "2026-06-05T15:05:26.000Z",
+              "uid": "35240-a9a5c72f-fa89-454f-9a49-35091eed30b6"
+            },
+            {
+              "name": "Appmixer Delete an unprocessed message",
+              "id": "c6c695b2-3946-404d-8812-73c8674e60e2",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/unprocessed-messages/:messageId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "unprocessed-messages",
+                    ":messageId"
+                  ],
+                  "variable": [
+                    {
+                      "id": "bdefe587-8326-49db-af69-1183effc6c52",
+                      "key": "messageId",
+                      "value": "<string>",
+                      "description": "(Required) "
+                    }
+                  ]
+                },
+                "description": "Delete a specific unprocessed message."
+              },
+              "response": [
+                {
+                  "id": "06301616-7d18-43ca-99f8-eba943c6593d",
+                  "name": "Message deleted successfully",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/unprocessed-messages/:messageId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "unprocessed-messages",
+                        ":messageId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "messageId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-06301616-7d18-43ca-99f8-eba943c6593d"
+                },
+                {
+                  "id": "d0de56e5-89ea-42d2-8871-fb4ad99af76d",
+                  "name": "Unauthorized",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/unprocessed-messages/:messageId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "unprocessed-messages",
+                        ":messageId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "messageId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-d0de56e5-89ea-42d2-8871-fb4ad99af76d"
+                },
+                {
+                  "id": "c1341db1-0b91-4af1-9343-6332d4cd4abf",
+                  "name": "Message not found",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "description": "Added as a part of security scheme: bearer",
+                        "key": "Authorization",
+                        "value": "Bearer <token>"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{baseUrl}}/unprocessed-messages/:messageId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "unprocessed-messages",
+                        ":messageId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "messageId"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "_postman_previewlanguage": "text",
+                  "header": [],
+                  "cookie": [],
+                  "responseTime": null,
+                  "body": null,
+                  "createdAt": "2026-06-05T15:05:27.000Z",
+                  "updatedAt": "2026-06-05T15:05:27.000Z",
+                  "uid": "35240-c1341db1-0b91-4af1-9343-6332d4cd4abf"
+                }
+              ],
+              "createdAt": "2026-06-05T15:05:26.000Z",
+              "updatedAt": "2026-06-05T15:05:26.000Z",
+              "uid": "35240-c6c695b2-3946-404d-8812-73c8674e60e2"
+            }
+          ],
+          "id": "0507faf8-b48a-4236-bb74-8051898984c8",
+          "createdAt": "2026-06-05T15:05:26.000Z",
+          "updatedAt": "2026-06-05T15:05:26.000Z",
+          "uid": "35240-0507faf8-b48a-4236-bb74-8051898984c8"
+        },
+        {
+          "name": "Appmixer List unprocessed messages",
+          "id": "1ee83a67-b061-472b-8b45-efb778a3d26d",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/unprocessed-messages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "unprocessed-messages"
+              ]
+            },
+            "description": "Get the list of unprocessed messages."
+          },
+          "response": [
+            {
+              "id": "166390df-88c1-49f6-92eb-032cbcb82190",
+              "name": "Unprocessed messages returned successfully",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/unprocessed-messages",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "unprocessed-messages"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "responseTime": null,
+              "body": "[\n  {\n    \"messageId\": \"<string>\",\n    \"flowId\": \"<string>\",\n    \"componentId\": \"<string>\",\n    \"data\": {},\n    \"createdAt\": \"<dateTime>\"\n  },\n  {\n    \"messageId\": \"<string>\",\n    \"flowId\": \"<string>\",\n    \"componentId\": \"<string>\",\n    \"data\": {},\n    \"createdAt\": \"<dateTime>\"\n  }\n]",
+              "createdAt": "2026-06-05T15:05:27.000Z",
+              "updatedAt": "2026-06-05T15:05:27.000Z",
+              "uid": "35240-166390df-88c1-49f6-92eb-032cbcb82190"
+            },
+            {
+              "id": "c0ddcf9f-24e5-4c50-a155-58ccc7021210",
+              "name": "Unauthorized",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/unprocessed-messages",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "unprocessed-messages"
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "responseTime": null,
+              "body": null,
+              "createdAt": "2026-06-05T15:05:27.000Z",
+              "updatedAt": "2026-06-05T15:05:27.000Z",
+              "uid": "35240-c0ddcf9f-24e5-4c50-a155-58ccc7021210"
+            }
+          ],
+          "createdAt": "2026-06-05T15:05:26.000Z",
+          "updatedAt": "2026-06-05T15:05:26.000Z",
+          "uid": "35240-1ee83a67-b061-472b-8b45-efb778a3d26d"
+        }
+      ],
+      "id": "303880b0-c396-4a90-ab26-705d95472331",
+      "createdAt": "2026-06-05T15:05:26.000Z",
+      "updatedAt": "2026-06-05T15:05:26.000Z",
+      "uid": "35240-303880b0-c396-4a90-ab26-705d95472331"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "tenant",
+      "value": "YOUR_TENANT"
+    },
+    {
+      "key": "baseUrl",
+      "value": "https://api.{{tenant}}.appmixer.cloud"
+    }
+  ]
+}
