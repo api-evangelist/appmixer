@@ -1,0 +1,259 @@
+openapi: 3.1.0
+info:
+  title: Appmixer Accounts Flows API
+  description: The Appmixer REST API provides programmatic access to manage workflows, users, accounts, apps/connectors, files, data stores, insights, and people tasks within the Appmixer embedded iPaaS platform. The API allows you to access all the features that the Appmixer UI works with.
+  version: 6.1.0
+  contact:
+    name: Appmixer
+    url: https://www.appmixer.com/
+  license:
+    name: Proprietary
+    url: https://www.appmixer.com/terms-and-conditions
+servers:
+- url: https://api.{tenant}.appmixer.cloud
+  description: Appmixer Cloud Tenant API
+  variables:
+    tenant:
+      default: YOUR_TENANT
+      description: Your Appmixer tenant identifier
+security:
+- bearerAuth: []
+tags:
+- name: Flows
+  description: Workflow flow management
+paths:
+  /flows:
+    get:
+      operationId: listFlows
+      summary: Appmixer List flows
+      description: Get all flows of the authenticated user. Supports filtering, sorting, and pagination.
+      parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+        description: Maximum number of flows to return
+      - name: offset
+        in: query
+        schema:
+          type: integer
+        description: Number of flows to skip
+      - name: pattern
+        in: query
+        schema:
+          type: string
+        description: Filter flows by name pattern
+      - name: sort
+        in: query
+        schema:
+          type: string
+        description: Sort field and direction
+      - name: projection
+        in: query
+        schema:
+          type: string
+        description: Comma-separated list of properties to exclude
+      - name: filter
+        in: query
+        schema:
+          type: string
+        description: Filter expression
+      responses:
+        '200':
+          description: List of flows returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Flow'
+        '401':
+          description: Unauthorized
+      tags:
+      - Flows
+    post:
+      operationId: createFlow
+      summary: Appmixer Create a flow
+      description: Create a new flow in Appmixer.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Name of the flow
+                flow:
+                  type: object
+                  description: Flow definition object
+                customFields:
+                  type: object
+                  description: Custom metadata for the flow
+      responses:
+        '200':
+          description: Flow created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flow'
+        '401':
+          description: Unauthorized
+      tags:
+      - Flows
+  /flows/{flowId}:
+    get:
+      operationId: getFlow
+      summary: Appmixer Get a flow
+      description: Get details of a specific flow by its ID.
+      parameters:
+      - name: flowId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Flow returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flow'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Flow not found
+      tags:
+      - Flows
+    put:
+      operationId: updateFlow
+      summary: Appmixer Update a flow
+      description: Update an existing flow. A running flow cannot be updated without the forceUpdate query parameter.
+      parameters:
+      - name: flowId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: forceUpdate
+        in: query
+        schema:
+          type: boolean
+        description: Force update a running flow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                flow:
+                  type: object
+                customFields:
+                  type: object
+      responses:
+        '200':
+          description: Flow updated successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Flow not found
+      tags:
+      - Flows
+    delete:
+      operationId: deleteFlow
+      summary: Appmixer Delete a flow
+      description: Delete an existing flow by its ID.
+      parameters:
+      - name: flowId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Flow deleted successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Flow not found
+      tags:
+      - Flows
+  /flows/{flowId}/start:
+    put:
+      operationId: startFlow
+      summary: Appmixer Start a flow
+      description: Start a stopped flow.
+      parameters:
+      - name: flowId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Flow started successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Flow not found
+      tags:
+      - Flows
+  /flows/{flowId}/stop:
+    put:
+      operationId: stopFlow
+      summary: Appmixer Stop a flow
+      description: Stop a running flow.
+      parameters:
+      - name: flowId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Flow stopped successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Flow not found
+      tags:
+      - Flows
+components:
+  schemas:
+    Flow:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        flow:
+          type: object
+          description: Flow definition object
+        stage:
+          type: string
+          enum:
+          - running
+          - stopped
+        btime:
+          type: string
+          format: date-time
+          description: Creation time
+        mtime:
+          type: string
+          format: date-time
+          description: Modification time
+        thumbnail:
+          type: string
+        customFields:
+          type: object
+          description: Custom metadata for the flow
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: 'Access token obtained from the /user/auth endpoint. Pass as Authorization: Bearer {token} header.'

@@ -1,0 +1,75 @@
+openapi: 3.1.0
+info:
+  title: Appmixer Accounts People Tasks API
+  description: The Appmixer REST API provides programmatic access to manage workflows, users, accounts, apps/connectors, files, data stores, insights, and people tasks within the Appmixer embedded iPaaS platform. The API allows you to access all the features that the Appmixer UI works with.
+  version: 6.1.0
+  contact:
+    name: Appmixer
+    url: https://www.appmixer.com/
+  license:
+    name: Proprietary
+    url: https://www.appmixer.com/terms-and-conditions
+servers:
+- url: https://api.{tenant}.appmixer.cloud
+  description: Appmixer Cloud Tenant API
+  variables:
+    tenant:
+      default: YOUR_TENANT
+      description: Your Appmixer tenant identifier
+security:
+- bearerAuth: []
+tags:
+- name: People Tasks
+  description: Human-in-the-loop task management
+paths:
+  /people-task/tasks:
+    get:
+      operationId: listPeopleTasks
+      summary: Appmixer List people tasks
+      description: Get all tasks of the authenticated user. Can filter by role (approver or requester).
+      parameters:
+      - name: role
+        in: query
+        schema:
+          type: string
+          enum:
+          - approver
+          - requester
+        description: Filter tasks by role
+      responses:
+        '200':
+          description: List of tasks returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PeopleTask'
+        '401':
+          description: Unauthorized
+      tags:
+      - People Tasks
+components:
+  schemas:
+    PeopleTask:
+      type: object
+      properties:
+        id:
+          type: string
+        flowId:
+          type: string
+        role:
+          type: string
+          enum:
+          - approver
+          - requester
+        status:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: 'Access token obtained from the /user/auth endpoint. Pass as Authorization: Bearer {token} header.'

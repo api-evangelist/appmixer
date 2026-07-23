@@ -1,0 +1,50 @@
+openapi: 3.1.0
+info:
+  title: Appmixer Accounts System API
+  description: The Appmixer REST API provides programmatic access to manage workflows, users, accounts, apps/connectors, files, data stores, insights, and people tasks within the Appmixer embedded iPaaS platform. The API allows you to access all the features that the Appmixer UI works with.
+  version: 6.1.0
+  contact:
+    name: Appmixer
+    url: https://www.appmixer.com/
+  license:
+    name: Proprietary
+    url: https://www.appmixer.com/terms-and-conditions
+servers:
+- url: https://api.{tenant}.appmixer.cloud
+  description: Appmixer Cloud Tenant API
+  variables:
+    tenant:
+      default: YOUR_TENANT
+      description: Your Appmixer tenant identifier
+security:
+- bearerAuth: []
+tags:
+- name: System
+  description: System health and information
+paths:
+  /:
+    get:
+      operationId: getApiInfo
+      summary: Appmixer Get API information
+      description: Basic liveness check that returns basic API information about the Appmixer instance.
+      security: []
+      responses:
+        '200':
+          description: API information returned successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  version:
+                    type: string
+                  status:
+                    type: string
+      tags:
+      - System
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: 'Access token obtained from the /user/auth endpoint. Pass as Authorization: Bearer {token} header.'

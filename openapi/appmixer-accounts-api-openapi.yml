@@ -1,0 +1,106 @@
+openapi: 3.1.0
+info:
+  title: Appmixer Accounts API
+  description: The Appmixer REST API provides programmatic access to manage workflows, users, accounts, apps/connectors, files, data stores, insights, and people tasks within the Appmixer embedded iPaaS platform. The API allows you to access all the features that the Appmixer UI works with.
+  version: 6.1.0
+  contact:
+    name: Appmixer
+    url: https://www.appmixer.com/
+  license:
+    name: Proprietary
+    url: https://www.appmixer.com/terms-and-conditions
+servers:
+- url: https://api.{tenant}.appmixer.cloud
+  description: Appmixer Cloud Tenant API
+  variables:
+    tenant:
+      default: YOUR_TENANT
+      description: Your Appmixer tenant identifier
+security:
+- bearerAuth: []
+tags:
+- name: Accounts
+  description: Connected third-party account management
+paths:
+  /accounts:
+    get:
+      operationId: listAccounts
+      summary: Appmixer List accounts
+      description: Get list of all accounts the user has authenticated with to any component (e.g. OAuth connections to third-party services).
+      responses:
+        '200':
+          description: List of accounts returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Account'
+        '401':
+          description: Unauthorized
+      tags:
+      - Accounts
+  /accounts/{accountId}:
+    get:
+      operationId: getAccount
+      summary: Appmixer Get an account
+      description: Get details for a specific account and check if its credentials (tokens) are still valid.
+      parameters:
+      - name: accountId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Account information returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Account not found
+      tags:
+      - Accounts
+    delete:
+      operationId: deleteAccount
+      summary: Appmixer Delete an account
+      description: Delete (disconnect) an authenticated account.
+      parameters:
+      - name: accountId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Account deleted successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Account not found
+      tags:
+      - Accounts
+components:
+  schemas:
+    Account:
+      type: object
+      properties:
+        accountId:
+          type: string
+        name:
+          type: string
+        service:
+          type: string
+        profileInfo:
+          type: object
+        valid:
+          type: boolean
+          description: Whether the account credentials are still valid
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: 'Access token obtained from the /user/auth endpoint. Pass as Authorization: Bearer {token} header.'

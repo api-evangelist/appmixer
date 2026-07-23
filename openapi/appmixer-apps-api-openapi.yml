@@ -1,0 +1,123 @@
+openapi: 3.1.0
+info:
+  title: Appmixer Accounts Apps API
+  description: The Appmixer REST API provides programmatic access to manage workflows, users, accounts, apps/connectors, files, data stores, insights, and people tasks within the Appmixer embedded iPaaS platform. The API allows you to access all the features that the Appmixer UI works with.
+  version: 6.1.0
+  contact:
+    name: Appmixer
+    url: https://www.appmixer.com/
+  license:
+    name: Proprietary
+    url: https://www.appmixer.com/terms-and-conditions
+servers:
+- url: https://api.{tenant}.appmixer.cloud
+  description: Appmixer Cloud Tenant API
+  variables:
+    tenant:
+      default: YOUR_TENANT
+      description: Your Appmixer tenant identifier
+security:
+- bearerAuth: []
+tags:
+- name: Apps
+  description: Applications and connectors management
+paths:
+  /apps:
+    get:
+      operationId: listApps
+      summary: Appmixer List apps
+      description: Get all applications (services or modules) available in the Appmixer tenant.
+      responses:
+        '200':
+          description: List of apps returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/App'
+        '401':
+          description: Unauthorized
+      tags:
+      - Apps
+  /components:
+    get:
+      operationId: listComponents
+      summary: Appmixer List components
+      description: Get all available components (connectors) in the tenant.
+      responses:
+        '200':
+          description: List of components returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    label:
+                      type: string
+                    type:
+                      type: string
+        '401':
+          description: Unauthorized
+      tags:
+      - Apps
+    post:
+      operationId: publishComponent
+      summary: Appmixer Publish a component
+      description: Publish a new component, module, or service to the Appmixer tenant.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Component published successfully
+        '401':
+          description: Unauthorized
+      tags:
+      - Apps
+  /components/{componentId}:
+    delete:
+      operationId: deleteComponent
+      summary: Appmixer Delete a component
+      description: Delete (uninstall) a component, module, or service.
+      parameters:
+      - name: componentId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Component identifier (e.g. appmixer.myservice)
+      responses:
+        '200':
+          description: Component deleted successfully
+        '401':
+          description: Unauthorized
+        '404':
+          description: Component not found
+      tags:
+      - Apps
+components:
+  schemas:
+    App:
+      type: object
+      properties:
+        name:
+          type: string
+        label:
+          type: string
+        icon:
+          type: string
+        description:
+          type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: 'Access token obtained from the /user/auth endpoint. Pass as Authorization: Bearer {token} header.'
