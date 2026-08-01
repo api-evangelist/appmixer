@@ -1,0 +1,36 @@
+{
+  "provider": "appmixer",
+  "sources": [
+    "appmixer-accounts-api-openapi.yml",
+    "appmixer-apps-api-openapi.yml",
+    "appmixer-authentication-api-openapi.yml",
+    "appmixer-data-stores-api-openapi.yml",
+    "appmixer-files-api-openapi.yml",
+    "appmixer-flows-api-openapi.yml",
+    "appmixer-insights-api-openapi.yml",
+    "appmixer-logs-api-openapi.yml",
+    "appmixer-messages-api-openapi.yml",
+    "appmixer-people-tasks-api-openapi.yml",
+    "appmixer-system-api-openapi.yml",
+    "appmixer-users-api-openapi.yml"
+  ],
+  "outputs": [
+    "appmixer-accounts-api-openapi.yml",
+    "appmixer-apps-api-openapi.yml",
+    "appmixer-authentication-api-openapi.yml",
+    "appmixer-data-stores-api-openapi.yml",
+    "appmixer-files-api-openapi.yml",
+    "appmixer-flows-api-openapi.yml",
+    "appmixer-insights-api-openapi.yml",
+    "appmixer-logs-api-openapi.yml",
+    "appmixer-messages-api-openapi.yml",
+    "appmixer-people-tasks-api-openapi.yml",
+    "appmixer-system-api-openapi.yml",
+    "appmixer-users-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
