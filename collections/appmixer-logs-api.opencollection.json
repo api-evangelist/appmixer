@@ -1,0 +1,55 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Appmixer Accounts Logs API",
+    "version": "6.1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Logs",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Appmixer Get logs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.{tenant}.appmixer.cloud/logs",
+            "params": [
+              {
+                "name": "flowId",
+                "value": "",
+                "type": "query",
+                "description": "Filter logs by flow ID"
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of log entries to return"
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Number of entries to skip"
+              }
+            ]
+          },
+          "docs": "Retrieve logs for the authenticated user's flows."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,71 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Appmixer Accounts Data Stores API",
+    "version": "6.1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Data Stores",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Appmixer List data stores",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.{tenant}.appmixer.cloud/data-stores"
+          },
+          "docs": "Get all data stores belonging to the authenticated user."
+        },
+        {
+          "info": {
+            "name": "Appmixer Get a data store",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.{tenant}.appmixer.cloud/data-stores/:storeId",
+            "params": [
+              {
+                "name": "storeId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get details of a specific data store."
+        },
+        {
+          "info": {
+            "name": "Appmixer Delete a data store",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.{tenant}.appmixer.cloud/data-stores/:storeId",
+            "params": [
+              {
+                "name": "storeId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete a specific data store."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

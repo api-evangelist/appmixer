@@ -1,0 +1,35 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Appmixer Accounts System API",
+    "version": "6.1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "System",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Appmixer Get API information",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.{tenant}.appmixer.cloud/"
+          },
+          "docs": "Basic liveness check that returns basic API information about the Appmixer instance."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

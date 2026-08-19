@@ -1,0 +1,35 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Appmixer Accounts Insights API",
+    "version": "6.1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Insights",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Appmixer List insights",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.{tenant}.appmixer.cloud/insights"
+          },
+          "docs": "Get all Insights charts of the authenticated user."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

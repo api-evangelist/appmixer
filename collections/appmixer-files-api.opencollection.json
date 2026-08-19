@@ -1,0 +1,92 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Appmixer Accounts Files API",
+    "version": "6.1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Files",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Appmixer List files",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.{tenant}.appmixer.cloud/files"
+          },
+          "docs": "Get all files belonging to the authenticated user."
+        },
+        {
+          "info": {
+            "name": "Appmixer Upload a file",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.{tenant}.appmixer.cloud/files",
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "file",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "docs": "Upload a new file to the Appmixer file management system."
+        },
+        {
+          "info": {
+            "name": "Appmixer Get a file",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.{tenant}.appmixer.cloud/files/:fileId",
+            "params": [
+              {
+                "name": "fileId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Download or get details of a specific file."
+        },
+        {
+          "info": {
+            "name": "Appmixer Delete a file",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.{tenant}.appmixer.cloud/files/:fileId",
+            "params": [
+              {
+                "name": "fileId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete a specific file."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

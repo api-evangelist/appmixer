@@ -1,0 +1,188 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Appmixer Accounts Flows API",
+    "version": "6.1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Flows",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Appmixer List flows",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.{tenant}.appmixer.cloud/flows",
+            "params": [
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Maximum number of flows to return"
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Number of flows to skip"
+              },
+              {
+                "name": "pattern",
+                "value": "",
+                "type": "query",
+                "description": "Filter flows by name pattern"
+              },
+              {
+                "name": "sort",
+                "value": "",
+                "type": "query",
+                "description": "Sort field and direction"
+              },
+              {
+                "name": "projection",
+                "value": "",
+                "type": "query",
+                "description": "Comma-separated list of properties to exclude"
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query",
+                "description": "Filter expression"
+              }
+            ]
+          },
+          "docs": "Get all flows of the authenticated user. Supports filtering, sorting, and pagination."
+        },
+        {
+          "info": {
+            "name": "Appmixer Create a flow",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.{tenant}.appmixer.cloud/flows",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new flow in Appmixer."
+        },
+        {
+          "info": {
+            "name": "Appmixer Get a flow",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.{tenant}.appmixer.cloud/flows/:flowId",
+            "params": [
+              {
+                "name": "flowId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get details of a specific flow by its ID."
+        },
+        {
+          "info": {
+            "name": "Appmixer Update a flow",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.{tenant}.appmixer.cloud/flows/:flowId",
+            "params": [
+              {
+                "name": "flowId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "forceUpdate",
+                "value": "",
+                "type": "query",
+                "description": "Force update a running flow"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update an existing flow. A running flow cannot be updated without the forceUpdate query parameter."
+        },
+        {
+          "info": {
+            "name": "Appmixer Delete a flow",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.{tenant}.appmixer.cloud/flows/:flowId",
+            "params": [
+              {
+                "name": "flowId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete an existing flow by its ID."
+        },
+        {
+          "info": {
+            "name": "Appmixer Start a flow",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.{tenant}.appmixer.cloud/flows/:flowId/start",
+            "params": [
+              {
+                "name": "flowId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Start a stopped flow."
+        },
+        {
+          "info": {
+            "name": "Appmixer Stop a flow",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.{tenant}.appmixer.cloud/flows/:flowId/stop",
+            "params": [
+              {
+                "name": "flowId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Stop a running flow."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

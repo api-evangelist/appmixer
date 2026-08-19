@@ -1,0 +1,80 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Appmixer Accounts Apps API",
+    "version": "6.1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Apps",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Appmixer List apps",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.{tenant}.appmixer.cloud/apps"
+          },
+          "docs": "Get all applications (services or modules) available in the Appmixer tenant."
+        },
+        {
+          "info": {
+            "name": "Appmixer List components",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.{tenant}.appmixer.cloud/components"
+          },
+          "docs": "Get all available components (connectors) in the tenant."
+        },
+        {
+          "info": {
+            "name": "Appmixer Publish a component",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.{tenant}.appmixer.cloud/components",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Publish a new component, module, or service to the Appmixer tenant."
+        },
+        {
+          "info": {
+            "name": "Appmixer Delete a component",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.{tenant}.appmixer.cloud/components/:componentId",
+            "params": [
+              {
+                "name": "componentId",
+                "value": "",
+                "type": "path",
+                "description": "Component identifier (e.g. appmixer.myservice)"
+              }
+            ]
+          },
+          "docs": "Delete (uninstall) a component, module, or service."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

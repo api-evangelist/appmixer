@@ -1,0 +1,90 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Appmixer Accounts Users API",
+    "version": "6.1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Users",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Appmixer Get current user",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.{tenant}.appmixer.cloud/user"
+          },
+          "docs": "Get information about the currently authenticated user."
+        },
+        {
+          "info": {
+            "name": "Appmixer Create a new user",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.{tenant}.appmixer.cloud/user",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new Appmixer user account. By default, this endpoint is open and does not require authentication."
+        },
+        {
+          "info": {
+            "name": "Appmixer Update a user",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.{tenant}.appmixer.cloud/users/:userId",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update user information for the specified user."
+        },
+        {
+          "info": {
+            "name": "Appmixer Delete a user",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.{tenant}.appmixer.cloud/users/:userId",
+            "params": [
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Delete the specified user account."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

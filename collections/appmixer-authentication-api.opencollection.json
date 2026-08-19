@@ -1,0 +1,39 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Appmixer Accounts Authentication API",
+    "version": "6.1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Authentication",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Appmixer Authenticate user",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.{tenant}.appmixer.cloud/user/auth",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Sign in a user with credentials and obtain an access token for authenticating subsequent API requests."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
