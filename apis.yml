@@ -6,6 +6,8 @@ apis:
   description: Connected third-party account management
   humanURL: https://docs.appmixer.com/getting-started/api
   tags:
+  - Account
+  tags_raw:
   - Accounts
   properties:
   - type: OpenAPI
@@ -61,6 +63,8 @@ apis:
   description: Applications and connectors management
   humanURL: https://docs.appmixer.com/getting-started/api
   tags:
+  - Application
+  tags_raw:
   - Apps
   properties:
   - type: OpenAPI
@@ -171,6 +175,8 @@ apis:
   description: Data store management
   humanURL: https://docs.appmixer.com/getting-started/api
   tags:
+  - Datastores
+  tags_raw:
   - Data Stores
   properties:
   - type: OpenAPI
@@ -226,6 +232,8 @@ apis:
   description: File management
   humanURL: https://docs.appmixer.com/getting-started/api
   tags:
+  - File
+  tags_raw:
   - Files
   properties:
   - type: OpenAPI
@@ -446,6 +454,8 @@ apis:
   description: Unprocessed message management
   humanURL: https://docs.appmixer.com/getting-started/api
   tags:
+  - Message
+  tags_raw:
   - Messages
   properties:
   - type: OpenAPI
@@ -611,6 +621,8 @@ apis:
   description: User account management
   humanURL: https://docs.appmixer.com/getting-started/api
   tags:
+  - User
+  tags_raw:
   - Users
   properties:
   - type: OpenAPI
@@ -663,6 +675,13 @@ apis:
     url: vocabulary/appmixer-vocabulary.yaml
 name: Appmixer
 tags:
+  - Agentic
+  - Automation
+  - Embedded iPaaS
+  - Integration
+  - Low-Code
+  - Workflows
+tags_raw:
   - Agentic
   - Automation
   - Embedded iPaaS
