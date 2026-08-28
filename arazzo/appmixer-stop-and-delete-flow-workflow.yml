@@ -9,8 +9,8 @@ info:
     flow skips straight to deletion.
   version: 1.0.0
 sourceDescriptions:
-- name: appmixerApi
-  url: ../openapi/appmixer-api-openapi.yml
+- name: flowsApi
+  url: ../openapi/appmixer-flows-api-openapi.yml
   type: openapi
 workflows:
 - workflowId: decommission-flow

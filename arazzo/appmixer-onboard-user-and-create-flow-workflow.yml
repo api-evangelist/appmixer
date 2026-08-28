@@ -10,8 +10,14 @@ info:
     inline bearer authorization derived from the freshly issued token.
   version: 1.0.0
 sourceDescriptions:
-- name: appmixerApi
-  url: ../openapi/appmixer-api-openapi.yml
+- name: authenticationApi
+  url: ../openapi/appmixer-authentication-api-openapi.yml
+  type: openapi
+- name: flowsApi
+  url: ../openapi/appmixer-flows-api-openapi.yml
+  type: openapi
+- name: usersApi
+  url: ../openapi/appmixer-users-api-openapi.yml
   type: openapi
 workflows:
 - workflowId: onboard-user-and-create-flow

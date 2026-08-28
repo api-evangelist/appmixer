@@ -10,8 +10,8 @@ info:
     user's account list free of broken OAuth connections.
   version: 1.0.0
 sourceDescriptions:
-- name: appmixerApi
-  url: ../openapi/appmixer-api-openapi.yml
+- name: accountsApi
+  url: ../openapi/appmixer-accounts-api-openapi.yml
   type: openapi
 workflows:
 - workflowId: disconnect-invalid-account
