@@ -175,7 +175,7 @@ apis:
   description: Data store management
   humanURL: https://docs.appmixer.com/getting-started/api
   tags:
-  - Data Stores
+  - Datastores
   tags_raw:
   - Data Stores
   properties:
