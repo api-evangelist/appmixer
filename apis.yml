@@ -708,11 +708,12 @@ accessModel:
   try_now: true
   public: false
   label: Freemium · Self-serve signup
-  confidence: high
+  confidence: medium
   source:
   - plans
   - authentication
-  generated: '2026-07-22'
+  - security
+  generated: '2026-09-03'
   method: derived
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/appmixer.png
 access: 3rd-Party
@@ -1308,7 +1309,7 @@ common:
     url: https://docs.appmixer.com/llms.txt
 created: '2025-06-06T00:00:00.000Z'
 modified: '2026-05-19'
-position: Consumer
+position: Consuming
 description: Let your users build powerful agentic workflowsno code, fully white-labeled, and embedded right in your web app.
 maintainers:
   - FN: Kin Lane
