@@ -170,63 +170,6 @@ apis:
     url: rules/appmixer-spectral-rules.yml
   - type: Vocabulary
     url: vocabulary/appmixer-vocabulary.yaml
-- aid: appmixer:appmixer-data-stores-api
-  name: Appmixer Data Stores API
-  description: Data store management
-  humanURL: https://docs.appmixer.com/getting-started/api
-  tags:
-  - Datastores
-  tags_raw:
-  - Data Stores
-  properties:
-  - type: OpenAPI
-    url: openapi/appmixer-data-stores-api-openapi.yml
-  - type: Documentation
-    url: https://docs.appmixer.com/getting-started/api
-  - type: Documentation
-    url: https://docs.appmixer.com/api/authentication
-  - type: JSONSchema
-    url: json-schema/flow.json
-  - type: JSONSchema
-    url: json-schema/user.json
-  - type: JSONSchema
-    url: json-schema/account.json
-  - type: JSONSchema
-    url: json-schema/file.json
-  - type: JSONSchema
-    url: json-schema/data-store.json
-  - type: JSONSchema
-    url: json-schema/people-task.json
-  - type: JSONLD
-    url: json-ld/appmixer-context.jsonld
-  - type: JSONStructure
-    url: json-structure/flow-structure.json
-  - type: JSONStructure
-    url: json-structure/user-structure.json
-  - type: JSONStructure
-    url: json-structure/account-structure.json
-  - type: JSONStructure
-    url: json-structure/file-structure.json
-  - type: JSONStructure
-    url: json-structure/data-store-structure.json
-  - type: JSONStructure
-    url: json-structure/people-task-structure.json
-  - type: Examples
-    url: examples/flow-example.json
-  - type: Examples
-    url: examples/user-example.json
-  - type: Examples
-    url: examples/account-example.json
-  - type: Examples
-    url: examples/file-example.json
-  - type: Examples
-    url: examples/data-store-example.json
-  - type: Examples
-    url: examples/people-task-example.json
-  - type: SpectralRules
-    url: rules/appmixer-spectral-rules.yml
-  - type: Vocabulary
-    url: vocabulary/appmixer-vocabulary.yaml
 - aid: appmixer:appmixer-files-api
   name: Appmixer Files API
   description: File management
@@ -627,6 +570,61 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/appmixer-users-api-openapi.yml
+  - type: Documentation
+    url: https://docs.appmixer.com/getting-started/api
+  - type: Documentation
+    url: https://docs.appmixer.com/api/authentication
+  - type: JSONSchema
+    url: json-schema/flow.json
+  - type: JSONSchema
+    url: json-schema/user.json
+  - type: JSONSchema
+    url: json-schema/account.json
+  - type: JSONSchema
+    url: json-schema/file.json
+  - type: JSONSchema
+    url: json-schema/data-store.json
+  - type: JSONSchema
+    url: json-schema/people-task.json
+  - type: JSONLD
+    url: json-ld/appmixer-context.jsonld
+  - type: JSONStructure
+    url: json-structure/flow-structure.json
+  - type: JSONStructure
+    url: json-structure/user-structure.json
+  - type: JSONStructure
+    url: json-structure/account-structure.json
+  - type: JSONStructure
+    url: json-structure/file-structure.json
+  - type: JSONStructure
+    url: json-structure/data-store-structure.json
+  - type: JSONStructure
+    url: json-structure/people-task-structure.json
+  - type: Examples
+    url: examples/flow-example.json
+  - type: Examples
+    url: examples/user-example.json
+  - type: Examples
+    url: examples/account-example.json
+  - type: Examples
+    url: examples/file-example.json
+  - type: Examples
+    url: examples/data-store-example.json
+  - type: Examples
+    url: examples/people-task-example.json
+  - type: SpectralRules
+    url: rules/appmixer-spectral-rules.yml
+  - type: Vocabulary
+    url: vocabulary/appmixer-vocabulary.yaml
+- aid: appmixer:appmixer-datastores-api
+  name: Appmixer Datastores API
+  description: Data store management
+  humanURL: https://docs.appmixer.com/getting-started/api
+  tags:
+  - Datastores
+  properties:
+  - type: OpenAPI
+    url: openapi/appmixer-datastores-api-openapi.yml
   - type: Documentation
     url: https://docs.appmixer.com/getting-started/api
   - type: Documentation
