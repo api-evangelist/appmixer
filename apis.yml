@@ -232,6 +232,8 @@ apis:
   description: Workflow flow management
   humanURL: https://docs.appmixer.com/getting-started/api
   tags:
+  - Flow
+  tags_raw:
   - Flows
   properties:
   - type: OpenAPI
