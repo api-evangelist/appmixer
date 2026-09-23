@@ -1,6 +1,6 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Appmixer Accounts Data Stores API
+  title: Appmixer Data Stores API
   description: The Appmixer REST API provides programmatic access to manage workflows, users, accounts, apps/connectors, files, data stores, insights, and people tasks within the Appmixer embedded iPaaS platform. The API allows you to access all the features that the Appmixer UI works with.
   version: 6.1.0
   contact:
@@ -19,7 +19,7 @@ servers:
 security:
 - bearerAuth: []
 tags:
-- name: Data Stores
+- name: Datastores
   description: Data store management
 paths:
   /data-stores:
@@ -39,7 +39,7 @@ paths:
         '401':
           description: Unauthorized
       tags:
-      - Data Stores
+      - Datastores
   /data-stores/{storeId}:
     get:
       operationId: getDataStore
@@ -63,7 +63,7 @@ paths:
         '404':
           description: Data store not found
       tags:
-      - Data Stores
+      - Datastores
     delete:
       operationId: deleteDataStore
       summary: Appmixer Delete a data store
@@ -82,7 +82,7 @@ paths:
         '404':
           description: Data store not found
       tags:
-      - Data Stores
+      - Datastores
 components:
   schemas:
     DataStore:

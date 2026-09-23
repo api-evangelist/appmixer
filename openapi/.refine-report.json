@@ -1,18 +1,7 @@
 {
   "provider": "appmixer",
   "sources": [
-    "appmixer-accounts-api-openapi.yml",
-    "appmixer-apps-api-openapi.yml",
-    "appmixer-authentication-api-openapi.yml",
-    "appmixer-data-stores-api-openapi.yml",
-    "appmixer-files-api-openapi.yml",
-    "appmixer-flows-api-openapi.yml",
-    "appmixer-insights-api-openapi.yml",
-    "appmixer-logs-api-openapi.yml",
-    "appmixer-messages-api-openapi.yml",
-    "appmixer-people-tasks-api-openapi.yml",
-    "appmixer-system-api-openapi.yml",
-    "appmixer-users-api-openapi.yml"
+    "_original/appmixer-api-openapi.yml"
   ],
   "outputs": [
     "appmixer-accounts-api-openapi.yml",
@@ -28,9 +17,29 @@
     "appmixer-system-api-openapi.yml",
     "appmixer-users-api-openapi.yml"
   ],
-  "archived": [],
+  "archived": [
+    "deleted 1 superseded output(s) from the previous generation"
+  ],
   "errors": [],
   "warnings": [],
-  "notes": [],
-  "skipped": []
+  "notes": [
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "appmixer-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "superseded outputs removed: appmixer-datastores-api-openapi.yml",
+    "apis.yml register: written (+1 apis, 12 total)"
+  ],
+  "skipped": [
+    "appmixer-accounts-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "appmixer-apps-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "appmixer-authentication-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "appmixer-datastores-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "appmixer-files-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "appmixer-flows-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "appmixer-insights-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "appmixer-logs-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "appmixer-messages-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "appmixer-people-tasks-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "appmixer-system-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "appmixer-users-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }
