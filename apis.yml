@@ -678,7 +678,7 @@ apis:
     url: vocabulary/appmixer-vocabulary.yaml
 name: Appmixer
 tags:
-  - Agentic
+  - AI Agents
   - Automation
   - Embedded iPaaS
   - Integration
@@ -1251,7 +1251,7 @@ common:
     name: Extensible Connector Library
     type: Integrations
   - url: >-
-      https://docs.appmixer.com/?_gl=1*r2dl5*_gcl_au*MTE0OTMzNzAwOC4xNzQ5MTU5NDE1*_ga*NTEwNzE5MjYuMTc0OTE1OTQxNQ..*_ga_60B263RRK5*czE3NDk1MDc4NjAkbzIkZzEkdDE3NDk1MDgzOTckajYwJGwwJGgw
+      https://docs.appmixer.com/
     name: Introduction | Appmixer Docs Site
     type: Documentation
     description: 'null'
@@ -1272,7 +1272,7 @@ common:
     type: SDKs
     description: 'null'
   - url: >-
-      https://docs.appmixer.com/appmixer-cli/appmixer-cli?_gl=1*jj6vs6*_gcl_au*MTE0OTMzNzAwOC4xNzQ5MTU5NDE1*_ga*NTEwNzE5MjYuMTc0OTE1OTQxNQ..*_ga_60B263RRK5*czE3NDk1MDc4NjAkbzIkZzEkdDE3NDk1MDg1ODQkajMkbDAkaDA.
+      https://docs.appmixer.com/appmixer-cli/appmixer-cli
     name: Getting Started | Appmixer Docs Site
     type: CLI
     description: 'null'
