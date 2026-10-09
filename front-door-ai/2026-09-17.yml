@@ -1,0 +1,34 @@
+# Front Door AI Index — appmixer — 2026-09-17
+# AI vocabulary counted on the provider's root page. Generated; do not edit.
+# `score` is null unless ownership is `own` — see front_door_ai.py.
+front_door_ai:
+  slug: appmixer
+  lexicon_version: '1.0'
+  probed_at: '2026-09-25'
+  host: www.appmixer.com
+  final_host: www.appmixer.com
+  ownership: own
+  owner: appmixer
+  shares_host_with: null
+  inherited_from: null
+  alias_of: null
+  verdict: scored
+  score: 20
+  band: 5
+  band_label: prominent
+  host_score: 20
+  density: 14.25
+  words: 1404
+  tiers:
+    agentic: 6
+    core: 14
+    model: 0
+  ambiguous: 25
+  top_terms:
+    automation: 24
+    AI: 14
+    MCP: 2
+    embedding: 2
+    AI agent: 1
+    agent: 1
+    agentic: 1
