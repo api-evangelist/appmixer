@@ -1,83 +1,371 @@
 openapi: 3.2.0
 info:
-  title: Appmixer Authentication API
-  description: The Appmixer REST API provides programmatic access to manage workflows, users, accounts, apps/connectors, files, data stores, insights, and people tasks within the Appmixer embedded iPaaS platform. The API allows you to access all the features that the Appmixer UI works with.
-  version: 6.1.0
+  title: Appmixer REST Authentication API
+  version: 6.5.5
+  summary: REST API of the Appmixer workflow automation and embedded iPaaS platform.
+  description: 'Appmixer offers a REST API that mirrors the functionality available in its UI. Use it for
+
+    advanced customizations, additional automations and scripting.
+
+
+    **Base URL.** The base URL depends on your Appmixer tenant, for example `https://api-acme.appmixer.ai`
+
+    (newer hosted tenants), `https://api.acme.appmixer.cloud` (older hosted tenants), or the API URL of
+
+    your Self-Managed installation.
+
+
+    **Authentication.** Most endpoints require a user access token sent as `Authorization: Bearer `.
+
+    Get a token by signing in with `POST /user/auth`. Some endpoints also require the user to have
+
+    the `admin` scope; this is noted in their descriptions.
+
+
+    **Errors.** Errors are returned as JSON objects with `statusCode`, `error` and `message` properties.'
   contact:
     name: Appmixer
-    url: https://www.appmixer.com/
-  license:
-    name: Proprietary
-    url: https://www.appmixer.com/terms-and-conditions
+    url: https://www.appmixer.com
 servers:
-- url: https://api.{tenant}.appmixer.cloud
-  description: Appmixer Cloud Tenant API
+- url: '{tenantApiUrl}'
+  description: Your Appmixer tenant API
   variables:
-    tenant:
-      default: YOUR_TENANT
-      description: Your Appmixer tenant identifier
+    tenantApiUrl:
+      default: https://api-acme.appmixer.ai
+      description: API URL of your Appmixer tenant, e.g. https://api-acme.appmixer.ai or https://api.acme.appmixer.cloud.
 security:
 - bearerAuth: []
 tags:
 - name: Authentication
-  description: User authentication and token management
+  description: 'Sign in to get an access token, create (sign up) a user and get the current user. Pass the token to other endpoints in the `Authorization: Bearer ` header.'
 paths:
   /user/auth:
     post:
-      operationId: authenticateUser
-      summary: Appmixer Authenticate user
-      description: Sign in a user with credentials and obtain an access token for authenticating subsequent API requests.
+      tags:
+      - Authentication
+      summary: Sign-in User
+      operationId: signInUser
+      description: 'Sign in a user with credentials and get their access token. Provide either `username` or `email`
+
+        together with `password`.
+
+
+        This endpoint is public by default. If the `API_USER_AUTH_SCOPE` system configuration is set, a
+
+        token with one of the listed scopes is required.'
       security: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              required:
-              - username
-              - password
-              properties:
-                username:
-                  type: string
-                  description: The user's email address or username
-                password:
-                  type: string
-                  description: The user's password
+              oneOf:
+              - type: object
+                title: Username and password
+                additionalProperties: false
+                required:
+                - username
+                - password
+                properties:
+                  username:
+                    type: string
+                    description: Username (usually the email address).
+                  password:
+                    type: string
+                    description: Password.
+              - type: object
+                title: Email and password
+                additionalProperties: false
+                required:
+                - email
+                - password
+                properties:
+                  email:
+                    type: string
+                    format: email
+                    description: Email address.
+                  password:
+                    type: string
+                    description: Password.
+            example:
+              username: abc@example.com
+              password: abc321
       responses:
         '200':
-          description: Authentication successful
+          description: The user signed in. Returns the user and an access token.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  token:
-                    type: string
-                    description: Access token for API authentication
-                  user:
-                    $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/UserAuthResponse'
+              example:
+                user:
+                  id: 5c88c7cc04a917256c726c3d
+                  username: abc@example.com
+                  isActive: false
+                  email: abc@example.com
+                  plan: free
+                  metadata: {}
+                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjODhjN2NjMDRhOTE3MjU2YzcyNmMzZCIsInNjb3BlIjpbInVzZXIiXSwiaWF0IjoxNTUyNDkyNjA5LCJleHAiOjE1NTUwODQ2MDl9.9jVcqY0qo9Q_1GeK9Fg14v7OrdpWvzmqnv4jDMZfqnI
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
-          description: Invalid credentials
+          description: Invalid credentials.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /user:
+    post:
       tags:
       - Authentication
+      summary: Create User
+      operationId: createUser
+      description: 'Create a user. By default, this endpoint is open (does not require authentication). This can be
+
+        changed with the `API_USER_CREATE_SCOPE` system configuration: if you set it to, for example,
+
+        `admin`, an admin token is required to call this endpoint.
+
+
+        Setting `aiContext` always requires an **admin token**, even though this endpoint is otherwise open
+
+        by default. Copilot splices the value into its system prompt, so allowing a self-service signup to
+
+        set it would be a prompt-injection vector. A request that sets `aiContext` without the `admin` scope
+
+        is rejected with `403 Setting aiContext requires the admin scope.` Reading the field back is
+
+        unrestricted.
+
+
+        Unauthenticated signups are rate limited per email address and per IP address.'
+      security:
+      - {}
+      - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateRequest'
+            example:
+              username: abc@example.com
+              email: abc@example.com
+              password: abc321abc321
+      responses:
+        '201':
+          description: The user was created. Returns the user and an access token.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAuthResponse'
+              example:
+                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjODhjN2NjMDRhOTE3MjU2YzcyNmMzZCIsInNjb3BlIjpbInVzZXIiXSwiaWF0IjoxNTUyNDkyNjA5LCJleHAiOjE1NTUwODQ2MDl9.9jVcqY0qo9Q_1GeK9Fg14v7OrdpWvzmqnv4jDMZfqnI
+                user:
+                  id: 5c88c7cc04a917256c726c3d
+                  username: abc@example.com
+                  isActive: true
+                  email: abc@example.com
+                  scope:
+                  - user
+                  metadata: {}
+                  aiContext: null
+                  plan: beta
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          description: Too many signup attempts for this email address or from this IP address.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      tags:
+      - Authentication
+      summary: Get Current User Information
+      operationId: getCurrentUser
+      description: Get information about the user the access token belongs to.
+      responses:
+        '200':
+          description: The current user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+              example:
+                id: 58593f07c3ee4f239dc69ff7
+                username: tomas@client.io
+                isActive: true
+                email: tomas@client.io
+                scope:
+                - user
+                metadata: {}
+                aiContext: 'Timezone: Europe/Prague.'
+                plan: beta
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
 components:
   schemas:
-    User:
+    UserCreateRequest:
       type: object
+      required:
+      - username
+      - email
+      - password
+      properties:
+        username:
+          type: string
+          description: Username, usually the email address.
+        email:
+          type: string
+          format: email
+          description: Email address.
+        password:
+          type: string
+          minLength: 12
+          description: 'Password. The minimum length is set by the `USER_PASSWORD_MIN_LENGTH` environment variable
+
+            (12 by default).
+
+            '
+        phoneNumber:
+          type:
+          - string
+          - 'null'
+        title:
+          type:
+          - string
+          - 'null'
+        metadata:
+          type: object
+          description: Optional metadata.
+        aiContext:
+          type:
+          - string
+          - 'null'
+          description: 'Optional per-user context for AI Copilot. Requires an admin token. The maximum length is set by
+
+            `USER_AI_CONTEXT_MAX_LENGTH`.
+
+            '
+        signUpCoupon:
+          type: string
+          description: Sign-up coupon code.
+    UserDetail:
+      type: object
+      description: User as returned by the sign-in, sign-up and current user endpoints.
       properties:
         id:
           type: string
+          description: User ID.
         username:
           type: string
+        isActive:
+          type: boolean
         email:
           type: string
-        token:
-          type: string
+          format: email
         plan:
           type: string
+        scope:
+          type: array
+          items:
+            type: string
+          description: User scopes, for example `user` or `admin`.
+        vendor:
+          description: One or more vendors.
+          oneOf:
+          - type:
+            - string
+            - 'null'
+          - type: array
+            items:
+              type: string
+        created:
+          type:
+          - string
+          - integer
+          description: Creation time (ISO date string, or a timestamp in milliseconds for some users).
+        metadata:
+          type: object
+          description: Custom metadata.
+        aiContext:
+          type:
+          - string
+          - 'null'
+          description: Per-user context for AI Copilot.
+        type:
+          type: string
+          enum:
+          - personal
+          - group
+          description: '`group` for the internal users that own User Group resources.'
+    Error:
+      type: object
+      description: Error response.
+      properties:
+        statusCode:
+          type: integer
+          example: 404
+        error:
+          type: string
+          example: Not Found
+        message:
+          type: string
+          example: Flow not found.
+      required:
+      - statusCode
+      - error
+    UserAuthResponse:
+      type: object
+      required:
+      - user
+      - token
+      properties:
+        user:
+          $ref: '#/components/schemas/UserDetail'
+        token:
+          type: string
+          description: 'Access token (JWT). Send it as `Authorization: Bearer <token>`.'
+  responses:
+    Unauthorized:
+      description: The access token is missing, invalid or expired.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: The user does not have the permission (or scope) required for this operation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: The request is invalid, for example it failed payload or query validation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
-      description: 'Access token obtained from the /user/auth endpoint. Pass as Authorization: Bearer {token} header.'
+      bearerFormat: JWT
+      description: User access token obtained from `POST /user/auth`.
+externalDocs:
+  description: Appmixer documentation
+  url: https://docs.appmixer.com

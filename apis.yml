@@ -342,15 +342,18 @@ apis:
     url: rules/appmixer-spectral-rules.yml
   - type: Vocabulary
     url: vocabulary/appmixer-vocabulary.yaml
-- aid: appmixer:appmixer-logs-api
-  name: Appmixer Logs API
-  description: Flow execution logs
+- aid: appmixer:appmixer-acl-api
+  name: Appmixer ACL API
+  description: >-
+    ACLs control access to connectors (components) by users or groups of users, and access to any other
+
+    Appmixer functionality by limiting the API routes users can use (API/UI).
   humanURL: https://docs.appmixer.com/getting-started/api
   tags:
-  - Logs
+  - ACL
   properties:
   - type: OpenAPI
-    url: openapi/appmixer-logs-api-openapi.yml
+    url: openapi/appmixer-acl-api-openapi.yml
   - type: Documentation
     url: https://docs.appmixer.com/getting-started/api
   - type: Documentation
@@ -397,17 +400,42 @@ apis:
     url: rules/appmixer-spectral-rules.yml
   - type: Vocabulary
     url: vocabulary/appmixer-vocabulary.yaml
-- aid: appmixer:appmixer-messages-api
-  name: Appmixer Messages API
-  description: Unprocessed message management
+- aid: appmixer:appmixer-audit-logs-api
+  name: Appmixer Audit Logs API
+  description: >-
+    The audit log records who changed what in your Appmixer tenant, and when. Failed attempts are
+
+    recorded too. Only users with the `admin` scope can read it.
+
+
+    **Attribution to your own users.** If your application works through one Appmixer user for many
+
+    people, send an opaque ID of the person who makes a change in the `X-Appmixer-Audit-External-User-Id`
+
+    header of the request that makes it (available since Appmixer 6.5.6). The value must be 1 to 128
+
+    characters long and use only letters, digits, `.`, `_` and `-`; a value in any other format is
+
+    ignored and the request still succeeds. It is stored as `externalUserId` on the audit log entry and
+
+    can be filtered on. Requests that do not write an audit log entry ignore the header.
+
+
+    Never send names, email addresses or other personal data: the value is stored exactly as sent,
+
+    returned by the API and exported in the CSV until the entry expires, and entries cannot be deleted
+
+    earlier. The header is attribution, not authentication: Appmixer does not verify it. From browser
+
+    code, send the header only to Appmixer 6.5.6 or later: older versions refuse it in the CORS
+
+    preflight, so the browser blocks the whole request. Server-side requests are not affected.
   humanURL: https://docs.appmixer.com/getting-started/api
   tags:
-  - Message
-  tags_raw:
-  - Messages
+  - Audit Logs
   properties:
   - type: OpenAPI
-    url: openapi/appmixer-messages-api-openapi.yml
+    url: openapi/appmixer-audit-logs-api-openapi.yml
   - type: Documentation
     url: https://docs.appmixer.com/getting-started/api
   - type: Documentation
@@ -454,15 +482,20 @@ apis:
     url: rules/appmixer-spectral-rules.yml
   - type: Vocabulary
     url: vocabulary/appmixer-vocabulary.yaml
-- aid: appmixer:appmixer-people-tasks-api
-  name: Appmixer People Tasks API
-  description: Human-in-the-loop task management
+- aid: appmixer:appmixer-automation-hub-api
+  name: Appmixer Automation Hub API
+  description: >-
+    Automation Hub configuration and shareable link management. Settings configure the hub's
+
+    appearance, behavior and access controls (admin only). Shareable links enable public access
+
+    to the Automation Hub marketplace via email-based authentication with one-time activation links.
   humanURL: https://docs.appmixer.com/getting-started/api
   tags:
-  - People Tasks
+  - Automation Hub
   properties:
   - type: OpenAPI
-    url: openapi/appmixer-people-tasks-api-openapi.yml
+    url: openapi/appmixer-automation-hub-api-openapi.yml
   - type: Documentation
     url: https://docs.appmixer.com/getting-started/api
   - type: Documentation
@@ -509,15 +542,17 @@ apis:
     url: rules/appmixer-spectral-rules.yml
   - type: Vocabulary
     url: vocabulary/appmixer-vocabulary.yaml
-- aid: appmixer:appmixer-system-api
-  name: Appmixer System API
-  description: System health and information
+- aid: appmixer:appmixer-config-api
+  name: Appmixer Config API
+  description: >-
+    System configuration stored in the database. These endpoints are only accessible to users with the
+    `admin` scope.
   humanURL: https://docs.appmixer.com/getting-started/api
   tags:
-  - System
+  - Config
   properties:
   - type: OpenAPI
-    url: openapi/appmixer-system-api-openapi.yml
+    url: openapi/appmixer-config-api-openapi.yml
   - type: Documentation
     url: https://docs.appmixer.com/getting-started/api
   - type: Documentation
@@ -564,17 +599,434 @@ apis:
     url: rules/appmixer-spectral-rules.yml
   - type: Vocabulary
     url: vocabulary/appmixer-vocabulary.yaml
-- aid: appmixer:appmixer-users-api
-  name: Appmixer Users API
-  description: User account management
+- aid: appmixer:appmixer-connector-configuration-api
+  name: Appmixer Connector Configuration API
+  description: >-
+    Global configuration for your connectors. Values stored for a service are injected into the
+
+    `context.config` object (alias `context.auth`) of every component of that service, and into the
+
+    `context` of its auth module. Only users with the `admin` scope can use these endpoints.
+  humanURL: https://docs.appmixer.com/getting-started/api
+  tags:
+  - Connector Configuration
+  properties:
+  - type: OpenAPI
+    url: openapi/appmixer-connector-configuration-api-openapi.yml
+  - type: Documentation
+    url: https://docs.appmixer.com/getting-started/api
+  - type: Documentation
+    url: https://docs.appmixer.com/api/authentication
+  - type: JSONSchema
+    url: json-schema/flow.json
+  - type: JSONSchema
+    url: json-schema/user.json
+  - type: JSONSchema
+    url: json-schema/account.json
+  - type: JSONSchema
+    url: json-schema/file.json
+  - type: JSONSchema
+    url: json-schema/data-store.json
+  - type: JSONSchema
+    url: json-schema/people-task.json
+  - type: JSONLD
+    url: json-ld/appmixer-context.jsonld
+  - type: JSONStructure
+    url: json-structure/flow-structure.json
+  - type: JSONStructure
+    url: json-structure/user-structure.json
+  - type: JSONStructure
+    url: json-structure/account-structure.json
+  - type: JSONStructure
+    url: json-structure/file-structure.json
+  - type: JSONStructure
+    url: json-structure/data-store-structure.json
+  - type: JSONStructure
+    url: json-structure/people-task-structure.json
+  - type: Examples
+    url: examples/flow-example.json
+  - type: Examples
+    url: examples/user-example.json
+  - type: Examples
+    url: examples/account-example.json
+  - type: Examples
+    url: examples/file-example.json
+  - type: Examples
+    url: examples/data-store-example.json
+  - type: Examples
+    url: examples/people-task-example.json
+  - type: SpectralRules
+    url: rules/appmixer-spectral-rules.yml
+  - type: Vocabulary
+    url: vocabulary/appmixer-vocabulary.yaml
+- aid: appmixer:appmixer-integration-categories-api
+  name: Appmixer Integration Categories API
+  description: >-
+    Categories organize integration templates in the Automation Hub marketplace. Categories are global
+    resources; all authenticated users can read them, only admins can create, update or delete them. Categories
+    are assigned to integration templates and drafts through the Flows API (`categories` array).
+  humanURL: https://docs.appmixer.com/getting-started/api
+  tags:
+  - Integration Categories
+  properties:
+  - type: OpenAPI
+    url: openapi/appmixer-integration-categories-api-openapi.yml
+  - type: Documentation
+    url: https://docs.appmixer.com/getting-started/api
+  - type: Documentation
+    url: https://docs.appmixer.com/api/authentication
+  - type: JSONSchema
+    url: json-schema/flow.json
+  - type: JSONSchema
+    url: json-schema/user.json
+  - type: JSONSchema
+    url: json-schema/account.json
+  - type: JSONSchema
+    url: json-schema/file.json
+  - type: JSONSchema
+    url: json-schema/data-store.json
+  - type: JSONSchema
+    url: json-schema/people-task.json
+  - type: JSONLD
+    url: json-ld/appmixer-context.jsonld
+  - type: JSONStructure
+    url: json-structure/flow-structure.json
+  - type: JSONStructure
+    url: json-structure/user-structure.json
+  - type: JSONStructure
+    url: json-structure/account-structure.json
+  - type: JSONStructure
+    url: json-structure/file-structure.json
+  - type: JSONStructure
+    url: json-structure/data-store-structure.json
+  - type: JSONStructure
+    url: json-structure/people-task-structure.json
+  - type: Examples
+    url: examples/flow-example.json
+  - type: Examples
+    url: examples/user-example.json
+  - type: Examples
+    url: examples/account-example.json
+  - type: Examples
+    url: examples/file-example.json
+  - type: Examples
+    url: examples/data-store-example.json
+  - type: Examples
+    url: examples/people-task-example.json
+  - type: SpectralRules
+    url: rules/appmixer-spectral-rules.yml
+  - type: Vocabulary
+    url: vocabulary/appmixer-vocabulary.yaml
+- aid: appmixer:appmixer-modifiers-api
+  name: Appmixer Modifiers API
+  description: >-
+    Modifiers are data transformation functions that can be used to transform data variables inside your
+    flows. You can customize the list of modifiers or even define your own functions.
+  humanURL: https://docs.appmixer.com/getting-started/api
+  tags:
+  - Modifiers
+  properties:
+  - type: OpenAPI
+    url: openapi/appmixer-modifiers-api-openapi.yml
+  - type: Documentation
+    url: https://docs.appmixer.com/getting-started/api
+  - type: Documentation
+    url: https://docs.appmixer.com/api/authentication
+  - type: JSONSchema
+    url: json-schema/flow.json
+  - type: JSONSchema
+    url: json-schema/user.json
+  - type: JSONSchema
+    url: json-schema/account.json
+  - type: JSONSchema
+    url: json-schema/file.json
+  - type: JSONSchema
+    url: json-schema/data-store.json
+  - type: JSONSchema
+    url: json-schema/people-task.json
+  - type: JSONLD
+    url: json-ld/appmixer-context.jsonld
+  - type: JSONStructure
+    url: json-structure/flow-structure.json
+  - type: JSONStructure
+    url: json-structure/user-structure.json
+  - type: JSONStructure
+    url: json-structure/account-structure.json
+  - type: JSONStructure
+    url: json-structure/file-structure.json
+  - type: JSONStructure
+    url: json-structure/data-store-structure.json
+  - type: JSONStructure
+    url: json-structure/people-task-structure.json
+  - type: Examples
+    url: examples/flow-example.json
+  - type: Examples
+    url: examples/user-example.json
+  - type: Examples
+    url: examples/account-example.json
+  - type: Examples
+    url: examples/file-example.json
+  - type: Examples
+    url: examples/data-store-example.json
+  - type: Examples
+    url: examples/people-task-example.json
+  - type: SpectralRules
+    url: rules/appmixer-spectral-rules.yml
+  - type: Vocabulary
+    url: vocabulary/appmixer-vocabulary.yaml
+- aid: appmixer:appmixer-public-files-api
+  name: Appmixer Public Files API
+  description: >-
+    Public files are files that are available at the root location of your Appmixer tenant API
+
+    endpoint. For example, uploading `verify.html` makes the file available at `API_URL/verify.html`.
+
+    All Public Files endpoints require the `admin` scope.
+  humanURL: https://docs.appmixer.com/getting-started/api
+  tags:
+  - Public Files
+  properties:
+  - type: OpenAPI
+    url: openapi/appmixer-public-files-api-openapi.yml
+  - type: Documentation
+    url: https://docs.appmixer.com/getting-started/api
+  - type: Documentation
+    url: https://docs.appmixer.com/api/authentication
+  - type: JSONSchema
+    url: json-schema/flow.json
+  - type: JSONSchema
+    url: json-schema/user.json
+  - type: JSONSchema
+    url: json-schema/account.json
+  - type: JSONSchema
+    url: json-schema/file.json
+  - type: JSONSchema
+    url: json-schema/data-store.json
+  - type: JSONSchema
+    url: json-schema/people-task.json
+  - type: JSONLD
+    url: json-ld/appmixer-context.jsonld
+  - type: JSONStructure
+    url: json-structure/flow-structure.json
+  - type: JSONStructure
+    url: json-structure/user-structure.json
+  - type: JSONStructure
+    url: json-structure/account-structure.json
+  - type: JSONStructure
+    url: json-structure/file-structure.json
+  - type: JSONStructure
+    url: json-structure/data-store-structure.json
+  - type: JSONStructure
+    url: json-structure/people-task-structure.json
+  - type: Examples
+    url: examples/flow-example.json
+  - type: Examples
+    url: examples/user-example.json
+  - type: Examples
+    url: examples/account-example.json
+  - type: Examples
+    url: examples/file-example.json
+  - type: Examples
+    url: examples/data-store-example.json
+  - type: Examples
+    url: examples/people-task-example.json
+  - type: SpectralRules
+    url: rules/appmixer-spectral-rules.yml
+  - type: Vocabulary
+    url: vocabulary/appmixer-vocabulary.yaml
+- aid: appmixer:appmixer-unprocessed-messages-api
+  name: Appmixer Unprocessed Messages API
+  description: >-
+    When a message processing fails, even after a certain number of retries, Appmixer stops
+
+    processing the message and archives it. You can fetch, delete, and even retry those messages
+
+    programmatically.
+  humanURL: https://docs.appmixer.com/getting-started/api
+  tags:
+  - Unprocessed Messages
+  properties:
+  - type: OpenAPI
+    url: openapi/appmixer-unprocessed-messages-api-openapi.yml
+  - type: Documentation
+    url: https://docs.appmixer.com/getting-started/api
+  - type: Documentation
+    url: https://docs.appmixer.com/api/authentication
+  - type: JSONSchema
+    url: json-schema/flow.json
+  - type: JSONSchema
+    url: json-schema/user.json
+  - type: JSONSchema
+    url: json-schema/account.json
+  - type: JSONSchema
+    url: json-schema/file.json
+  - type: JSONSchema
+    url: json-schema/data-store.json
+  - type: JSONSchema
+    url: json-schema/people-task.json
+  - type: JSONLD
+    url: json-ld/appmixer-context.jsonld
+  - type: JSONStructure
+    url: json-structure/flow-structure.json
+  - type: JSONStructure
+    url: json-structure/user-structure.json
+  - type: JSONStructure
+    url: json-structure/account-structure.json
+  - type: JSONStructure
+    url: json-structure/file-structure.json
+  - type: JSONStructure
+    url: json-structure/data-store-structure.json
+  - type: JSONStructure
+    url: json-structure/people-task-structure.json
+  - type: Examples
+    url: examples/flow-example.json
+  - type: Examples
+    url: examples/user-example.json
+  - type: Examples
+    url: examples/account-example.json
+  - type: Examples
+    url: examples/file-example.json
+  - type: Examples
+    url: examples/data-store-example.json
+  - type: Examples
+    url: examples/people-task-example.json
+  - type: SpectralRules
+    url: rules/appmixer-spectral-rules.yml
+  - type: Vocabulary
+    url: vocabulary/appmixer-vocabulary.yaml
+- aid: appmixer:appmixer-user-api
+  name: Appmixer User API
+  description: Sign in, create and manage users, and change or reset passwords.
   humanURL: https://docs.appmixer.com/getting-started/api
   tags:
   - User
-  tags_raw:
-  - Users
   properties:
   - type: OpenAPI
-    url: openapi/appmixer-users-api-openapi.yml
+    url: openapi/appmixer-user-api-openapi.yml
+  - type: Documentation
+    url: https://docs.appmixer.com/getting-started/api
+  - type: Documentation
+    url: https://docs.appmixer.com/api/authentication
+  - type: JSONSchema
+    url: json-schema/flow.json
+  - type: JSONSchema
+    url: json-schema/user.json
+  - type: JSONSchema
+    url: json-schema/account.json
+  - type: JSONSchema
+    url: json-schema/file.json
+  - type: JSONSchema
+    url: json-schema/data-store.json
+  - type: JSONSchema
+    url: json-schema/people-task.json
+  - type: JSONLD
+    url: json-ld/appmixer-context.jsonld
+  - type: JSONStructure
+    url: json-structure/flow-structure.json
+  - type: JSONStructure
+    url: json-structure/user-structure.json
+  - type: JSONStructure
+    url: json-structure/account-structure.json
+  - type: JSONStructure
+    url: json-structure/file-structure.json
+  - type: JSONStructure
+    url: json-structure/data-store-structure.json
+  - type: JSONStructure
+    url: json-structure/people-task-structure.json
+  - type: Examples
+    url: examples/flow-example.json
+  - type: Examples
+    url: examples/user-example.json
+  - type: Examples
+    url: examples/account-example.json
+  - type: Examples
+    url: examples/file-example.json
+  - type: Examples
+    url: examples/data-store-example.json
+  - type: Examples
+    url: examples/people-task-example.json
+  - type: SpectralRules
+    url: rules/appmixer-spectral-rules.yml
+  - type: Vocabulary
+    url: vocabulary/appmixer-vocabulary.yaml
+- aid: appmixer:appmixer-user-groups-api
+  name: Appmixer User Groups API
+  description: >-
+    User Groups (also known as Workspaces) let teams collaborate by sharing resources such as flows,
+
+    data stores and files. Group resources are owned by the group rather than by individual users,
+
+    while audit logs keep track of the individual user actions. Admin users are automatically added
+
+    to the default admin group. Users can switch between their personal context and a group context;
+
+    the access token then carries the group information.
+  humanURL: https://docs.appmixer.com/getting-started/api
+  tags:
+  - User Groups
+  properties:
+  - type: OpenAPI
+    url: openapi/appmixer-user-groups-api-openapi.yml
+  - type: Documentation
+    url: https://docs.appmixer.com/getting-started/api
+  - type: Documentation
+    url: https://docs.appmixer.com/api/authentication
+  - type: JSONSchema
+    url: json-schema/flow.json
+  - type: JSONSchema
+    url: json-schema/user.json
+  - type: JSONSchema
+    url: json-schema/account.json
+  - type: JSONSchema
+    url: json-schema/file.json
+  - type: JSONSchema
+    url: json-schema/data-store.json
+  - type: JSONSchema
+    url: json-schema/people-task.json
+  - type: JSONLD
+    url: json-ld/appmixer-context.jsonld
+  - type: JSONStructure
+    url: json-structure/flow-structure.json
+  - type: JSONStructure
+    url: json-structure/user-structure.json
+  - type: JSONStructure
+    url: json-structure/account-structure.json
+  - type: JSONStructure
+    url: json-structure/file-structure.json
+  - type: JSONStructure
+    url: json-structure/data-store-structure.json
+  - type: JSONStructure
+    url: json-structure/people-task-structure.json
+  - type: Examples
+    url: examples/flow-example.json
+  - type: Examples
+    url: examples/user-example.json
+  - type: Examples
+    url: examples/account-example.json
+  - type: Examples
+    url: examples/file-example.json
+  - type: Examples
+    url: examples/data-store-example.json
+  - type: Examples
+    url: examples/people-task-example.json
+  - type: SpectralRules
+    url: rules/appmixer-spectral-rules.yml
+  - type: Vocabulary
+    url: vocabulary/appmixer-vocabulary.yaml
+- aid: appmixer:appmixer-variables-api
+  name: Appmixer Variables API
+  description: >-
+    Variables are placeholders that can be used in component config or inputs. They are replaced
+
+    either at runtime by data coming from components connected back in the chain (dynamic
+
+    variables) or by real values (static variables).
+  humanURL: https://docs.appmixer.com/getting-started/api
+  tags:
+  - Variables
+  properties:
+  - type: OpenAPI
+    url: openapi/appmixer-variables-api-openapi.yml
   - type: Documentation
     url: https://docs.appmixer.com/getting-started/api
   - type: Documentation
@@ -623,7 +1075,7 @@ apis:
     url: vocabulary/appmixer-vocabulary.yaml
 - aid: appmixer:appmixer-datastores-api
   name: Appmixer Datastores API
-  description: Data store management
+  description: Access Data Stores (built-in key-value store).
   humanURL: https://docs.appmixer.com/getting-started/api
   tags:
   - Datastores

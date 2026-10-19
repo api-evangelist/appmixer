@@ -1,0 +1,552 @@
+openapi: 3.2.0
+info:
+  title: Appmixer REST Automation Hub API
+  version: 6.5.5
+  summary: REST API of the Appmixer workflow automation and embedded iPaaS platform.
+  description: 'Appmixer offers a REST API that mirrors the functionality available in its UI. Use it for
+
+    advanced customizations, additional automations and scripting.
+
+
+    **Base URL.** The base URL depends on your Appmixer tenant, for example `https://api-acme.appmixer.ai`
+
+    (newer hosted tenants), `https://api.acme.appmixer.cloud` (older hosted tenants), or the API URL of
+
+    your Self-Managed installation.
+
+
+    **Authentication.** Most endpoints require a user access token sent as `Authorization: Bearer `.
+
+    Get a token by signing in with `POST /user/auth`. Some endpoints also require the user to have
+
+    the `admin` scope; this is noted in their descriptions.
+
+
+    **Errors.** Errors are returned as JSON objects with `statusCode`, `error` and `message` properties.'
+  contact:
+    name: Appmixer
+    url: https://www.appmixer.com
+servers:
+- url: '{tenantApiUrl}'
+  description: Your Appmixer tenant API
+  variables:
+    tenantApiUrl:
+      default: https://api-acme.appmixer.ai
+      description: API URL of your Appmixer tenant, e.g. https://api-acme.appmixer.ai or https://api.acme.appmixer.cloud.
+security:
+- bearerAuth: []
+tags:
+- name: Automation Hub
+  description: 'Automation Hub configuration and shareable link management. Settings configure the hub''s
+
+    appearance, behavior and access controls (admin only). Shareable links enable public access
+
+    to the Automation Hub marketplace via email-based authentication with one-time activation links.'
+paths:
+  /automation-hub/settings:
+    get:
+      tags:
+      - Automation Hub
+      summary: Get Settings
+      operationId: getAutomationHubSettings
+      description: 'Retrieve the current Automation Hub settings. All authenticated users can read settings, but
+
+        sensitive fields (`settings.sharing.allowedEmails`) are only returned to admin users.
+
+
+        If no settings exist, default empty settings are returned (`settings: {}`, `createdAt` and
+
+        `updatedAt` set to `null`).'
+      responses:
+        '200':
+          description: The Automation Hub settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutomationHubSettings'
+              examples:
+                settingsFound:
+                  summary: Settings found
+                  value:
+                    id: default
+                    settings:
+                      sharing:
+                        allowedEmails:
+                        - user@example.com
+                        - team@company.com
+                      theme:
+                        primaryColor: '#007bff'
+                        logoUrl: https://example.com/logo.png
+                      customField: any-value
+                    createdAt: 2026-01-15 10:30:00+00:00
+                    updatedAt: 2026-04-20 14:45:00+00:00
+                noSettings:
+                  summary: No settings
+                  value:
+                    id: default
+                    settings: {}
+                    createdAt: null
+                    updatedAt: null
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags:
+      - Automation Hub
+      summary: Update Settings
+      operationId: updateAutomationHubSettings
+      description: 'Create or update Automation Hub settings. This endpoint performs an upsert operation: the
+
+        whole `settings` object is replaced. Requires the `admin` scope.
+
+
+        The `settings` object supports any properties, allowing you to add custom fields without
+
+        backend changes. Only `settings.sharing.allowedEmails` is validated (must be an array of
+
+        valid email addresses).
+
+
+        The operation is recorded in the audit logs.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AutomationHubSettingsUpdate'
+            example:
+              settings:
+                sharing:
+                  allowedEmails:
+                  - user@example.com
+                  - team@company.com
+                theme:
+                  primaryColor: '#007bff'
+      responses:
+        '200':
+          description: The updated settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutomationHubSettings'
+              example:
+                id: default
+                settings:
+                  sharing:
+                    allowedEmails:
+                    - user@example.com
+                    - team@company.com
+                  theme:
+                    primaryColor: '#007bff'
+                createdAt: 2026-01-15 10:30:00+00:00
+                updatedAt: 2026-04-22 09:15:00+00:00
+        '400':
+          description: The request is invalid, for example it failed payload validation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                statusCode: 400
+                error: Bad Request
+                message: '"settings.sharing.allowedEmails[0]" must be a valid email'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    delete:
+      tags:
+      - Automation Hub
+      summary: Delete Settings
+      operationId: deleteAutomationHubSettings
+      description: 'Delete all Automation Hub settings and reset to defaults. Requires the `admin` scope.
+
+        The operation is recorded in the audit logs.'
+      responses:
+        '204':
+          description: Settings successfully deleted.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /automation-hub/share/request-login:
+    post:
+      tags:
+      - Automation Hub
+      summary: Request Login
+      operationId: requestAutomationHubLogin
+      security: []
+      description: 'Request an activation link for email-based login to the Automation Hub. No authentication
+
+        required. The email must be on the allow list configured in the hub settings
+
+        (`settings.sharing.allowedEmails`, case-insensitive).
+
+
+        If automatic email sending is enabled (`AUTOMATION_HUB_AUTO_SEND_EMAIL`, default `true`),
+
+        the activation link is sent by email (via SMTP if `SMTP_HOST` is configured, otherwise via
+
+        the Cloud Email API). Otherwise, the code and link are returned directly in the response.
+
+
+        Rate limited by email (`AUTOMATION_HUB_RATE_LIMIT_REQUEST_LOGIN_EMAIL`, default 5 requests
+
+        per minute) and IP address (`AUTOMATION_HUB_RATE_LIMIT_REQUEST_LOGIN_IP`, default 20
+
+        requests per minute).'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AutomationHubEmailRequest'
+            example:
+              email: user@example.com
+      responses:
+        '200':
+          description: 'The activation link was sent by email (auto-send enabled), or the code and link are returned
+
+            directly (manual mode, `AUTOMATION_HUB_AUTO_SEND_EMAIL` disabled).
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutomationHubActivationLinkResult'
+              examples:
+                autoSend:
+                  summary: Auto-send enabled
+                  value:
+                    success: true
+                    message: Activation link sent to your email
+                manual:
+                  summary: Manual mode
+                  value:
+                    success: true
+                    code: a1b2c3d4e5f6
+                    link: https://your-hub.com/automation-hub/share/activate?code=a1b2c3d4e5f6
+                    expiresIn: 3600
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          description: The email is not on the allow list configured in the hub settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutomationHubShareError'
+              example:
+                error: Email not authorized. Please contact your administrator.
+        '429':
+          description: Rate limit exceeded. Separate limits apply per email and per IP address.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                statusCode: 429
+                error: Too Many Requests
+                message: Too many requests for this email address. Please try again in a few minutes.
+        '500':
+          description: Email sending failed (SMTP or Cloud Email API error).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutomationHubShareError'
+              example:
+                error: Failed to send activation email. Please try again.
+  /automation-hub/share/activate:
+    get:
+      tags:
+      - Automation Hub
+      summary: Activate Link
+      operationId: activateAutomationHubLink
+      security: []
+      description: 'Activate the link, create or find the virtual user, and return a JWT token. No
+
+        authentication required. Each activation link can only be used once and expires after
+
+        `AUTOMATION_HUB_ACTIVATION_LINK_TTL` seconds (default 3600).
+
+
+        The returned JWT token includes an `otp: true` flag and can be used for authentication.
+
+        Virtual users are created automatically on first activation, with username and email set
+
+        to the activation email address, and can access only the Automation Hub marketplace.
+
+
+        Rate limited by IP address (`AUTOMATION_HUB_RATE_LIMIT_ACTIVATE_IP`, default 10 requests per
+
+        minute).'
+      parameters:
+      - name: code
+        in: query
+        required: true
+        description: Activation code from the email link.
+        schema:
+          type: string
+        example: a1b2c3d4e5f6
+      responses:
+        '200':
+          description: The link was activated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutomationHubActivationResult'
+              example:
+                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                user:
+                  id: 507f1f77bcf86cd799439011
+                  email: user@example.com
+                  username: user@example.com
+        '400':
+          description: The activation link has already been used, or the `code` parameter is missing.
+          content:
+            application/json:
+              schema:
+                anyOf:
+                - $ref: '#/components/schemas/AutomationHubShareError'
+                - $ref: '#/components/schemas/Error'
+              example:
+                error: Activation link has already been used
+        '404':
+          description: The activation code is invalid or the link has expired.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutomationHubShareError'
+              example:
+                error: Invalid or expired activation link
+        '429':
+          description: Rate limit exceeded for the IP address.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                statusCode: 429
+                error: Too Many Requests
+                message: Too many activation attempts. Please try again in a few minutes.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutomationHubShareError'
+              example:
+                error: Internal server error
+  /automation-hub/share/refresh:
+    post:
+      tags:
+      - Automation Hub
+      summary: Refresh Link
+      operationId: refreshAutomationHubLink
+      security: []
+      description: 'Request a new activation link for users with expired tokens. Works exactly like
+
+        `POST /automation-hub/share/request-login` (same allow list validation and responses) but is
+
+        intended for users who already have an expired session. No authentication required.
+
+
+        Rate limited by email (`AUTOMATION_HUB_RATE_LIMIT_REFRESH_EMAIL`, default 5 requests per
+
+        minute) and IP address (`AUTOMATION_HUB_RATE_LIMIT_REFRESH_IP`, default 20 requests per
+
+        minute).'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AutomationHubEmailRequest'
+            example:
+              email: user@example.com
+      responses:
+        '200':
+          description: 'The activation link was sent by email (auto-send enabled), or the code and link are returned
+
+            directly (manual mode, `AUTOMATION_HUB_AUTO_SEND_EMAIL` disabled).
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutomationHubActivationLinkResult'
+              examples:
+                autoSend:
+                  summary: Auto-send enabled
+                  value:
+                    success: true
+                    message: Activation link sent to your email
+                manual:
+                  summary: Manual mode
+                  value:
+                    success: true
+                    code: a1b2c3d4e5f6
+                    link: https://your-hub.com/automation-hub/share/activate?code=a1b2c3d4e5f6
+                    expiresIn: 3600
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          description: The email is not on the allow list configured in the hub settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutomationHubShareError'
+              example:
+                error: Email not authorized. Please contact your administrator.
+        '429':
+          description: Rate limit exceeded. Separate limits apply per email and per IP address.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                statusCode: 429
+                error: Too Many Requests
+                message: Too many requests for this email address. Please try again in a few minutes.
+        '500':
+          description: Email sending failed (SMTP or Cloud Email API error).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AutomationHubShareError'
+              example:
+                error: Failed to send activation email. Please try again.
+components:
+  schemas:
+    AutomationHubSettings:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Hub ID (always `default`).
+          example: default
+        settings:
+          $ref: '#/components/schemas/AutomationHubSettingsObject'
+        createdAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        updatedAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+    AutomationHubShareError:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+      - error
+    AutomationHubEmailRequest:
+      type: object
+      required:
+      - email
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 255
+          description: Email address to send the activation link to.
+    AutomationHubActivationLinkResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+          description: Present when the link was sent by email.
+        code:
+          type: string
+          description: Activation code (manual mode only).
+        link:
+          type: string
+          format: uri
+          description: Activation link (manual mode only).
+        expiresIn:
+          type: integer
+          description: Link TTL in seconds (manual mode only).
+    AutomationHubSettingsUpdate:
+      type: object
+      required:
+      - settings
+      properties:
+        settings:
+          $ref: '#/components/schemas/AutomationHubSettingsObject'
+    AutomationHubSettingsObject:
+      type: object
+      description: Settings object with a flexible schema; any properties are allowed.
+      additionalProperties: true
+      properties:
+        sharing:
+          type: object
+          properties:
+            allowedEmails:
+              type: array
+              description: Email addresses allowed to access the Hub via share link. Only visible to admin users.
+              items:
+                type: string
+                format: email
+    Error:
+      type: object
+      description: Error response.
+      properties:
+        statusCode:
+          type: integer
+          example: 404
+        error:
+          type: string
+          example: Not Found
+        message:
+          type: string
+          example: Flow not found.
+      required:
+      - statusCode
+      - error
+    AutomationHubActivationResult:
+      type: object
+      properties:
+        token:
+          type: string
+          description: 'JWT access token with the `otp: true` flag.'
+        user:
+          type: object
+          properties:
+            id:
+              type: string
+            email:
+              type: string
+            username:
+              type: string
+  responses:
+    Unauthorized:
+      description: The access token is missing, invalid or expired.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: The user does not have the permission (or scope) required for this operation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: The request is invalid, for example it failed payload or query validation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: User access token obtained from `POST /user/auth`.
+externalDocs:
+  description: Appmixer documentation
+  url: https://docs.appmixer.com

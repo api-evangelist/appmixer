@@ -1,0 +1,388 @@
+openapi: 3.2.0
+info:
+  title: Appmixer REST ACL API
+  version: 6.5.5
+  summary: REST API of the Appmixer workflow automation and embedded iPaaS platform.
+  description: 'Appmixer offers a REST API that mirrors the functionality available in its UI. Use it for
+
+    advanced customizations, additional automations and scripting.
+
+
+    **Base URL.** The base URL depends on your Appmixer tenant, for example `https://api-acme.appmixer.ai`
+
+    (newer hosted tenants), `https://api.acme.appmixer.cloud` (older hosted tenants), or the API URL of
+
+    your Self-Managed installation.
+
+
+    **Authentication.** Most endpoints require a user access token sent as `Authorization: Bearer `.
+
+    Get a token by signing in with `POST /user/auth`. Some endpoints also require the user to have
+
+    the `admin` scope; this is noted in their descriptions.
+
+
+    **Errors.** Errors are returned as JSON objects with `statusCode`, `error` and `message` properties.'
+  contact:
+    name: Appmixer
+    url: https://www.appmixer.com
+servers:
+- url: '{tenantApiUrl}'
+  description: Your Appmixer tenant API
+  variables:
+    tenantApiUrl:
+      default: https://api-acme.appmixer.ai
+      description: API URL of your Appmixer tenant, e.g. https://api-acme.appmixer.ai or https://api.acme.appmixer.cloud.
+security:
+- bearerAuth: []
+tags:
+- name: ACL
+  description: 'ACLs control access to connectors (components) by users or groups of users, and access to any other
+
+    Appmixer functionality by limiting the API routes users can use (API/UI).'
+paths:
+  /acl-types:
+    get:
+      tags:
+      - ACL
+      summary: Get ACL types
+      operationId: getAclTypes
+      description: 'There are two types of access control lists: for components and for API routes. Admin token
+
+        required (`admin` scope).'
+      responses:
+        '200':
+          description: Available ACL types. Other types might be added in the future.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AclType'
+              example:
+              - routes
+              - components
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /acl/{type}:
+    get:
+      tags:
+      - ACL
+      summary: Get ACL rules for components|routes
+      operationId: getAclRules
+      description: Get the list of all ACL rules for the given type. Admin token required (`admin` scope).
+      responses:
+        '200':
+          description: ACL rules. The example shows the default rules for components (all users can access all non-private components).
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AclRule'
+              example:
+              - role: admin
+                resource: '*'
+                action:
+                - '*'
+                attributes:
+                - non-private
+              - role: user
+                resource: '*'
+                action:
+                - '*'
+                attributes:
+                - non-private
+              - role: tester
+                resource: '*'
+                action:
+                - '*'
+                attributes:
+                - non-private
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+      parameters:
+      - $ref: '#/components/parameters/AclTypeParam'
+    post:
+      tags:
+      - ACL
+      summary: Update ACL rules
+      operationId: updateAclRules
+      description: 'Replace the ACL rule set for the given type. Admin token required (`admin` scope). The body is an
+
+        array of ACL rules.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/AclRule'
+            example:
+            - role: admin
+              resource: '*'
+              action:
+              - '*'
+              attributes:
+              - private
+            - role: user
+              resource: appmixer.utils.*
+              action:
+              - '*'
+              attributes:
+              - non-private
+      responses:
+        '200':
+          description: The saved rule set (echo of the request body).
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AclRule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+      parameters:
+      - $ref: '#/components/parameters/AclTypeParam'
+  /acl/{type}/resources:
+    get:
+      tags:
+      - ACL
+      summary: Get available resource values
+      operationId: getAclResources
+      description: 'Get the available values for the `resource` property of an ACL rule. Used for building the ACL UI in
+
+        the Backoffice. Admin token required (`admin` scope). For `routes`, returns a list of options; for
+
+        `components`, returns a regular expression that a resource has to match.'
+      responses:
+        '200':
+          description: Available resource values.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - type: array
+                  description: Options for the `routes` type.
+                  items:
+                    type: string
+                - type: object
+                  description: Pattern for the `components` type.
+                  required:
+                  - pattern
+                  properties:
+                    pattern:
+                      type: string
+              example:
+              - '*'
+              - flows
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+      parameters:
+      - $ref: '#/components/parameters/AclTypeParam'
+  /acl/{type}/actions:
+    get:
+      tags:
+      - ACL
+      summary: Get available action values
+      operationId: getAclActions
+      description: 'Get the available values for the `action` property of an ACL rule. Used for building the ACL UI in
+
+        the Backoffice. Admin token required (`admin` scope). For `components` the values are `*`, `use`
+
+        and `!use`.'
+      responses:
+        '200':
+          description: Available action values. The example shows the options for the `routes` type.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example:
+              - '*'
+              - read
+              - '!read'
+              - create
+              - '!create'
+              - update
+              - '!update'
+              - delete
+              - '!delete'
+              - clone
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+      parameters:
+      - $ref: '#/components/parameters/AclTypeParam'
+  /acl/{type}/resource/{resource}/attributes:
+    get:
+      tags:
+      - ACL
+      summary: Get available options for attributes property
+      operationId: getAclResourceAttributes
+      description: 'Get the available values for the `attributes` property of an ACL rule. Used for building the ACL UI
+
+        in the Backoffice. Admin token required (`admin` scope).'
+      responses:
+        '200':
+          description: UI definition of the available attribute options. The example shows the options for the `components` type.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - type
+                - options
+                properties:
+                  type:
+                    type: string
+                    enum:
+                    - select
+                    - multiselect
+                  options:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                      - value
+                      - label
+                      properties:
+                        value:
+                          type: string
+                        label:
+                          type: string
+                        tooltip:
+                          type: string
+              example:
+                type: select
+                options:
+                - value: non-private
+                  label: non-private
+                  tooltip: Non private components only
+                - value: private
+                  label: private
+                  tooltip: Include private components
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+      parameters:
+      - $ref: '#/components/parameters/AclTypeParam'
+      - name: resource
+        in: path
+        required: true
+        description: Resource name, for example `flows` or `appmixer.utils.controls.*`.
+        schema:
+          type: string
+components:
+  schemas:
+    AclRule:
+      type: object
+      required:
+      - role
+      - resource
+      - action
+      properties:
+        role:
+          type: string
+          minLength: 1
+          description: User scope (role) the rule applies to, for example `admin`, `user` or `tester`.
+        resource:
+          type: string
+          minLength: 1
+          description: 'Resource the rule applies to. For routes, `*` or a route resource such as `flows`; for components,
+
+            a component type pattern such as `appmixer.utils.*`.
+
+            '
+        action:
+          type: array
+          minItems: 1
+          items:
+            type: string
+          description: Allowed (or, with a `!` prefix, denied) actions, for example `*`, `read`, `!delete` or `use`.
+        attributes:
+          type: array
+          minItems: 1
+          items:
+            type: string
+          description: Rule attributes, for example `non-private` or `private` for components.
+    Error:
+      type: object
+      description: Error response.
+      properties:
+        statusCode:
+          type: integer
+          example: 404
+        error:
+          type: string
+          example: Not Found
+        message:
+          type: string
+          example: Flow not found.
+      required:
+      - statusCode
+      - error
+    AclType:
+      type: string
+      enum:
+      - routes
+      - components
+  parameters:
+    AclTypeParam:
+      name: type
+      in: path
+      required: true
+      description: ACL type.
+      schema:
+        $ref: '#/components/schemas/AclType'
+  responses:
+    Unauthorized:
+      description: The access token is missing, invalid or expired.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: The user does not have the permission (or scope) required for this operation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: The request is invalid, for example it failed payload or query validation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: User access token obtained from `POST /user/auth`.
+externalDocs:
+  description: Appmixer documentation
+  url: https://docs.appmixer.com

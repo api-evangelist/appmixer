@@ -1,0 +1,12 @@
+{
+ "url": "https://4113719406-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FzU8KYStPfR8N1iZXsgad%2Fuploads%2Fgit-blob-6433572bd8011e652aa91642ad387d4ab08bc48b%2Fappmixer-openapi.yaml?alt=media",
+ "final": "https://4113719406-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FzU8KYStPfR8N1iZXsgad%2Fuploads%2Fgit-blob-6433572bd8011e652aa91642ad387d4ab08bc48b%2Fappmixer-openapi.yaml?alt=media",
+ "status": 200,
+ "content_type": "application/octet-stream",
+ "bytes": 332203,
+ "sha256": "846f26c963d3e528f81d90ea79d2a7b2bd5f380d7d58bfb7c7f848afc3c188cf",
+ "fetched_at": "2026-10-19",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "byte-identical",
+ "note": "re-archived: the provider's current document replaced a stale archive (roadmap#793); the old files are in openapi/_superseded/2026-10-19-stale"
+}

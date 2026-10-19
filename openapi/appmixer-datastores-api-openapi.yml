@@ -1,99 +1,644 @@
 openapi: 3.2.0
 info:
-  title: Appmixer Data Stores API
-  description: The Appmixer REST API provides programmatic access to manage workflows, users, accounts, apps/connectors, files, data stores, insights, and people tasks within the Appmixer embedded iPaaS platform. The API allows you to access all the features that the Appmixer UI works with.
-  version: 6.1.0
+  title: Appmixer REST Data Stores API
+  version: 6.5.5
+  summary: REST API of the Appmixer workflow automation and embedded iPaaS platform.
+  description: 'Appmixer offers a REST API that mirrors the functionality available in its UI. Use it for
+
+    advanced customizations, additional automations and scripting.
+
+
+    **Base URL.** The base URL depends on your Appmixer tenant, for example `https://api-acme.appmixer.ai`
+
+    (newer hosted tenants), `https://api.acme.appmixer.cloud` (older hosted tenants), or the API URL of
+
+    your Self-Managed installation.
+
+
+    **Authentication.** Most endpoints require a user access token sent as `Authorization: Bearer `.
+
+    Get a token by signing in with `POST /user/auth`. Some endpoints also require the user to have
+
+    the `admin` scope; this is noted in their descriptions.
+
+
+    **Errors.** Errors are returned as JSON objects with `statusCode`, `error` and `message` properties.'
   contact:
     name: Appmixer
-    url: https://www.appmixer.com/
-  license:
-    name: Proprietary
-    url: https://www.appmixer.com/terms-and-conditions
+    url: https://www.appmixer.com
 servers:
-- url: https://api.{tenant}.appmixer.cloud
-  description: Appmixer Cloud Tenant API
+- url: '{tenantApiUrl}'
+  description: Your Appmixer tenant API
   variables:
-    tenant:
-      default: YOUR_TENANT
-      description: Your Appmixer tenant identifier
+    tenantApiUrl:
+      default: https://api-acme.appmixer.ai
+      description: API URL of your Appmixer tenant, e.g. https://api-acme.appmixer.ai or https://api.acme.appmixer.cloud.
 security:
 - bearerAuth: []
 tags:
 - name: Datastores
-  description: Data store management
+  description: Access Data Stores (built-in key-value store).
 paths:
-  /data-stores:
+  /stores:
     get:
-      operationId: listDataStores
-      summary: Appmixer List data stores
-      description: Get all data stores belonging to the authenticated user.
+      tags:
+      - Datastores
+      summary: Get All Stores
+      operationId: getDataStores
+      description: 'Get all key-value stores of the current user. A default store is created for the user if it does
+
+        not exist yet. Stores that are pending deletion are not returned.'
       responses:
         '200':
-          description: List of data stores returned successfully
+          description: List of stores.
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/DataStore'
+              example:
+              - name: My Store 1
+                storeId: 5c6fc9932ff3ff000747ead4
+              - name: My Store 2
+                storeId: 2a3fc9512bb3fca23747lai2
         '401':
-          description: Unauthorized
+          $ref: '#/components/responses/Unauthorized'
+    post:
       tags:
       - Datastores
-  /data-stores/{storeId}:
-    get:
-      operationId: getDataStore
-      summary: Appmixer Get a data store
-      description: Get details of a specific data store.
-      parameters:
-      - name: storeId
-        in: path
+      summary: Create a new Store
+      operationId: createDataStore
+      description: Create a new key-value store. Returns the newly created Store ID.
+      requestBody:
         required: true
-        schema:
-          type: string
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DataStoreName'
+            example:
+              name: My Store
       responses:
         '200':
-          description: Data store returned successfully
+          description: The store was created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  storeId:
+                    type: string
+                    description: ID of the new store.
+                required:
+                - storeId
+              example:
+                storeId: 5c7f9bfe51dbaf0007f08db0
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '503':
+          description: Data store writes are temporarily disabled because the system is at capacity (circuit breaker).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /stores/{storeId}:
+    get:
+      tags:
+      - Datastores
+      summary: Get One Store metadata
+      operationId: getDataStore
+      description: 'Get the name of a store. If the store does not exist, does not belong to the current user, or is
+
+        pending deletion, the response is empty.'
+      parameters:
+      - $ref: '#/components/parameters/DataStoreIdParam'
+      responses:
+        '200':
+          description: Store metadata.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DataStore'
+              example:
+                name: My Store 1
+                storeId: 5c6fc9932ff3ff000747ead4
+        '204':
+          description: The store was not found (the handler returns `null`).
         '401':
-          description: Unauthorized
-        '404':
-          description: Data store not found
+          $ref: '#/components/responses/Unauthorized'
+    put:
       tags:
       - Datastores
-    delete:
-      operationId: deleteDataStore
-      summary: Appmixer Delete a data store
-      description: Delete a specific data store.
+      summary: Rename a Store
+      operationId: renameDataStore
+      description: Rename an existing store. Returns the old name of the store.
       parameters:
-      - name: storeId
-        in: path
+      - $ref: '#/components/parameters/DataStoreIdParam'
+      requestBody:
         required: true
-        schema:
-          type: string
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DataStoreName'
+            example:
+              name: My New Name
       responses:
         '200':
-          description: Data store deleted successfully
+          description: The store was renamed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  oldName:
+                    type: string
+                  storeId:
+                    type: string
+              example:
+                oldName: My Old Store Name
+                storeId: 5c7f9bfe51dbaf0007f08db0
         '401':
-          description: Unauthorized
-        '404':
-          description: Data store not found
+          $ref: '#/components/responses/Unauthorized'
+        '503':
+          description: Data store writes are temporarily disabled because the system is at capacity (circuit breaker).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
       tags:
       - Datastores
+      summary: Delete a Store
+      operationId: deleteDataStore
+      description: 'Delete a store and all the records in the store. The store is marked for deletion immediately and
+
+        its records are removed by a background job.'
+      parameters:
+      - $ref: '#/components/parameters/DataStoreIdParam'
+      responses:
+        '200':
+          description: The store was marked for deletion.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataStore'
+              example:
+                name: My Store
+                storeId: 5c7f9bfe51dbaf0007f08db0
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /store:
+    get:
+      tags:
+      - Datastores
+      summary: Get Store Records
+      operationId: getDataStoreItems
+      description: 'Get records. Supports search and pagination.
+
+
+        `pattern` is a regular expression matched against both the `key` and the `value` of every record;
+
+        a record is included if either matches. The pattern is not anchored. The key is matched
+
+        case-sensitively; the value is matched case-insensitively and `.` also matches newlines. Remember to
+
+        URL-encode the pattern.
+
+
+        Set `escapePattern=true` to search for the pattern literally instead of as a regular expression
+
+        (recommended when the pattern comes from user input). Escaping is applied only when the value is
+
+        exactly `true`.
+
+
+        When paginating through search results, pass the same `pattern` and `escapePattern` to both
+
+        `/store` and `/store/count` so that the total count matches the records you list.'
+      parameters:
+      - name: storeId
+        in: query
+        required: false
+        description: Store ID. If omitted, records of all the stores of the current user are returned.
+        schema:
+          type: string
+      - name: sort
+        in: query
+        required: false
+        description: 'Store record property to sort by, followed by `:` and the sort order `-1` (descending) or `1`
+
+          (ascending), e.g. `updatedAt:-1`.
+
+          '
+        schema:
+          type: string
+        example: updatedAt:-1
+      - name: offset
+        in: query
+        required: false
+        description: Index of the first record returned.
+        schema:
+          type: integer
+          default: 0
+      - name: limit
+        in: query
+        required: false
+        description: Maximum number of records returned.
+        schema:
+          type: integer
+          default: 1000
+      - $ref: '#/components/parameters/DataStorePatternParam'
+      - $ref: '#/components/parameters/DataStoreEscapePatternParam'
+      responses:
+        '200':
+          description: List of store records.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DataStoreItem'
+              example:
+              - key: Box 8RE1
+                storeId: 5b214ba6f90a6200113abfd8
+                userId: 583c06511afb7b0016ef120b
+                updatedAt: 2019-03-06 10:02:20.419000+00:00
+                value: '321'
+                createdAt: 2019-03-06 10:02:20.419000+00:00
+              - key: T-shirt T41B
+                storeId: 5b214ba6f90a6200113abfd8
+                userId: 583c06511afb7b0016ef120b
+                updatedAt: 2019-03-06 10:01:59.360000+00:00
+                value: '18'
+                createdAt: 2019-03-06 10:01:59.360000+00:00
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    delete:
+      tags:
+      - Datastores
+      summary: Delete Store Items
+      operationId: deleteDataStoreItems
+      description: Delete one or multiple items from one or more stores.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              description: Items to delete.
+              items:
+                $ref: '#/components/schemas/DataStoreItemRef'
+            example:
+            - key: mykey
+              storeId: 5c7f9bfe51dbaf0007f08db0
+            - key: mykey2
+              storeId: 5c7f9bfe51dbaf0007f08db0
+      responses:
+        '200':
+          description: Number of deleted items.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deletedCount:
+                    type: integer
+              example:
+                deletedCount: 1
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /store/count:
+    get:
+      tags:
+      - Datastores
+      summary: Get Number of Records in a Store
+      operationId: getDataStoreItemsCount
+      description: 'Get the number of records in a store. Accepts the same `pattern` and `escapePattern` search
+
+        parameters as Get Store Records.'
+      parameters:
+      - name: storeId
+        in: query
+        required: false
+        description: Store ID. If omitted, records of all the stores of the current user are counted.
+        schema:
+          type: string
+      - $ref: '#/components/parameters/DataStorePatternParam'
+      - $ref: '#/components/parameters/DataStoreEscapePatternParam'
+      responses:
+        '200':
+          description: Number of matching records.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                required:
+                - count
+              example:
+                count: 681
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /store/download/{storeId}:
+    get:
+      tags:
+      - Datastores
+      summary: Download the content of a Data Store
+      operationId: downloadDataStore
+      description: 'Downloads the entire store either as a CSV or a JSON file. The response is sent with
+
+        `Content-Type: application/octet-stream` and
+
+        `Content-Disposition: attachment; filename="."`. The JSON format is an array of
+
+        `{ key, value }` objects (values that are valid JSON strings are parsed).'
+      parameters:
+      - $ref: '#/components/parameters/DataStoreIdParam'
+      - name: format
+        in: query
+        required: false
+        description: Download format.
+        schema:
+          type: string
+          enum:
+          - json
+          - csv
+          default: json
+      responses:
+        '200':
+          description: The store content as a file attachment.
+          headers:
+            Content-Disposition:
+              description: '`attachment; filename="<storeId>.<format>"`'
+              schema:
+                type: string
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /store/{storeId}/{key}:
+    post:
+      tags:
+      - Datastores
+      summary: Create a new Store Item
+      operationId: createDataStoreItem
+      description: 'Create a new value in the store under a key. The request body is the value itself. Fails if the key
+
+        already exists in the store.'
+      parameters:
+      - $ref: '#/components/parameters/DataStoreIdParam'
+      - name: key
+        in: path
+        required: true
+        description: Key of the record.
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          text/plain:
+            schema:
+              type: string
+              description: Value to store under the key.
+            example: my value
+          application/json:
+            schema:
+              description: Any JSON value to store under the key.
+      responses:
+        '200':
+          description: The created record.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataStoreItem'
+              example:
+                key: mykey
+                value: myvalue
+                createdAt: 2019-03-06 10:17:58.796000+00:00
+                updatedAt: 2019-03-06 10:17:58.796000+00:00
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '503':
+          description: Data store writes are temporarily disabled because the system is at capacity (circuit breaker).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      tags:
+      - Datastores
+      summary: Update key or value of an existing store item
+      operationId: updateDataStoreItem
+      description: 'Rename a key or update the value stored under the key. Updates are passed in the body payload; at
+
+        least one of `key` and `value` is required.
+
+
+        Note: the code returns the previous value as `oldValue` (and `key` is the new key, omitted if the
+
+        key did not change), not the new value as shown in the docs example.'
+      parameters:
+      - $ref: '#/components/parameters/DataStoreIdParam'
+      - name: key
+        in: path
+        required: true
+        description: Key of the record.
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              minProperties: 1
+              additionalProperties: false
+              properties:
+                key:
+                  type:
+                  - string
+                  - number
+                  description: New key.
+                value:
+                  type:
+                  - string
+                  - number
+                  description: New value.
+            example:
+              key: newKey
+              value: newValue
+      responses:
+        '200':
+          description: The updated record.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  key:
+                    type: string
+                  value:
+                    description: New value (as documented).
+                  oldValue:
+                    description: Previous value (as returned by the code).
+                  createdAt:
+                    type: string
+                    format: date-time
+                  updatedAt:
+                    type: string
+                    format: date-time
+              example:
+                key: New Key
+                value: New Value
+                createdAt: 2021-09-01T11:34:00.258+0000
+                updatedAt: 2021-09-01T11:34:00.258+0000
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '503':
+          description: Data store writes are temporarily disabled because the system is at capacity (circuit breaker).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
+  parameters:
+    DataStorePatternParam:
+      name: pattern
+      in: query
+      required: false
+      description: 'Optional search pattern (regular expression). Only records whose key or value matches the pattern
+
+        are included.
+
+        '
+      schema:
+        type: string
+    DataStoreEscapePatternParam:
+      name: escapePattern
+      in: query
+      required: false
+      description: 'Set to `true` to treat `pattern` as a literal string instead of a regular expression. Any other
+
+        value leaves the pattern interpreted as a regular expression.
+
+        '
+      schema:
+        type: string
+    DataStoreIdParam:
+      name: storeId
+      in: path
+      required: true
+      description: Store ID.
+      schema:
+        type: string
   schemas:
     DataStore:
       type: object
       properties:
         storeId:
           type: string
+          description: Store ID.
         name:
           type: string
+          description: Name of the store.
+        default:
+          type: boolean
+          description: '`true` for the user''s default store (returned by Get All Stores only).'
+      required:
+      - storeId
+      - name
+    Error:
+      type: object
+      description: Error response.
+      properties:
+        statusCode:
+          type: integer
+          example: 404
+        error:
+          type: string
+          example: Not Found
+        message:
+          type: string
+          example: Flow not found.
+      required:
+      - statusCode
+      - error
+    DataStoreName:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the store.
+      required:
+      - name
+    DataStoreItem:
+      type: object
+      description: A key-value record in a store.
+      properties:
+        key:
+          type: string
+        value:
+          description: The stored value (usually a string).
+        storeId:
+          type: string
+        userId:
+          type: string
+        oldValue:
+          description: Previous value, present on records that were updated.
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    DataStoreItemRef:
+      type: object
+      properties:
+        storeId:
+          type: string
+        key:
+          type:
+          - string
+          - number
+      required:
+      - storeId
+      - key
+  responses:
+    Unauthorized:
+      description: The access token is missing, invalid or expired.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: The request is invalid, for example it failed payload or query validation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
-      description: 'Access token obtained from the /user/auth endpoint. Pass as Authorization: Bearer {token} header.'
+      bearerFormat: JWT
+      description: User access token obtained from `POST /user/auth`.
+externalDocs:
+  description: Appmixer documentation
+  url: https://docs.appmixer.com

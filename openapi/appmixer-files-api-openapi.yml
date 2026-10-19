@@ -1,49 +1,160 @@
 openapi: 3.2.0
 info:
-  title: Appmixer Files API
-  description: The Appmixer REST API provides programmatic access to manage workflows, users, accounts, apps/connectors, files, data stores, insights, and people tasks within the Appmixer embedded iPaaS platform. The API allows you to access all the features that the Appmixer UI works with.
-  version: 6.1.0
+  title: Appmixer REST Files API
+  version: 6.5.5
+  summary: REST API of the Appmixer workflow automation and embedded iPaaS platform.
+  description: 'Appmixer offers a REST API that mirrors the functionality available in its UI. Use it for
+
+    advanced customizations, additional automations and scripting.
+
+
+    **Base URL.** The base URL depends on your Appmixer tenant, for example `https://api-acme.appmixer.ai`
+
+    (newer hosted tenants), `https://api.acme.appmixer.cloud` (older hosted tenants), or the API URL of
+
+    your Self-Managed installation.
+
+
+    **Authentication.** Most endpoints require a user access token sent as `Authorization: Bearer `.
+
+    Get a token by signing in with `POST /user/auth`. Some endpoints also require the user to have
+
+    the `admin` scope; this is noted in their descriptions.
+
+
+    **Errors.** Errors are returned as JSON objects with `statusCode`, `error` and `message` properties.'
   contact:
     name: Appmixer
-    url: https://www.appmixer.com/
-  license:
-    name: Proprietary
-    url: https://www.appmixer.com/terms-and-conditions
+    url: https://www.appmixer.com
 servers:
-- url: https://api.{tenant}.appmixer.cloud
-  description: Appmixer Cloud Tenant API
+- url: '{tenantApiUrl}'
+  description: Your Appmixer tenant API
   variables:
-    tenant:
-      default: YOUR_TENANT
-      description: Your Appmixer tenant identifier
+    tenantApiUrl:
+      default: https://api-acme.appmixer.ai
+      description: API URL of your Appmixer tenant, e.g. https://api-acme.appmixer.ai or https://api.acme.appmixer.cloud.
 security:
 - bearerAuth: []
 tags:
 - name: Files
-  description: File management
+  description: Appmixer allows you to upload files to use them in your flows.
 paths:
   /files:
     get:
-      operationId: listFiles
-      summary: Appmixer List files
-      description: Get all files belonging to the authenticated user.
+      tags:
+      - Files
+      summary: Get user files
+      operationId: getFiles
+      description: 'Returns the metadata of the files of the current user (the file content is not included).
+
+        Supports paging, sorting and filtering.
+
+
+        Example: `GET /files?limit=10&filter=filename:~invoice&sort=filename:1` returns 10 files with
+
+        `invoice` in the filename.
+
+
+        Users with the `admin` scope (except group users) see the files of all users and can narrow the
+
+        result with `filter=userId:`.'
+      parameters:
+      - $ref: '#/components/parameters/FileLimitParam'
+      - $ref: '#/components/parameters/FileOffsetParam'
+      - $ref: '#/components/parameters/FileSortParam'
+      - $ref: '#/components/parameters/FileProjectionParam'
+      - $ref: '#/components/parameters/FileFilterParam'
+      - $ref: '#/components/parameters/FileIncludeComponentSourceFilesParam'
       responses:
         '200':
-          description: List of files returned successfully
+          description: List of file metadata objects.
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/File'
+              example:
+              - length: 2366210
+                chunkSize: 261120
+                uploadDate: 2022-09-14 15:25:33.281000+00:00
+                filename: 3mb.pdf
+                md5: 69604bdd54ff681ecd0bf166544c0854
+                metadata:
+                  userId: 6123bbeb34598f20b676833b
+                contentType: application/pdf
+                fileId: 7b917904-41b8-4c66-9f5f-0c1bf897eab6
         '401':
-          description: Unauthorized
+          $ref: '#/components/responses/Unauthorized'
+    post:
       tags:
       - Files
-    post:
+      summary: Upload a file
       operationId: uploadFile
-      summary: Appmixer Upload a file
-      description: Upload a new file to the Appmixer file management system.
+      description: 'Upload a file to Appmixer. Uploads by chunks are supported; whether the sent file is treated as a
+
+        chunk of an existing file or as a new file depends on the `uploader-*` headers. The request must
+
+        be `multipart/form-data`. The first file part of the form is stored (the field name is not checked).
+
+
+        The `fileId` in the response can be used to upload more chunks for the same file, or in other
+
+        endpoints to reference this file.'
+      parameters:
+      - name: uploader-file-id
+        in: header
+        required: false
+        description: 'If set, the uploaded content is appended as a chunk to the file with this ID. If not present,
+
+          a new file is created. The response includes the resulting file''s ID, so it can be used in
+
+          subsequent requests to add chunks to the file.
+
+          '
+        schema:
+          type: string
+          format: uuid
+      - name: uploader-file-name
+        in: header
+        required: false
+        description: The name of the file. Ignored when the `uploader-file-id` header is present.
+        schema:
+          type: string
+      - name: uploader-chunk-size
+        in: header
+        required: false
+        description: The size in bytes of the file/chunk being uploaded.
+        schema:
+          type: integer
+      - name: uploader-chunk-number
+        in: header
+        required: false
+        description: The ordinal number of this chunk, e.g. the first chunk is 1, the second is 2 and so on.
+        schema:
+          type: integer
+          minimum: 1
+      - name: uploader-chunks-total
+        in: header
+        required: false
+        description: The total number of chunks that compose the file. `1` means this is the complete file.
+        schema:
+          type: integer
+          minimum: 1
+      - name: archived
+        in: query
+        required: false
+        description: 'Whether the uploaded file is marked as archived. Files uploaded through the API are archived by
+
+          default; pass `archived=false` to upload a non-archived file.
+
+          '
+        schema:
+          type: string
+          enum:
+          - 'true'
+          - 'false'
+          default: 'true'
       requestBody:
         required: true
         content:
@@ -54,74 +165,320 @@ paths:
                 file:
                   type: string
                   format: binary
+                  description: The file/chunk to be uploaded.
+              required:
+              - file
       responses:
         '200':
-          description: File uploaded successfully
+          description: 'The stored file (or the file the chunk was appended to). The `fileId` can be used to upload more
+
+            chunks for the same file, or in other endpoints to reference this file.
+
+            '
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/File'
+              example:
+                length: 146737
+                chunkSize: 261120
+                uploadDate: 2020-07-24 20:23:38.565000+00:00
+                filename: chart1.png
+                md5: 1d0ed5eb2cacbab4526de272837102dd
+                metadata:
+                  userId: 5f15d59cef81ecb3344fab55
+                contentType: image/png
+                fileId: 8cb8fed0-0cd8-4478-8372-9f7cb4eb16e3
         '401':
-          description: Unauthorized
-      tags:
-      - Files
-  /files/{fileId}:
-    get:
-      operationId: getFile
-      summary: Appmixer Get a file
-      description: Download or get details of a specific file.
-      parameters:
-      - name: fileId
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: File returned successfully
-        '401':
-          description: Unauthorized
-        '404':
-          description: File not found
-      tags:
-      - Files
+          $ref: '#/components/responses/Unauthorized'
+        '413':
+          description: The payload exceeds the maximum allowed size.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: The request is not `multipart/form-data`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: File uploads are temporarily disabled because the system is at capacity (circuit breaker).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '507':
+          description: The user has exceeded their file storage quota.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     delete:
-      operationId: deleteFile
-      summary: Appmixer Delete a file
-      description: Delete a specific file.
-      parameters:
-      - name: fileId
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: File deleted successfully
-        '401':
-          description: Unauthorized
-        '404':
-          description: File not found
       tags:
       - Files
+      summary: Delete all user files
+      operationId: deleteFiles
+      description: 'Deletes all files of the current user that match the optional `filter`. The deletion runs as a
+
+        background task; the response contains a `ticket` identifying it.
+
+
+        Example: `DELETE /files?filter=filename:~invoice` deletes all of the user''s files with `invoice`
+
+        in the name.'
+      parameters:
+      - $ref: '#/components/parameters/FileFilterParam'
+      - $ref: '#/components/parameters/FileIncludeComponentSourceFilesParam'
+      responses:
+        '200':
+          description: The background deletion task was started.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileDeleteTicket'
+              example:
+                ticket: 3f2c1b8e-6a7d-4a55-9b1e-2f1d2a3b4c5d
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /files/count:
+    get:
+      tags:
+      - Files
+      summary: Get number of files
+      operationId: getFilesCount
+      description: Returns the number of files of the current user that match the filter. Used for paging.
+      parameters:
+      - $ref: '#/components/parameters/FileFilterParam'
+      - $ref: '#/components/parameters/FileIncludeComponentSourceFilesParam'
+      responses:
+        '200':
+          description: Number of matching files.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileCount'
+              example:
+                count: 2
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /files/metadata/{fileId}:
+    get:
+      tags:
+      - Files
+      summary: Get file info
+      operationId: getFileMetadata
+      description: 'Get the information for the specified file. The file content is not included. Only the owner of
+
+        the file or a user with the `admin` scope can access it.'
+      parameters:
+      - $ref: '#/components/parameters/FileIdParam'
+      responses:
+        '200':
+          description: File metadata.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/File'
+              example:
+                length: 146737
+                chunkSize: 261120
+                uploadDate: 2020-07-24 19:19:49.755000+00:00
+                filename: chart1.png
+                md5: 1d0ed5eb2cacbab4526de272837102dd
+                metadata:
+                  userId: 5f15d59cef81ecb3344fab55
+                contentType: image/png
+                fileId: f179c163-2ad8-4f9d-bce5-95200691b7f9
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /files/{fileId}:
+    delete:
+      tags:
+      - Files
+      summary: Remove file
+      operationId: deleteFile
+      description: 'Removes the specified file. Only the owner of the file or a user with the `admin` scope can
+
+        remove it.'
+      parameters:
+      - $ref: '#/components/parameters/FileIdParam'
+      responses:
+        '200':
+          description: The file was removed. The response body is an empty object.
+          content:
+            application/json:
+              schema:
+                type: object
+              example: {}
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
 components:
+  parameters:
+    FileIncludeComponentSourceFilesParam:
+      name: includeComponentSourceFiles
+      in: query
+      required: false
+      description: 'By default, only files (that are used in flows) are returned. Custom component source codes are
+
+        stored as files as well; set this to include them. Note that any non-empty value (even `false`)
+
+        enables it.
+
+        '
+      schema:
+        type: boolean
+    FileProjectionParam:
+      name: projection
+      in: query
+      required: false
+      description: Comma-separated list of properties to include; prefix a property with `-` to exclude it.
+      schema:
+        type: string
+    FileFilterParam:
+      name: filter
+      in: query
+      required: false
+      description: 'Filter in the form `property:value`, e.g. `filename:~invoice` (`~` means "contains"). Can be
+
+        repeated.
+
+        '
+      schema:
+        type: string
+    FileOffsetParam:
+      name: offset
+      in: query
+      required: false
+      description: Number of files to skip.
+      schema:
+        type: integer
+    FileIdParam:
+      name: fileId
+      in: path
+      required: true
+      description: The UUID of the file.
+      schema:
+        type: string
+        format: uuid
+    FileSortParam:
+      name: sort
+      in: query
+      required: false
+      description: Property to sort by followed by `:` and `1` (ascending) or `-1` (descending), e.g. `filename:1`.
+      schema:
+        type: string
+    FileLimitParam:
+      name: limit
+      in: query
+      required: false
+      description: Maximum number of files returned.
+      schema:
+        type: integer
+        default: 100
   schemas:
     File:
       type: object
+      description: File metadata (GridFS file document). The file content is not included.
       properties:
         fileId:
           type: string
+          format: uuid
+          description: The UUID of the file.
         filename:
           type: string
         length:
           type: integer
-        contentType:
-          type: string
-        createdAt:
+          description: File size in bytes.
+        chunkSize:
+          type: integer
+          description: Storage chunk size in bytes.
+        uploadDate:
           type: string
           format: date-time
+        md5:
+          type: string
+        contentType:
+          type: string
+        metadata:
+          type: object
+          description: Additional file metadata.
+          properties:
+            userId:
+              type: string
+              description: ID of the owner of the file.
+            archived:
+              type: boolean
+            vendor:
+              type: string
+              description: Set for custom component source files.
+          additionalProperties: true
+    FileCount:
+      type: object
+      properties:
+        count:
+          type: integer
+      required:
+      - count
+    Error:
+      type: object
+      description: Error response.
+      properties:
+        statusCode:
+          type: integer
+          example: 404
+        error:
+          type: string
+          example: Not Found
+        message:
+          type: string
+          example: Flow not found.
+      required:
+      - statusCode
+      - error
+    FileDeleteTicket:
+      type: object
+      properties:
+        ticket:
+          type: string
+          format: uuid
+          description: ID of the background deletion task.
+      required:
+      - ticket
+  responses:
+    Unauthorized:
+      description: The access token is missing, invalid or expired.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: The user does not have the permission (or scope) required for this operation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
-      description: 'Access token obtained from the /user/auth endpoint. Pass as Authorization: Bearer {token} header.'
+      bearerFormat: JWT
+      description: User access token obtained from `POST /user/auth`.
+externalDocs:
+  description: Appmixer documentation
+  url: https://docs.appmixer.com

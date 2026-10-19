@@ -1,0 +1,441 @@
+openapi: 3.2.0
+info:
+  title: Appmixer REST Audit Logs API
+  version: 6.5.5
+  summary: REST API of the Appmixer workflow automation and embedded iPaaS platform.
+  description: 'Appmixer offers a REST API that mirrors the functionality available in its UI. Use it for
+
+    advanced customizations, additional automations and scripting.
+
+
+    **Base URL.** The base URL depends on your Appmixer tenant, for example `https://api-acme.appmixer.ai`
+
+    (newer hosted tenants), `https://api.acme.appmixer.cloud` (older hosted tenants), or the API URL of
+
+    your Self-Managed installation.
+
+
+    **Authentication.** Most endpoints require a user access token sent as `Authorization: Bearer `.
+
+    Get a token by signing in with `POST /user/auth`. Some endpoints also require the user to have
+
+    the `admin` scope; this is noted in their descriptions.
+
+
+    **Errors.** Errors are returned as JSON objects with `statusCode`, `error` and `message` properties.'
+  contact:
+    name: Appmixer
+    url: https://www.appmixer.com
+servers:
+- url: '{tenantApiUrl}'
+  description: Your Appmixer tenant API
+  variables:
+    tenantApiUrl:
+      default: https://api-acme.appmixer.ai
+      description: API URL of your Appmixer tenant, e.g. https://api-acme.appmixer.ai or https://api.acme.appmixer.cloud.
+security:
+- bearerAuth: []
+tags:
+- name: Audit Logs
+  description: 'The audit log records who changed what in your Appmixer tenant, and when. Failed attempts are
+
+    recorded too. Only users with the `admin` scope can read it.
+
+
+    **Attribution to your own users.** If your application works through one Appmixer user for many
+
+    people, send an opaque ID of the person who makes a change in the `X-Appmixer-Audit-External-User-Id`
+
+    header of the request that makes it (available since Appmixer 6.5.6). The value must be 1 to 128
+
+    characters long and use only letters, digits, `.`, `_` and `-`; a value in any other format is
+
+    ignored and the request still succeeds. It is stored as `externalUserId` on the audit log entry and
+
+    can be filtered on. Requests that do not write an audit log entry ignore the header.
+
+
+    Never send names, email addresses or other personal data: the value is stored exactly as sent,
+
+    returned by the API and exported in the CSV until the entry expires, and entries cannot be deleted
+
+    earlier. The header is attribution, not authentication: Appmixer does not verify it. From browser
+
+    code, send the header only to Appmixer 6.5.6 or later: older versions refuse it in the CORS
+
+    preflight, so the browser blocks the whole request. Server-side requests are not affected.'
+paths:
+  /system/audits:
+    get:
+      tags:
+      - Audit Logs
+      summary: Get audit log entries
+      operationId: getAuditLogs
+      description: 'Return the audit log entries that match the filters, newest first, one page at a time. Requires
+
+        the `admin` scope. An entry must match all the filters you send.
+
+
+        **Check that your filters were applied.** A version that does not know a filter ignores it and
+
+        returns the entries as if it had not been sent. `appliedFilters` lists the filter parameters the
+
+        server recognized and applied (`sort`, `page`, `size` and `format` are not filters). If your code
+
+        relies on a filter, fail closed: do not treat the entries as filtered when the response has no
+
+        `appliedFilters` (a version that predates it) or when your filter is missing from it.
+
+
+        **Paging.** Send `ts` with the time of your first request in every page request, so that entries
+
+        recorded in the meantime do not shift the pages. `page=0` returns all matching entries in one
+
+        response and ignores `size`; the Backoffice CSV export uses it.
+
+
+        **CSV export.** With `format=csv`, the entries are returned as a CSV file (`data.csv`) with the
+
+        columns `id`, `flowId`, `flowName`, `action`, `created`, `eventType`, `user` (the username),
+
+        `status`, `flatDiff`, `source`, `threadId` and `externalUserId`, in this order. Filters, `sort`,
+
+        `page` and `size` apply as for JSON. The CSV has no `appliedFilters`.
+
+
+        **Retention.** By default, entries are deleted 100 days after they were recorded
+
+        (`GARBAGE_COLLECTOR_AUDIT_LOGS_TTL` on Appmixer Self-Managed).
+
+
+        `userId`, `externalUserId` and `appliedFilters` are available since Appmixer 6.5.6; `source` and
+
+        `threadId` since Appmixer 6.5.5.'
+      parameters:
+      - name: eventType
+        in: query
+        description: Type of the event.
+        schema:
+          type: string
+          enum:
+          - create
+          - update
+          - delete
+      - name: status
+        in: query
+        description: Result of the recorded action.
+        schema:
+          type: string
+          enum:
+          - success
+          - failure
+      - name: username
+        in: query
+        description: Username of the Appmixer user who made the change. Exact match, not case-sensitive.
+        schema:
+          type: string
+      - name: userId
+        in: query
+        description: ID of the Appmixer user who made the change.
+        schema:
+          type: string
+          pattern: ^[0-9a-fA-F]{24}$
+      - name: externalUserId
+        in: query
+        description: ID sent in the `X-Appmixer-Audit-External-User-Id` request header. Exact match, case-sensitive.
+        schema:
+          type: string
+          pattern: ^[A-Za-z0-9._-]{1,128}$
+      - name: flowId
+        in: query
+        description: ID of the flow the change concerns.
+        schema:
+          type: string
+      - name: source
+        in: query
+        description: '`copilot` returns the changes made by the AI Copilot.'
+        schema:
+          type: string
+          enum:
+          - copilot
+      - name: threadId
+        in: query
+        description: ID of the AI Copilot conversation that made the change.
+        schema:
+          type: string
+      - name: dateFrom
+        in: query
+        description: 'Entries recorded at or after this date or time, in ISO 8601. A date without a time means midnight UTC.
+
+          A value that cannot be read as a date, such as a Unix timestamp, is refused with `400`.
+
+          '
+        schema:
+          type: string
+        example: '2026-09-01'
+      - name: dateTo
+        in: query
+        description: 'Entries recorded on or before this day. Send a date without a time; the whole day (UTC) is
+
+          included. A value that cannot be read as a date, such as a Unix timestamp, is refused with `400`.
+
+          '
+        schema:
+          type: string
+        example: '2026-09-30'
+      - name: ts
+        in: query
+        description: 'Entries recorded at or before this time, as a Unix timestamp in milliseconds. A value that is not
+
+          a whole number, or is too large for a date, is refused with `400`.
+
+          '
+        schema:
+          type: integer
+          format: int64
+        example: 1790240400000
+      - name: search
+        in: query
+        description: Full-text search in `action`, `flatDiff`, `status` and the username. Matches whole words; with several words, entries that contain any of them.
+        schema:
+          type: string
+      - name: sort
+        in: query
+        description: 'Property to sort by, for example `created`, `eventType`, `action`, `status`, `flowId` or
+
+          `flowName`. Prefix it with `-` for descending order. `source`, `threadId` and `externalUserId`
+
+          cannot be sorted by.
+
+          '
+        schema:
+          type: string
+          default: -created
+      - name: page
+        in: query
+        description: Page number, starting at `1`. `0` returns all matching entries, without paging.
+        schema:
+          type: integer
+          minimum: 0
+          default: 1
+      - name: size
+        in: query
+        description: Number of entries per page. With `page=0`, `size` has no upper limit.
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 10
+      - name: format
+        in: query
+        description: '`csv` returns the entries as a CSV file instead of JSON.'
+        schema:
+          type: string
+          enum:
+          - csv
+      responses:
+        '200':
+          description: The matching entries.
+          headers:
+            Content-Range:
+              description: Same as `contentRange`. Sent with JSON responses only; a browser cannot read it in a cross-origin request.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditLogList'
+              example:
+                data:
+                - id: 66f28a1c9b3e4d0012a7c5e1
+                  eventType: update
+                  user:
+                    id: 66d9c1f47a2b3c0011e4f8a2
+                    username: acme@example.com
+                    lowername: acme@example.com
+                  flowId: 9089f275-f5a5-4796-ba23-365412c5666e
+                  flowName: Sync new bookings
+                  action: 'Update flow: Sync new bookings [9089f275-f5a5-4796-ba23-365412c5666e]'
+                  diff:
+                  - path: flow.name
+                    type: CHANGE
+                    changes:
+                      before: Sync bookings
+                      after: Sync new bookings
+                  flatDiff: '[{"path":"flow.name","type":"CHANGE","changes":{"before":"Sync bookings","after":"Sync new bookings"}}]'
+                  status: success
+                  created: 2026-09-24 09:12:44.102000+00:00
+                  externalUserId: staff-42
+                contentRange: 0-0/1
+                appliedFilters:
+                - dateFrom
+                - externalUserId
+            text/csv:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+components:
+  schemas:
+    AuditLogList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditLogEntry'
+        contentRange:
+          type: string
+          description: The part of the whole result this page holds, as `<first>-<last>/<total>` counted from zero.
+          example: 0-49/120
+        appliedFilters:
+          type: array
+          description: 'Names of the filter parameters the server recognized and applied, in no particular order.
+
+            Versions that predate it do not return it; treat such a response as unfiltered.
+
+            '
+          items:
+            type: string
+      required:
+      - data
+      - contentRange
+    AuditLogEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID of the entry.
+        created:
+          type: string
+          format: date-time
+          description: When the entry was recorded.
+        eventType:
+          type: string
+          enum:
+          - create
+          - update
+          - delete
+        status:
+          type: string
+          enum:
+          - success
+          - failure
+        action:
+          type: string
+          description: Description of the event.
+          example: 'Update flow: Sync new bookings [9089f275-f5a5-4796-ba23-365412c5666e]'
+        user:
+          type:
+          - object
+          - 'null'
+          description: 'The Appmixer user who made the change. In a user group context, `id` and `username` are those
+
+            of the group user, and `originalUserId`, `contextType` and `groupId` identify the person and the group.
+
+            '
+          properties:
+            id:
+              type: string
+            username:
+              type: string
+            lowername:
+              type: string
+              description: The username in lowercase.
+            originalUserId:
+              type: string
+            contextType:
+              type: string
+            groupId:
+              type: string
+        flowId:
+          type:
+          - string
+          - 'null'
+          description: ID of the flow the change concerns.
+        flowName:
+          type:
+          - string
+          - 'null'
+        diff:
+          type: array
+          description: The changed properties.
+          items:
+            type: object
+            properties:
+              path:
+                type: string
+                example: flow.name
+              type:
+                type: string
+                enum:
+                - CREATE
+                - CHANGE
+                - REMOVE
+              changes:
+                type: object
+                properties:
+                  before: {}
+                  after: {}
+        flatDiff:
+          type: string
+          description: '`diff` as a JSON string.'
+        source:
+          type: string
+          enum:
+          - copilot
+          description: Present only on changes made by the AI Copilot.
+        threadId:
+          type: string
+          description: ID of the AI Copilot conversation that made the change. Present only together with `source`.
+        externalUserId:
+          type: string
+          description: ID sent in the `X-Appmixer-Audit-External-User-Id` request header. Present only when the request carried a valid one.
+    Error:
+      type: object
+      description: Error response.
+      properties:
+        statusCode:
+          type: integer
+          example: 404
+        error:
+          type: string
+          example: Not Found
+        message:
+          type: string
+          example: Flow not found.
+      required:
+      - statusCode
+      - error
+  responses:
+    Unauthorized:
+      description: The access token is missing, invalid or expired.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: The user does not have the permission (or scope) required for this operation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: The request is invalid, for example it failed payload or query validation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: User access token obtained from `POST /user/auth`.
+externalDocs:
+  description: Appmixer documentation
+  url: https://docs.appmixer.com

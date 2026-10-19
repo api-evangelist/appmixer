@@ -1,0 +1,779 @@
+openapi: 3.2.0
+info:
+  title: Appmixer REST User Groups API
+  version: 6.5.5
+  summary: REST API of the Appmixer workflow automation and embedded iPaaS platform.
+  description: 'Appmixer offers a REST API that mirrors the functionality available in its UI. Use it for
+
+    advanced customizations, additional automations and scripting.
+
+
+    **Base URL.** The base URL depends on your Appmixer tenant, for example `https://api-acme.appmixer.ai`
+
+    (newer hosted tenants), `https://api.acme.appmixer.cloud` (older hosted tenants), or the API URL of
+
+    your Self-Managed installation.
+
+
+    **Authentication.** Most endpoints require a user access token sent as `Authorization: Bearer `.
+
+    Get a token by signing in with `POST /user/auth`. Some endpoints also require the user to have
+
+    the `admin` scope; this is noted in their descriptions.
+
+
+    **Errors.** Errors are returned as JSON objects with `statusCode`, `error` and `message` properties.'
+  contact:
+    name: Appmixer
+    url: https://www.appmixer.com
+servers:
+- url: '{tenantApiUrl}'
+  description: Your Appmixer tenant API
+  variables:
+    tenantApiUrl:
+      default: https://api-acme.appmixer.ai
+      description: API URL of your Appmixer tenant, e.g. https://api-acme.appmixer.ai or https://api.acme.appmixer.cloud.
+security:
+- bearerAuth: []
+tags:
+- name: User Groups
+  description: 'User Groups (also known as Workspaces) let teams collaborate by sharing resources such as flows,
+
+    data stores and files. Group resources are owned by the group rather than by individual users,
+
+    while audit logs keep track of the individual user actions. Admin users are automatically added
+
+    to the default admin group. Users can switch between their personal context and a group context;
+
+    the access token then carries the group information.'
+paths:
+  /users/{userId}/groups:
+    get:
+      tags:
+      - User Groups
+      summary: List User's Groups
+      operationId: getUserGroupsOfUser
+      description: 'Get all groups that a specific user belongs to. Users can only list their own groups; admins
+
+        (`admin` scope) can list the groups of any user.'
+      responses:
+        '200':
+          description: Groups the user is a member of.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserGroup'
+              example:
+              - id: 5f8a7b2c3d4e5f6a7b8c9d0e
+                groupUserId: 5f8a7b2c3d4e5f6a7b8c9d01
+                name: Marketing Team
+                metadata:
+                  department: marketing
+                isDefault: false
+                created: 2023-03-15 17:27:14.567000+00:00
+                updated: 2023-03-15 17:27:14.567000+00:00
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+      parameters:
+      - $ref: '#/components/parameters/UserIdParam'
+  /user-groups:
+    post:
+      tags:
+      - User Groups
+      summary: Create User Group
+      operationId: createUserGroup
+      description: Create a new user group. Admin token required (`admin` scope).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+                  description: Name of the user group.
+                metadata:
+                  type: object
+                  description: Optional metadata for the group.
+            example:
+              name: Marketing Team
+              metadata:
+                department: marketing
+      responses:
+        '201':
+          description: The group was created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserGroup'
+              example:
+                id: 5f8a7b2c3d4e5f6a7b8c9d0e
+                groupUserId: 5f8a7b2c3d4e5f6a7b8c9d01
+                name: Marketing Team
+                metadata:
+                  department: marketing
+                isDefault: false
+                created: 2023-03-15 17:27:14.567000+00:00
+                updated: 2023-03-15 17:27:14.567000+00:00
+                members: []
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    get:
+      tags:
+      - User Groups
+      summary: List User Groups
+      operationId: getUserGroups
+      description: 'List all user groups. Admin token required (`admin` scope). Regular users can list their own groups
+
+        with `GET /users/{userId}/groups` or `GET /auth/available-contexts`.'
+      responses:
+        '200':
+          description: List of user groups.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserGroup'
+              example:
+              - id: 5f8a7b2c3d4e5f6a7b8c9d0e
+                groupUserId: 5f8a7b2c3d4e5f6a7b8c9d01
+                name: Marketing Team
+                metadata:
+                  department: marketing
+                isDefault: false
+                created: 2023-03-15 17:27:14.567000+00:00
+                updated: 2023-03-15 17:27:14.567000+00:00
+                members:
+                - 5f8a7b2c3d4e5f6a7b8c9a01
+                - 5f8a7b2c3d4e5f6a7b8c9a02
+              - id: 5f8a7b2c3d4e5f6a7b8c9d0f
+                groupUserId: 5f8a7b2c3d4e5f6a7b8c9d02
+                name: Admin Group
+                metadata: {}
+                isDefault: true
+                created: 2023-03-15 17:27:14.568000+00:00
+                updated: 2023-03-15 17:27:14.568000+00:00
+                members:
+                - 5f8a7b2c3d4e5f6a7b8c9a03
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /user-groups/{groupId}:
+    get:
+      tags:
+      - User Groups
+      summary: Get User Group
+      operationId: getUserGroup
+      description: Get details of a specific user group, including its member IDs. Admin token required (`admin` scope).
+      responses:
+        '200':
+          description: The user group.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserGroup'
+              example:
+                id: 5f8a7b2c3d4e5f6a7b8c9d0e
+                groupUserId: 5f8a7b2c3d4e5f6a7b8c9d01
+                name: Marketing Team
+                metadata:
+                  department: marketing
+                isDefault: false
+                created: 2023-03-15 17:27:14.567000+00:00
+                updated: 2023-03-15 17:27:14.567000+00:00
+                members:
+                - 5f8a7b2c3d4e5f6a7b8c9a01
+                - 5f8a7b2c3d4e5f6a7b8c9a02
+                - 5f8a7b2c3d4e5f6a7b8c9a03
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      parameters:
+      - $ref: '#/components/parameters/UserGroupIdParam'
+    put:
+      tags:
+      - User Groups
+      summary: Update User Group
+      operationId: updateUserGroup
+      description: 'Update user group details. Admin token required (`admin` scope). `metadata` replaces the existing
+
+        metadata. The default (admin) group cannot be updated.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: New name of the group.
+                metadata:
+                  type: object
+                  description: New metadata (replaces the existing metadata).
+            example:
+              name: Marketing & Sales Team
+              metadata:
+                department: marketing
+                region: EMEA
+      responses:
+        '200':
+          description: The updated user group.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserGroup'
+              example:
+                id: 5f8a7b2c3d4e5f6a7b8c9d0e
+                groupUserId: 5f8a7b2c3d4e5f6a7b8c9d01
+                name: Marketing & Sales Team
+                metadata:
+                  department: marketing
+                  region: EMEA
+                isDefault: false
+                created: 2023-03-15 17:27:14.567000+00:00
+                updated: 2023-04-01 09:00:00+00:00
+                members:
+                - 5f8a7b2c3d4e5f6a7b8c9a01
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      parameters:
+      - $ref: '#/components/parameters/UserGroupIdParam'
+    delete:
+      tags:
+      - User Groups
+      summary: Delete User Group
+      operationId: deleteUserGroup
+      description: 'Delete a user group. Admin token required (`admin` scope). This removes the group and revokes all
+
+        group member access to shared resources. The default (admin) group cannot be deleted.
+
+
+        Deleting a group that still owns resources (flows, accounts, data stores, files, ...) is rejected
+
+        with a `400` error. Transfer the group''s resources first (see `PUT /resources/transfer`), or pass
+
+        `force=true` to delete the group together with all its resources.
+
+
+        The group''s internal user and its data are deleted in the background, the same way as with
+
+        `DELETE /users/{userId}`; the response contains a ticket for polling the progress.'
+      parameters:
+      - $ref: '#/components/parameters/UserGroupIdParam'
+      - name: force
+        in: query
+        required: false
+        description: Delete the group even if it still owns resources; all its resources are removed too.
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '200':
+          description: The group was deleted and the cleanup of its resources started.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserTaskTicket'
+              example:
+                ticket: 830639e3-c53a-42d6-ad43-0276674236b4
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /user-groups/{groupId}/members:
+    post:
+      tags:
+      - User Groups
+      summary: Add Group Members
+      operationId: addUserGroupMembers
+      description: 'Add one or more members to a user group. Admin token required (`admin` scope). User IDs that are not
+
+        valid or do not exist are silently skipped. Previously removed members are re-activated; existing
+
+        members are included in the response unchanged.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - userIds
+              properties:
+                userIds:
+                  type: array
+                  minItems: 1
+                  description: IDs of the users to add.
+                  items:
+                    type: string
+            example:
+              userIds:
+              - 5f8a7b2c3d4e5f6a7b8c9a01
+              - 5f8a7b2c3d4e5f6a7b8c9a02
+      responses:
+        '200':
+          description: Memberships of the added users.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserGroupMembership'
+              example:
+              - groupId: 5f8a7b2c3d4e5f6a7b8c9d0e
+                userId: 5f8a7b2c3d4e5f6a7b8c9a01
+                addedBy: 5f8a7b2c3d4e5f6a7b8c9a00
+                addedAt: 2023-03-15 17:27:14.567000+00:00
+              - groupId: 5f8a7b2c3d4e5f6a7b8c9d0e
+                userId: 5f8a7b2c3d4e5f6a7b8c9a02
+                addedBy: 5f8a7b2c3d4e5f6a7b8c9a00
+                addedAt: 2023-03-15 17:27:14.567000+00:00
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      parameters:
+      - $ref: '#/components/parameters/UserGroupIdParam'
+    get:
+      tags:
+      - User Groups
+      summary: Get Group Members
+      operationId: getUserGroupMembers
+      description: Get all members of a user group. Admin token required (`admin` scope).
+      responses:
+        '200':
+          description: Group members.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserGroupMember'
+              example:
+              - userId: 5f8a7b2c3d4e5f6a7b8c9a01
+                username: john@example.com
+                email: john@example.com
+                addedAt: 2023-03-15 17:27:14.567000+00:00
+                addedBy: 5f8a7b2c3d4e5f6a7b8c9a00
+              - userId: 5f8a7b2c3d4e5f6a7b8c9a02
+                username: jane@example.com
+                email: jane@example.com
+                addedAt: 2023-03-15 17:27:14.567000+00:00
+                addedBy: 5f8a7b2c3d4e5f6a7b8c9a00
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      parameters:
+      - $ref: '#/components/parameters/UserGroupIdParam'
+  /user-groups/{groupId}/members/{userId}:
+    delete:
+      tags:
+      - User Groups
+      summary: Remove Group Member
+      operationId: removeUserGroupMember
+      description: 'Remove a member from a user group. Admin token required (`admin` scope). Tokens the removed user
+
+        holds for this group context stop working. A token already used inside a running flow component
+
+        keeps working until the component execution completes.'
+      responses:
+        '204':
+          description: The member was removed.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      parameters:
+      - $ref: '#/components/parameters/UserGroupIdParam'
+      - $ref: '#/components/parameters/UserIdParam'
+  /resources/transfer:
+    put:
+      tags:
+      - User Groups
+      summary: Transfer Resources
+      operationId: transferResources
+      description: 'Transfer **all resources** (flows, accounts, access tokens, flow versions, data stores, files,
+
+        telemetry, ...) from a user or group to another user or group. Admin token required (`admin` scope).
+
+        Provide exactly one of `sourceUserId`/`sourceGroupId` and exactly one of `targetUserId`/`targetGroupId`.
+
+
+        Typical use cases: an employee leaving (transfer their resources to a group or a colleague), or
+
+        consolidating group ownership.
+
+
+        The transfer runs as a background task; the endpoint returns `202 Accepted` with a `ticket`. The source
+
+        user is blocked (`metadata.blocked`) before the transfer starts to prevent API access during the
+
+        migration; requesting a transfer for an already-blocked source returns `409 Conflict`. Running flows
+
+        keep running during and after the transfer.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sourceUserId:
+                  type: string
+                  description: User to transfer resources from.
+                sourceGroupId:
+                  type: string
+                  description: Group to transfer resources from.
+                targetUserId:
+                  type: string
+                  description: User to transfer resources to.
+                targetGroupId:
+                  type: string
+                  description: Group to transfer resources to.
+              allOf:
+              - oneOf:
+                - required:
+                  - sourceUserId
+                - required:
+                  - sourceGroupId
+              - oneOf:
+                - required:
+                  - targetUserId
+                - required:
+                  - targetGroupId
+            example:
+              sourceUserId: 5f8a7b2c3d4e5f6a7b8c9d0e
+              targetGroupId: 64b0a1c2d3e4f5a6b7c8d9e0
+      responses:
+        '202':
+          description: The transfer started.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserTaskTicket'
+              example:
+                ticket: 2e9dd726-2b7f-46f7-bea4-8db7f7175aa8
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: A transfer for this source is already in progress or has been completed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                statusCode: 409
+                error: Conflict
+                message: A transfer for this source is already in progress or has been completed
+  /auth/switch-context:
+    post:
+      tags:
+      - User Groups
+      summary: Switch Context
+      operationId: switchUserContext
+      description: 'Switch the user context between the personal workspace and a group workspace. Returns a new access
+
+        token for the selected context.
+
+
+        When operating in a group context, the token contains `id` (the group user ID; resources are owned
+
+        by this ID), `originalUserId` (the actual user ID, used for audit logging) and `groups`.'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                groupId:
+                  type:
+                  - string
+                  - 'null'
+                  description: ID of the group to switch to. Send `null` or omit it to switch to the personal context.
+            example:
+              groupId: 5f8a7b2c3d4e5f6a7b8c9d0e
+      responses:
+        '200':
+          description: New access token for the selected context.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserContextSwitchResponse'
+              example:
+                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                user:
+                  id: 5f8a7b2c3d4e5f6a7b8c9d01
+                  contextType: group
+                  originalUserId: 5f8a7b2c3d4e5f6a7b8c9a01
+                  groupId: 5f8a7b2c3d4e5f6a7b8c9d0e
+                  groupName: Marketing Team
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: The user is not a member of the group.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /auth/available-contexts:
+    get:
+      tags:
+      - User Groups
+      summary: Get Available Contexts
+      operationId: getAvailableUserContexts
+      description: 'List the groups the current user can switch to with `POST /auth/switch-context`. In a group context,
+
+        the groups of the original (personal) user are returned. The personal context is always available
+
+        and is not part of the response.'
+      responses:
+        '200':
+          description: Groups the current user is a member of.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserGroupContext'
+              example:
+              - id: 5f8a7b2c3d4e5f6a7b8c9d0e
+                groupUserId: 5f8a7b2c3d4e5f6a7b8c9d01
+                name: Marketing Team
+                metadata:
+                  department: marketing
+                isDefault: false
+              - id: 5f8a7b2c3d4e5f6a7b8c9d0f
+                groupUserId: 5f8a7b2c3d4e5f6a7b8c9d02
+                name: Admin Group
+                metadata: {}
+                isDefault: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+components:
+  schemas:
+    UserTaskTicket:
+      type: object
+      required:
+      - ticket
+      properties:
+        ticket:
+          type: string
+          description: Ticket of the background task.
+    UserGroup:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Group ID.
+        groupUserId:
+          type: string
+          description: ID of the internal group user that owns the group's resources.
+        name:
+          type: string
+        metadata:
+          type: object
+        isDefault:
+          type: boolean
+          description: '`true` for the default admin group, which cannot be updated or deleted.'
+        created:
+          type: string
+          format: date-time
+        updated:
+          type: string
+          format: date-time
+        members:
+          type: array
+          description: IDs of the active members. Returned by the admin group endpoints only.
+          items:
+            type: string
+    UserGroupContext:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Group ID.
+        groupUserId:
+          type: string
+          description: ID of the internal group user.
+        name:
+          type: string
+        metadata:
+          type: object
+        isDefault:
+          type: boolean
+    UserContextSwitchResponse:
+      type: object
+      required:
+      - token
+      - user
+      properties:
+        token:
+          type: string
+          description: New access token for the selected context.
+        user:
+          type: object
+          properties:
+            id:
+              type: string
+              description: The personal user ID, or the group user ID in a group context.
+            contextType:
+              type: string
+              enum:
+              - personal
+              - group
+            originalUserId:
+              type: string
+              description: The actual user ID (group context only).
+            groupId:
+              type: string
+              description: Group context only.
+            groupName:
+              type: string
+              description: Group context only.
+    UserGroupMembership:
+      type: object
+      properties:
+        groupId:
+          type: string
+        userId:
+          type: string
+        addedBy:
+          type: string
+          description: ID of the user who added the member.
+        addedAt:
+          type: string
+          format: date-time
+    Error:
+      type: object
+      description: Error response.
+      properties:
+        statusCode:
+          type: integer
+          example: 404
+        error:
+          type: string
+          example: Not Found
+        message:
+          type: string
+          example: Flow not found.
+      required:
+      - statusCode
+      - error
+    UserGroupMember:
+      type: object
+      properties:
+        userId:
+          type: string
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+        addedAt:
+          type: string
+          format: date-time
+        addedBy:
+          type: string
+          description: ID of the user who added the member.
+  parameters:
+    UserIdParam:
+      name: userId
+      in: path
+      required: true
+      description: User ID.
+      schema:
+        type: string
+    UserGroupIdParam:
+      name: groupId
+      in: path
+      required: true
+      description: User group ID.
+      schema:
+        type: string
+  responses:
+    Unauthorized:
+      description: The access token is missing, invalid or expired.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: The user does not have the permission (or scope) required for this operation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: The request is invalid, for example it failed payload or query validation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: User access token obtained from `POST /user/auth`.
+externalDocs:
+  description: Appmixer documentation
+  url: https://docs.appmixer.com

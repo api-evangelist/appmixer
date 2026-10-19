@@ -1,0 +1,319 @@
+openapi: 3.2.0
+info:
+  title: Appmixer REST Integration Categories API
+  version: 6.5.5
+  summary: REST API of the Appmixer workflow automation and embedded iPaaS platform.
+  description: 'Appmixer offers a REST API that mirrors the functionality available in its UI. Use it for
+
+    advanced customizations, additional automations and scripting.
+
+
+    **Base URL.** The base URL depends on your Appmixer tenant, for example `https://api-acme.appmixer.ai`
+
+    (newer hosted tenants), `https://api.acme.appmixer.cloud` (older hosted tenants), or the API URL of
+
+    your Self-Managed installation.
+
+
+    **Authentication.** Most endpoints require a user access token sent as `Authorization: Bearer `.
+
+    Get a token by signing in with `POST /user/auth`. Some endpoints also require the user to have
+
+    the `admin` scope; this is noted in their descriptions.
+
+
+    **Errors.** Errors are returned as JSON objects with `statusCode`, `error` and `message` properties.'
+  contact:
+    name: Appmixer
+    url: https://www.appmixer.com
+servers:
+- url: '{tenantApiUrl}'
+  description: Your Appmixer tenant API
+  variables:
+    tenantApiUrl:
+      default: https://api-acme.appmixer.ai
+      description: API URL of your Appmixer tenant, e.g. https://api-acme.appmixer.ai or https://api.acme.appmixer.cloud.
+security:
+- bearerAuth: []
+tags:
+- name: Integration Categories
+  description: Categories organize integration templates in the Automation Hub marketplace. Categories are global resources; all authenticated users can read them, only admins can create, update or delete them. Categories are assigned to integration templates and drafts through the Flows API (`categories` array).
+paths:
+  /categories:
+    get:
+      tags:
+      - Integration Categories
+      summary: List Categories
+      operationId: getCategories
+      description: Get all categories. Available to all authenticated users.
+      responses:
+        '200':
+          description: List of categories.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+              example:
+              - id: 5f8a7b2c3d4e5f6a7b8c9d0e
+                name: CRM
+                description: Customer relationship management integrations
+                created: 2023-03-15 17:27:14.567000+00:00
+                mtime: 2023-03-15 17:27:14.567000+00:00
+              - id: 5f8a7b2c3d4e5f6a7b8c9d0f
+                name: Marketing
+                description: Marketing automation and analytics tools
+                created: 2023-03-15 17:27:14.568000+00:00
+                mtime: 2023-03-15 17:27:14.568000+00:00
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags:
+      - Integration Categories
+      summary: Create Category
+      operationId: createCategory
+      description: 'Create a new category. Requires the `admin` scope. Category names must be unique across the
+
+        system; creating a category with a name that already exists returns `400`.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryCreate'
+            example:
+              name: CRM
+              description: Customer relationship management integrations
+      responses:
+        '201':
+          description: Category created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+              example:
+                id: 5f8a7b2c3d4e5f6a7b8c9d0e
+                name: CRM
+                description: Customer relationship management integrations
+                created: 2023-03-15 17:27:14.567000+00:00
+                mtime: 2023-03-15 17:27:14.567000+00:00
+        '400':
+          description: Validation failed or a category with this name already exists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                statusCode: 400
+                error: Bad Request
+                message: Category with this name already exists.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /categories/{categoryId}:
+    get:
+      tags:
+      - Integration Categories
+      summary: Get Category
+      operationId: getCategory
+      description: Get details of a specific category. Available to all authenticated users.
+      responses:
+        '200':
+          description: The category.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+              example:
+                id: 5f8a7b2c3d4e5f6a7b8c9d0e
+                name: CRM
+                description: Customer relationship management integrations
+                created: 2023-03-15 17:27:14.567000+00:00
+                mtime: 2023-03-15 17:27:14.567000+00:00
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: Category not found. The response body is `null`.
+          content:
+            application/json:
+              schema:
+                type: 'null'
+      parameters:
+      - $ref: '#/components/parameters/CategoryIdParam'
+    put:
+      tags:
+      - Integration Categories
+      summary: Update Category
+      operationId: updateCategory
+      description: Update an existing category. Requires the `admin` scope.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryUpdate'
+            example:
+              name: CRM & Sales
+              description: Customer relationship management and sales tools
+      responses:
+        '200':
+          description: The updated category.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+              example:
+                id: 5f8a7b2c3d4e5f6a7b8c9d0e
+                name: CRM & Sales
+                description: Customer relationship management and sales tools
+                created: 2023-03-15 17:27:14.567000+00:00
+                mtime: 2023-03-15 18:41:18.901000+00:00
+        '400':
+          description: Validation failed or a category with this name already exists.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                statusCode: 400
+                error: Bad Request
+                message: Category with this name already exists.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Category not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                statusCode: 404
+                error: Not Found
+                message: Category not found.
+      parameters:
+      - $ref: '#/components/parameters/CategoryIdParam'
+    delete:
+      tags:
+      - Integration Categories
+      summary: Delete Category
+      operationId: deleteCategory
+      description: 'Delete a category. Requires the `admin` scope. The category is automatically removed from all
+
+        integration templates and drafts that reference it.'
+      responses:
+        '200':
+          description: Category deleted. Empty object.
+          content:
+            application/json:
+              schema:
+                type: object
+              example: {}
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Category not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                statusCode: 404
+                error: Not Found
+                message: Category not found.
+      parameters:
+      - $ref: '#/components/parameters/CategoryIdParam'
+components:
+  parameters:
+    CategoryIdParam:
+      name: categoryId
+      in: path
+      required: true
+      description: ID of the category.
+      schema:
+        type: string
+      example: 5f8a7b2c3d4e5f6a7b8c9d0e
+  responses:
+    Unauthorized:
+      description: The access token is missing, invalid or expired.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: The user does not have the permission (or scope) required for this operation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Error:
+      type: object
+      description: Error response.
+      properties:
+        statusCode:
+          type: integer
+          example: 404
+        error:
+          type: string
+          example: Not Found
+        message:
+          type: string
+          example: Flow not found.
+      required:
+      - statusCode
+      - error
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        created:
+          type: string
+          format: date-time
+        mtime:
+          type: string
+          format: date-time
+    CategoryCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Category name, must be unique.
+        description:
+          type: string
+          maxLength: 500
+      required:
+      - name
+      additionalProperties: false
+    CategoryUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+      additionalProperties: false
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: User access token obtained from `POST /user/auth`.
+externalDocs:
+  description: Appmixer documentation
+  url: https://docs.appmixer.com

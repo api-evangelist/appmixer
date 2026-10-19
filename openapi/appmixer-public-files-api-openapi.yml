@@ -1,0 +1,231 @@
+openapi: 3.2.0
+info:
+  title: Appmixer REST Public Files API
+  version: 6.5.5
+  summary: REST API of the Appmixer workflow automation and embedded iPaaS platform.
+  description: 'Appmixer offers a REST API that mirrors the functionality available in its UI. Use it for
+
+    advanced customizations, additional automations and scripting.
+
+
+    **Base URL.** The base URL depends on your Appmixer tenant, for example `https://api-acme.appmixer.ai`
+
+    (newer hosted tenants), `https://api.acme.appmixer.cloud` (older hosted tenants), or the API URL of
+
+    your Self-Managed installation.
+
+
+    **Authentication.** Most endpoints require a user access token sent as `Authorization: Bearer `.
+
+    Get a token by signing in with `POST /user/auth`. Some endpoints also require the user to have
+
+    the `admin` scope; this is noted in their descriptions.
+
+
+    **Errors.** Errors are returned as JSON objects with `statusCode`, `error` and `message` properties.'
+  contact:
+    name: Appmixer
+    url: https://www.appmixer.com
+servers:
+- url: '{tenantApiUrl}'
+  description: Your Appmixer tenant API
+  variables:
+    tenantApiUrl:
+      default: https://api-acme.appmixer.ai
+      description: API URL of your Appmixer tenant, e.g. https://api-acme.appmixer.ai or https://api.acme.appmixer.cloud.
+security:
+- bearerAuth: []
+tags:
+- name: Public Files
+  description: 'Public files are files that are available at the root location of your Appmixer tenant API
+
+    endpoint. For example, uploading `verify.html` makes the file available at `API_URL/verify.html`.
+
+    All Public Files endpoints require the `admin` scope.'
+paths:
+  /public-files:
+    get:
+      tags:
+      - Public Files
+      summary: Get public files
+      operationId: getPublicFiles
+      description: 'Returns a list of the public files. The list does not contain the contents of the files.
+
+        Requires the `admin` scope.'
+      responses:
+        '200':
+          description: List of public files.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PublicFile'
+              example:
+              - filename: test.txt
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags:
+      - Public Files
+      summary: Upload a public file
+      operationId: uploadPublicFile
+      description: 'Uploads a public file. The file becomes available at the root of the tenant API URL under the
+
+        given `filename`. Maximum size is 16 MB. Requires the `admin` scope.
+
+
+        ```
+
+        curl ''[TENANT_API_URL]/public-files'' \
+
+        --header ''Authorization: Bearer [ADMIN_TOKEN]'' \
+
+        --form ''file=@"/tmp/icon.png"'' \
+
+        --form ''filename="icon.png"''
+
+        ```'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PublicFileUpload'
+          application/json:
+            schema:
+              type: object
+              description: Text content can also be sent as a JSON string.
+              properties:
+                filename:
+                  type: string
+                  description: The name for the file.
+                file:
+                  type: string
+                  description: The text content of the file.
+              required:
+              - filename
+              - file
+      responses:
+        '200':
+          description: The file was uploaded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicFileOk'
+              example:
+                ok: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '413':
+          description: The file is larger than 16 MB.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /public-files/{filename}:
+    delete:
+      tags:
+      - Public Files
+      summary: Remove a public file
+      operationId: deletePublicFile
+      description: Removes a public file. Requires the `admin` scope.
+      parameters:
+      - name: filename
+        in: path
+        required: true
+        description: The name of the file you want to remove.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 'The file was removed. The code returns the MongoDB delete result
+
+            (`acknowledged`, `deletedCount`), not `{ "ok": true }` as the docs state.
+
+            '
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  acknowledged:
+                    type: boolean
+                  deletedCount:
+                    type: integer
+              example:
+                acknowledged: true
+                deletedCount: 1
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+components:
+  schemas:
+    PublicFileOk:
+      type: object
+      properties:
+        ok:
+          type: boolean
+    PublicFileUpload:
+      type: object
+      properties:
+        filename:
+          type: string
+          description: The name for the file.
+        file:
+          type: string
+          format: binary
+          description: The file to be uploaded.
+      required:
+      - filename
+      - file
+    Error:
+      type: object
+      description: Error response.
+      properties:
+        statusCode:
+          type: integer
+          example: 404
+        error:
+          type: string
+          example: Not Found
+        message:
+          type: string
+          example: Flow not found.
+      required:
+      - statusCode
+      - error
+    PublicFile:
+      type: object
+      properties:
+        filename:
+          type: string
+      required:
+      - filename
+  responses:
+    Unauthorized:
+      description: The access token is missing, invalid or expired.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: The user does not have the permission (or scope) required for this operation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: User access token obtained from `POST /user/auth`.
+externalDocs:
+  description: Appmixer documentation
+  url: https://docs.appmixer.com

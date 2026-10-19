@@ -1,0 +1,361 @@
+openapi: 3.2.0
+info:
+  title: Appmixer REST Modifiers API
+  version: 6.5.5
+  summary: REST API of the Appmixer workflow automation and embedded iPaaS platform.
+  description: 'Appmixer offers a REST API that mirrors the functionality available in its UI. Use it for
+
+    advanced customizations, additional automations and scripting.
+
+
+    **Base URL.** The base URL depends on your Appmixer tenant, for example `https://api-acme.appmixer.ai`
+
+    (newer hosted tenants), `https://api.acme.appmixer.cloud` (older hosted tenants), or the API URL of
+
+    your Self-Managed installation.
+
+
+    **Authentication.** Most endpoints require a user access token sent as `Authorization: Bearer `.
+
+    Get a token by signing in with `POST /user/auth`. Some endpoints also require the user to have
+
+    the `admin` scope; this is noted in their descriptions.
+
+
+    **Errors.** Errors are returned as JSON objects with `statusCode`, `error` and `message` properties.'
+  contact:
+    name: Appmixer
+    url: https://www.appmixer.com
+servers:
+- url: '{tenantApiUrl}'
+  description: Your Appmixer tenant API
+  variables:
+    tenantApiUrl:
+      default: https://api-acme.appmixer.ai
+      description: API URL of your Appmixer tenant, e.g. https://api-acme.appmixer.ai or https://api.acme.appmixer.cloud.
+security:
+- bearerAuth: []
+tags:
+- name: Modifiers
+  description: Modifiers are data transformation functions that can be used to transform data variables inside your flows. You can customize the list of modifiers or even define your own functions.
+paths:
+  /modifiers:
+    get:
+      tags:
+      - Modifiers
+      summary: Get Modifiers
+      operationId: getModifiers
+      description: 'Get available modifiers. Appmixer is shipped with its own set of modifiers by default; use this
+
+        endpoint to see what they are. You can then redefine the set with `PUT /modifiers`. Private
+
+        modifiers are omitted. No access token is required.'
+      security: []
+      responses:
+        '200':
+          description: Modifier categories and modifiers.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModifierDefinitions'
+              example:
+                categories:
+                  object:
+                    label: Object
+                    index: 1
+                  list:
+                    label: List
+                    index: 2
+                modifiers:
+                  g_stringify:
+                    name: stringify
+                    label: Stringify
+                    category:
+                    - object
+                    - list
+                    description: Convert an object or list to a JSON string.
+                    arguments:
+                    - name: space
+                      type: number
+                      isHash: true
+                    returns:
+                      type: string
+                    helperFn: "function(value, { hash }) {\n\n                return JSON.stringify(value, null, hash.space);\n            }"
+                  g_length:
+                    name: length
+                    label: Length
+                    category:
+                    - list
+                    - text
+                    description: Find length of text or list.
+                    arguments: []
+                    returns:
+                      type: number
+                    helperFn: "function(value) {\n\n                return value && value.hasOwnProperty('length') ? value.length : 0;\n            }"
+    put:
+      tags:
+      - Modifiers
+      summary: Edit Modifiers
+      operationId: updateModifiers
+      description: 'Change the modifiers and their categories as a whole. Requires the `admin` scope. Before editing
+
+        existing modifiers or adding new ones, check the `GET /modifiers` endpoint to see the structure.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifierDefinitions'
+            example:
+              categories:
+                text:
+                  label: Text
+                  index: 1
+              modifiers:
+                g_length:
+                  label: Length
+                  category:
+                  - text
+                  description: Find length of text or list.
+                  arguments: []
+                  returns:
+                    type: number
+                  helperFn: 'function(value) { return value && value.hasOwnProperty(''length'') ? value.length : 0; }'
+      responses:
+        '200':
+          description: The whole updated definition, like the GET endpoint (including private modifiers and `modifiedBy`).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModifierDefinitions'
+        '400':
+          description: Payload validation failed or a modifier definition is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    delete:
+      tags:
+      - Modifiers
+      summary: Delete Modifiers
+      operationId: deleteModifiers
+      description: Delete all modifiers. Requires the `admin` scope.
+      responses:
+        '200':
+          description: Empty response.
+          content:
+            application/json:
+              schema:
+                type: object
+              example: {}
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /modifiers/test:
+    post:
+      tags:
+      - Modifiers
+      summary: Test Modifier Function
+      operationId: testModifier
+      description: 'Test a helper function with the desired arguments, to check how it will behave under different
+
+        conditions. Requires the `admin` scope. The helper function must always return a value;
+
+        if it returns `undefined`, a `400` error is returned.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModifierTestRequest'
+            example:
+              helperFn: 'function(value) { return value && value.hasOwnProperty(''length'') ? value.length : 0; }'
+              arguments:
+              - test
+      responses:
+        '200':
+          description: The value returned by the helper function.
+          content:
+            application/json:
+              schema: {}
+              example: 4
+        '400':
+          description: Validation failed, the helper function is invalid, or it returned `undefined`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                statusCode: 400
+                error: Bad Request
+                message: The function returned "undefined"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+components:
+  schemas:
+    ModifierCategory:
+      type: object
+      properties:
+        label:
+          type: string
+          description: Label shown in the Modifier Editor. Can be overridden by string customization.
+        index:
+          type: number
+          description: Position on which this category is displayed in the Modifier Editor.
+      required:
+      - label
+      - index
+    ModifierDefinitions:
+      type: object
+      properties:
+        categories:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ModifierCategory'
+        modifiers:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Modifier'
+      required:
+      - categories
+      - modifiers
+    ModifierArgument:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        description:
+          type: string
+        options: {}
+        defaultValue: {}
+        isHash:
+          type: boolean
+        isBlock:
+          type: boolean
+        multiline:
+          type: boolean
+      required:
+      - name
+      - type
+    Error:
+      type: object
+      description: Error response.
+      properties:
+        statusCode:
+          type: integer
+          example: 404
+        error:
+          type: string
+          example: Not Found
+        message:
+          type: string
+          example: Flow not found.
+      required:
+      - statusCode
+      - error
+    ModifierTestRequest:
+      type: object
+      properties:
+        helperFn:
+          type: string
+          description: The JavaScript helper function as a string.
+        arguments:
+          type: array
+          items: {}
+          description: The arguments to be passed to the helper function.
+      required:
+      - helperFn
+      - arguments
+    Modifier:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Kept for backward compatibility.
+        label:
+          type: string
+          description: Label shown in the Modifier Editor. Can be overridden by string customization.
+        category:
+          type: array
+          items:
+            type: string
+          description: Categories the modifier appears under.
+        description:
+          type: string
+        type:
+          type: string
+        tooltip:
+          type: string
+        arguments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModifierArgument'
+          description: Arguments of the modifier; an inspector field is generated for each.
+        returns:
+          type: object
+          properties:
+            type:
+              type: string
+          required:
+          - type
+        helperFn:
+          type: string
+          description: The JavaScript function as a string. The first argument is always the variable value, followed by the modifier's arguments in the order they are defined.
+        variableArguments:
+          type: boolean
+          description: When `true`, the modifier accepts any number of arguments.
+        isBlock:
+          type: boolean
+          description: Indicates a block modifier.
+        private:
+          type: boolean
+          description: Private modifiers are not available to users.
+        usesPartials:
+          type: boolean
+        partialVariables:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              type:
+                type: string
+              description:
+                type: string
+      required:
+      - label
+      - category
+      - description
+      - helperFn
+  responses:
+    Unauthorized:
+      description: The access token is missing, invalid or expired.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: The user does not have the permission (or scope) required for this operation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: User access token obtained from `POST /user/auth`.
+externalDocs:
+  description: Appmixer documentation
+  url: https://docs.appmixer.com

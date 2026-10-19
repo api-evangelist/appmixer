@@ -1,0 +1,210 @@
+openapi: 3.2.0
+info:
+  title: Appmixer REST Config API
+  version: 6.5.5
+  summary: REST API of the Appmixer workflow automation and embedded iPaaS platform.
+  description: 'Appmixer offers a REST API that mirrors the functionality available in its UI. Use it for
+
+    advanced customizations, additional automations and scripting.
+
+
+    **Base URL.** The base URL depends on your Appmixer tenant, for example `https://api-acme.appmixer.ai`
+
+    (newer hosted tenants), `https://api.acme.appmixer.cloud` (older hosted tenants), or the API URL of
+
+    your Self-Managed installation.
+
+
+    **Authentication.** Most endpoints require a user access token sent as `Authorization: Bearer `.
+
+    Get a token by signing in with `POST /user/auth`. Some endpoints also require the user to have
+
+    the `admin` scope; this is noted in their descriptions.
+
+
+    **Errors.** Errors are returned as JSON objects with `statusCode`, `error` and `message` properties.'
+  contact:
+    name: Appmixer
+    url: https://www.appmixer.com
+servers:
+- url: '{tenantApiUrl}'
+  description: Your Appmixer tenant API
+  variables:
+    tenantApiUrl:
+      default: https://api-acme.appmixer.ai
+      description: API URL of your Appmixer tenant, e.g. https://api-acme.appmixer.ai or https://api.acme.appmixer.cloud.
+security:
+- bearerAuth: []
+tags:
+- name: Config
+  description: System configuration stored in the database. These endpoints are only accessible to users with the `admin` scope.
+paths:
+  /config:
+    get:
+      tags:
+      - Config
+      summary: Get all configuration entries
+      operationId: getConfig
+      description: 'Returns the configuration values that have been stored through the API. Requires the `admin`
+
+        scope. The `JWTSecret` and `IDP_METADATA` entries are never returned.
+
+
+        With `includeDefaults=true`, default values of `FLOW_LIMIT_RULES`, `FLOW_LIMIT_RULES_ENABLED` and
+
+        `STORAGE_QUOTA_RULES` are added for keys that are not stored in the database.'
+      parameters:
+      - name: includeDefaults
+        in: query
+        description: When `true`, include default values for selected keys that are not stored in the database.
+        schema:
+          type: string
+          enum:
+          - 'true'
+          - 'false'
+      - name: key
+        in: query
+        description: With `includeDefaults=true`, only add the default value of this key.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Configuration entries.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ConfigEntry'
+              example:
+              - key: WEBHOOK_FLOW_COMPONENT_ERROR
+                value: https://example.com/webhook
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags:
+      - Config
+      summary: Create a configuration key/value pair
+      operationId: setConfig
+      description: 'Create or update (upsert) a configuration key/value pair. Requires the `admin` scope. Surrounding
+
+        whitespace is trimmed from both the key and the value. The value must be a string; structured
+
+        values are sent as JSON strings.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfigEntry'
+            example:
+              key: myConfigKey
+              value: My Custom Value
+      responses:
+        '200':
+          description: The stored configuration entry.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigEntry'
+              example:
+                key: myConfigKey
+                value: My Custom Value
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /config/{key}:
+    delete:
+      tags:
+      - Config
+      summary: Removes a configuration entry
+      operationId: deleteConfig
+      description: Remove a configuration entry. Requires the `admin` scope. Surrounding whitespace in the key is trimmed.
+      parameters:
+      - name: key
+        in: path
+        required: true
+        description: The key of the configuration to be removed.
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Entry removed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+              example:
+                ok: true
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+components:
+  responses:
+    Unauthorized:
+      description: The access token is missing, invalid or expired.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: The user does not have the permission (or scope) required for this operation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: The request is invalid, for example it failed payload or query validation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Error:
+      type: object
+      description: Error response.
+      properties:
+        statusCode:
+          type: integer
+          example: 404
+        error:
+          type: string
+          example: Not Found
+        message:
+          type: string
+          example: Flow not found.
+      required:
+      - statusCode
+      - error
+    ConfigEntry:
+      type: object
+      properties:
+        key:
+          type: string
+          description: Configuration key.
+        value:
+          type: string
+          description: Configuration value (structured values as JSON strings).
+      required:
+      - key
+      - value
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: User access token obtained from `POST /user/auth`.
+externalDocs:
+  description: Appmixer documentation
+  url: https://docs.appmixer.com

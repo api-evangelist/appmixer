@@ -1,0 +1,264 @@
+openapi: 3.2.0
+info:
+  title: Appmixer REST Variables API
+  version: 6.5.5
+  summary: REST API of the Appmixer workflow automation and embedded iPaaS platform.
+  description: 'Appmixer offers a REST API that mirrors the functionality available in its UI. Use it for
+
+    advanced customizations, additional automations and scripting.
+
+
+    **Base URL.** The base URL depends on your Appmixer tenant, for example `https://api-acme.appmixer.ai`
+
+    (newer hosted tenants), `https://api.acme.appmixer.cloud` (older hosted tenants), or the API URL of
+
+    your Self-Managed installation.
+
+
+    **Authentication.** Most endpoints require a user access token sent as `Authorization: Bearer `.
+
+    Get a token by signing in with `POST /user/auth`. Some endpoints also require the user to have
+
+    the `admin` scope; this is noted in their descriptions.
+
+
+    **Errors.** Errors are returned as JSON objects with `statusCode`, `error` and `message` properties.'
+  contact:
+    name: Appmixer
+    url: https://www.appmixer.com
+servers:
+- url: '{tenantApiUrl}'
+  description: Your Appmixer tenant API
+  variables:
+    tenantApiUrl:
+      default: https://api-acme.appmixer.ai
+      description: API URL of your Appmixer tenant, e.g. https://api-acme.appmixer.ai or https://api.acme.appmixer.cloud.
+security:
+- bearerAuth: []
+tags:
+- name: Variables
+  description: 'Variables are placeholders that can be used in component config or inputs. They are replaced
+
+    either at runtime by data coming from components connected back in the chain (dynamic
+
+    variables) or by real values (static variables).'
+paths:
+  /variables/{flowId}/fetch:
+    parameters:
+    - $ref: '#/components/parameters/FlowIdParam'
+    post:
+      tags:
+      - Variables
+      summary: Get flow variables
+      operationId: getFlowVariables
+      description: 'Get variables. Variables are placeholders that can be used in component config or inputs.
+
+        These placeholders are replaced either at runtime by data coming from components connected
+
+        back in the chain (dynamic variables) or by real values (static variables).
+
+
+        When `components.IDs` is empty, variables for the whole flow are returned (this is what the
+
+        Designer calls when a flow is opened). Requires read permission on the flow.'
+      parameters:
+      - name: compress
+        in: query
+        description: When `true`, dynamic component variables are de-duplicated into a separate `dynamicComponentVariables` object.
+        schema:
+          type: string
+          enum:
+          - 'true'
+          - 'false'
+          default: 'false'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                useCache:
+                  type: boolean
+                  default: true
+                flow:
+                  type: boolean
+                  default: true
+                  description: If `true`, the response object contains flow (global) variables too.
+                components:
+                  type: object
+                  properties:
+                    IDs:
+                      type: array
+                      items:
+                        type: string
+                      default: []
+                      description: Array of component IDs.
+                    links:
+                      type: boolean
+                      default: true
+                      description: If `true`, the response contains input link variables for the given component IDs.
+                    properties:
+                      type: boolean
+                      default: true
+                      description: If `true`, the response contains properties variables for the given component IDs.
+                    examples:
+                      type: boolean
+                      default: false
+                      description: Include example values.
+            example:
+              useCache: true
+              flow: false
+              components:
+                IDs:
+                - bd9891a7-3303-43d4-a223-714a8db11e05
+                properties: true
+                links: false
+      responses:
+        '200':
+          description: Variables.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  components:
+                    type: object
+                    description: Map of component ID to its `links` and/or `properties` variables.
+                    additionalProperties:
+                      type: object
+                      properties:
+                        links:
+                          type: object
+                          additionalProperties: true
+                        properties:
+                          type: object
+                          additionalProperties: true
+                  dynamicComponentVariables:
+                    type: object
+                    additionalProperties: true
+                    description: Present only with `compress=true`.
+                  flow:
+                    type: array
+                    description: Flow (global) variables. Present only when `flow` is `true`.
+                    items:
+                      type: object
+                      properties:
+                        label:
+                          type: string
+                        category:
+                          type: array
+                          items:
+                            type: string
+                        name:
+                          type: string
+              example:
+                components:
+                  e58aba53-cc20-4847-b3ef-c0d35d5e4421:
+                    links:
+                      message:
+                        a6bb7a84-89c5-41e9-8b59-6a3264a49272:
+                          out:
+                            inspector: {}
+                            variables:
+                              static: {}
+                              dynamic:
+                              - componentId: 9f9542a2-b37d-4280-aa54-87f21912701b
+                                hardwired: true
+                                label: Start time
+                                port: out
+                                value: '{{{$.9f9542a2-b37d-4280-aa54-87f21912701b.out.started}}}'
+                    properties:
+                      inspector:
+                        inputs: {}
+                        groups: {}
+                        errors:
+                          inputs: []
+                      variables:
+                        static:
+                          channelId:
+                          - label: My Channel
+                            value: '123'
+                      schema: {}
+                flow:
+                - label: Flow ID
+                  category:
+                  - Control
+                  name: g_flowId
+                - label: Flow Name
+                  category:
+                  - Control
+                  name: g_flowName
+                - label: Now (ISO 8601)
+                  category:
+                  - Date
+                  name: g_now
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  parameters:
+    FlowIdParam:
+      name: flowId
+      in: path
+      required: true
+      description: Flow ID (lowercased by the server).
+      schema:
+        type: string
+      example: 9089f275-f5a5-4796-ba23-365412c5666e
+  responses:
+    Unauthorized:
+      description: The access token is missing, invalid or expired.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: The user does not have the permission (or scope) required for this operation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: The request is invalid, for example it failed payload or query validation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Error:
+      type: object
+      description: Error response.
+      properties:
+        statusCode:
+          type: integer
+          example: 404
+        error:
+          type: string
+          example: Not Found
+        message:
+          type: string
+          example: Flow not found.
+      required:
+      - statusCode
+      - error
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: User access token obtained from `POST /user/auth`.
+externalDocs:
+  description: Appmixer documentation
+  url: https://docs.appmixer.com

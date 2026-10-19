@@ -1,106 +1,1065 @@
 openapi: 3.2.0
 info:
-  title: Appmixer Accounts API
-  description: The Appmixer REST API provides programmatic access to manage workflows, users, accounts, apps/connectors, files, data stores, insights, and people tasks within the Appmixer embedded iPaaS platform. The API allows you to access all the features that the Appmixer UI works with.
-  version: 6.1.0
+  title: Appmixer REST Accounts API
+  version: 6.5.5
+  summary: REST API of the Appmixer workflow automation and embedded iPaaS platform.
+  description: 'Appmixer offers a REST API that mirrors the functionality available in its UI. Use it for
+
+    advanced customizations, additional automations and scripting.
+
+
+    **Base URL.** The base URL depends on your Appmixer tenant, for example `https://api-acme.appmixer.ai`
+
+    (newer hosted tenants), `https://api.acme.appmixer.cloud` (older hosted tenants), or the API URL of
+
+    your Self-Managed installation.
+
+
+    **Authentication.** Most endpoints require a user access token sent as `Authorization: Bearer `.
+
+    Get a token by signing in with `POST /user/auth`. Some endpoints also require the user to have
+
+    the `admin` scope; this is noted in their descriptions.
+
+
+    **Errors.** Errors are returned as JSON objects with `statusCode`, `error` and `message` properties.'
   contact:
     name: Appmixer
-    url: https://www.appmixer.com/
-  license:
-    name: Proprietary
-    url: https://www.appmixer.com/terms-and-conditions
+    url: https://www.appmixer.com
 servers:
-- url: https://api.{tenant}.appmixer.cloud
-  description: Appmixer Cloud Tenant API
+- url: '{tenantApiUrl}'
+  description: Your Appmixer tenant API
   variables:
-    tenant:
-      default: YOUR_TENANT
-      description: Your Appmixer tenant identifier
+    tenantApiUrl:
+      default: https://api-acme.appmixer.ai
+      description: API URL of your Appmixer tenant, e.g. https://api-acme.appmixer.ai or https://api.acme.appmixer.cloud.
 security:
 - bearerAuth: []
 tags:
 - name: Accounts
-  description: Connected third-party account management
+  description: 'Accounts are the credentials (OAuth tokens, API keys, username/password pairs) that a user
+
+    authenticated with to connector apps. Components in flows use accounts to call third-party APIs. This group also contains the endpoints that drive authenticating a user to a connector app (authentication tickets, URLs and status) and assign accounts to components; the Appmixer JS SDK normally handles those for you.'
 paths:
-  /accounts:
+  /auth/{componentType}:
     get:
-      operationId: listAccounts
-      summary: Appmixer List accounts
-      description: Get list of all accounts the user has authenticated with to any component (e.g. OAuth connections to third-party services).
+      tags:
+      - Accounts
+      summary: Get Accounts
+      operationId: getAccountsByComponentType
+      description: 'Get the list of accounts the user has previously authenticated with for this component type.
+
+        Only accounts that have a valid access token with a sufficient scope for the component type are
+
+        returned.'
+      parameters:
+      - $ref: '#/components/parameters/AccountComponentTypeParam'
+      - name: componentId
+        in: query
+        required: false
+        description: 'Component ID. When set, the response indicates whether an account is assigned to this component
+
+          (`componentAssigned`). Can be repeated.
+
+          '
+        schema:
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        example: e15ef119-8fcb-459b-aaae-2a3f9ee41f15
+      - name: flowId
+        in: query
+        required: false
+        description: Flow ID. When set (and `componentId` is not), the scope is computed from the components of this flow that match the component type.
+        schema:
+          type: string
       responses:
         '200':
-          description: List of accounts returned successfully
+          description: Authentication status and accounts for the component type.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountComponentTypeAuth'
+              example:
+                componentType: appmixer.slack.list.SendChannelMessage
+                auth:
+                  accounts:
+                    5a6e21f3b266224186ac7d03:
+                      accessTokenValid: true
+                      accountId: 5a6e21f3b266224186ac7d03
+                      tokenId: 5a6e21f3b266224186ac7d04
+                      componentAssigned: true
+                      componentId: e25dc901-f92a-46a2-8d29-2573d4ad65e5
+                      scopeValid: true
+                      authorizedScope:
+                      - channels:read
+                      - chat:write:user
+                      name: U0UFJ0MFG - client IO
+                      displayName: client IO
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /accounts:
+    get:
+      tags:
+      - Accounts
+      summary: Get All Accounts
+      operationId: getAccounts
+      description: 'Get the list of all accounts the user has authenticated with to any component. Revoked accounts
+
+        are not returned.
+
+
+        Example of filtering out certain accounts (all `acme` accounts and AWS accounts):
+
+        `GET /accounts?filter=service:!acme:[service]&filter=service:!appmixer:aws`'
+      parameters:
+      - name: filter
+        in: query
+        required: false
+        description: 'Filter accounts. The format is `property:value` (equals) or `property:!value` (not equals),
+
+          for example `service:appmixer:slack`. The parameter can be repeated.
+
+          '
+        schema:
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        example: service:!appmixer:aws
+      - name: projection
+        in: query
+        required: false
+        description: Comma-separated list of properties to include (`name,service`) or exclude (`-profileInfo`).
+        schema:
+          type: string
+      responses:
+        '200':
+          description: List of accounts.
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Account'
+              example:
+              - accountId: 5a6e21f3b266224186ac7d03
+                name: U0UFJ0MFG - client IO
+                displayName: null
+                service: appmixer:slack
+                userId: 58593f07c3ee4f239dc69ff7
+                profileInfo:
+                  id: U0UFJ0MFG - client IO
+              - accountId: 5a7313abb3a60729efe76f1e
+                name: t.o.mas@client.io
+                displayName: null
+                service: appmixer:pipedrive
+                userId: 58593f07c3ee4f239dc69ff7
+                profileInfo:
+                  name: tomas
+                  email: t.o.mas@client.io
         '401':
-          description: Unauthorized
+          $ref: '#/components/responses/Unauthorized'
+    post:
       tags:
       - Accounts
-  /accounts/{accountId}:
-    get:
-      operationId: getAccount
-      summary: Appmixer Get an account
-      description: Get details for a specific account and check if its credentials (tokens) are still valid.
+      summary: Create Account
+      operationId: createAccount
+      description: 'Create an account. Usually, an account is created when the user authenticates a component. There
+
+        are scenarios where it is beneficial to create an account without user interaction (Integrations).
+
+        There has to be an authentication module (`auth.js`) installed in Appmixer corresponding to the
+
+        `service` ID. All the built-in authentication types are supported (OAuth 1, OAuth 2, API Key,
+
+        password).
+
+
+        The structure of `token` depends on the authentication type:
+
+
+        - OAuth 2: `accessToken` (required), `refreshToken`, `expDate` and `scope`.
+
+        - OAuth 1: `accessToken` and `accessTokenSecret` (both required).
+
+        - API Key / password: whatever fields the auth module expects, e.g. `apiKey`, or `username` and `password`.
+
+
+        For OAuth accounts, the `scope` of the token is validated against the scopes required by the
+
+        components of the service installed in Appmixer, unless `validateScope=false`.
+
+
+        The `profileInfo` object is optional. If you provide it, it will be used. If you don''t, the
+
+        `requestProfileInfo` function of the authentication module is called to get the profile info.'
       parameters:
-      - name: accountId
-        in: path
-        required: true
+      - name: validateScope
+        in: query
+        required: false
+        description: If `false`, the scope of the token from the body won't be validated against components installed in Appmixer (OAuth only).
         schema:
           type: string
+          enum:
+          - 'true'
+          - 'false'
+      - name: requestProfileInfo
+        in: query
+        required: false
+        description: 'If `false`, the `requestProfileInfo` function of the auth module won''t be called (OAuth). For API Key
+
+          and password accounts, `true` forces the call even when `profileInfo` is provided.
+
+          '
+        schema:
+          type: string
+          enum:
+          - 'true'
+          - 'false'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountCreateRequest'
+            examples:
+              oauth2Slack:
+                summary: Slack (OAuth 2) account
+                value:
+                  service: appmixer:slack
+                  token:
+                    accessToken: '[slack access token]'
+                    scope:
+                    - channels:write
+                    - groups:write
+                    - channels:read
+                    - channels:history
+                    - groups:read
+                    - groups:history
+                    - users:read
+                    - chat:write:user
+                  profileInfo:
+                    id: '[Name of the account that will be used in the frontend]'
+              oauth2Google:
+                summary: Google (OAuth 2) account with access token expiration
+                value:
+                  service: appmixer:google
+                  token:
+                    accessToken: '[google access token]'
+                    expDate: 2021-02-04 15:34:48.833000+00:00
+                    refreshToken: '[google refresh token]'
+                    scope:
+                    - https://www.googleapis.com/auth/drive
+                    - https://mail.google.com/
+                    - profile
+                    - email
+              apiKey:
+                summary: API Key account
+                value:
+                  service: appmixer:aws
+                  token:
+                    accessKeyId: '[AWS access key ID]'
+                    secretKey: '[AWS secret key]'
+              password:
+                summary: Password account
+                value:
+                  service: appmixer:acme
+                  token:
+                    username: '[username]'
+                    password: '[password]'
       responses:
         '200':
-          description: Account information returned successfully
+          description: The created account.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Account'
+              example:
+                accountId: 5f841f3a43f477a9fa8fa4e9
+                name: '[Name of the account]'
+                displayName: null
+                service: '[vendor:service]'
+                userId: 5f804b96ea48ec47a8c444a7
+                profileInfo: {}
+                pre: {}
+                revoked: false
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
-          description: Unauthorized
-        '404':
-          description: Account not found
+          $ref: '#/components/responses/Unauthorized'
+  /accounts/{accountId}:
+    put:
       tags:
       - Accounts
-    delete:
-      operationId: deleteAccount
-      summary: Appmixer Delete an account
-      description: Delete (disconnect) an authenticated account.
+      summary: Update Account Info
+      operationId: updateAccount
+      description: 'Update account information. Currently, only the display name can be updated. The display name is
+
+        visible in the Designer inspector when selecting available accounts for a component type and also on
+
+        the Accounts page.'
       parameters:
-      - name: accountId
-        in: path
+      - $ref: '#/components/parameters/AccountIdParam'
+      requestBody:
         required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                displayName:
+                  type: string
+                  minLength: 3
+                  maxLength: 40
+                  description: Human-readable name of the account.
+            example:
+              displayName: My Account Name
+      responses:
+        '200':
+          description: The updated account.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - Accounts
+      summary: Remove Account
+      operationId: deleteAccount
+      description: 'Remove the account and stop all the flows that this account is used in. The account''s tokens are
+
+        deleted and the account is marked as revoked.'
+      parameters:
+      - $ref: '#/components/parameters/AccountIdParam'
+      responses:
+        '200':
+          description: The account was removed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accountId:
+                    type: string
+                required:
+                - accountId
+              example:
+                accountId: 5abcd0ddc4c335326198c1b2
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /accounts/{accountId}/test:
+    post:
+      tags:
+      - Accounts
+      summary: Test Account
+      operationId: testAccount
+      description: Test account. Check if the credentials (tokens) of the account are still valid.
+      parameters:
+      - $ref: '#/components/parameters/AccountIdParam'
+      responses:
+        '200':
+          description: Result of the test. `ok` is `true` if at least one of the account's tokens is valid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                required:
+                - ok
+              example:
+                ok: true
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /accounts/{accountId}/flows:
+    get:
+      tags:
+      - Accounts
+      summary: List All Flows Using Account
+      operationId: getAccountFlows
+      description: List all the flows where the account is used.
+      parameters:
+      - $ref: '#/components/parameters/AccountIdParam'
+      responses:
+        '200':
+          description: Flows that use the account.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    flowId:
+                      type: string
+                    name:
+                      type: string
+                  required:
+                  - flowId
+                  - name
+              example:
+              - flowId: 9251b4b6-4cdb-42ad-9431-1843e05307be
+                name: 'Flow #1'
+              - flowId: 777d3024-43f6-4034-ac98-1cb5f320cb3a
+                name: 'Flow #2'
+              - flowId: 9089f275-f5a5-4796-ba23-365412c5666e
+                name: 'Flow #3'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /accounts/{accountId}/share:
+    post:
+      tags:
+      - Accounts
+      summary: Share Account
+      operationId: shareAccount
+      description: 'Share your account with an integration template so that instances created from the template can use
+
+        your account. This is useful when you want template users to access shared resources (like a database
+
+        or API) without requiring them to provide their own credentials.
+
+
+        Account sharing is done at the component level, not the template level. This allows you to share your
+
+        account for specific components while requiring users to connect their own accounts for other
+
+        components in the same template.
+
+
+        Shared accounts are locked to specific component types, components can only access tokens with the
+
+        required scopes, and shared account credentials are masked in logs for non-owners. The account must
+
+        have at least one valid token with the scope required by each of the component types, otherwise
+
+        `400` is returned.'
+      parameters:
+      - $ref: '#/components/parameters/AccountIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                flowId:
+                  type: string
+                  description: ID of the integration template to share the account with.
+                componentIds:
+                  type: array
+                  items:
+                    type: string
+                  description: IDs of the template components that should use this shared account.
+              required:
+              - flowId
+              - componentIds
+            example:
+              flowId: integration-template-id
+              componentIds:
+              - component-1
+              - component-2
+      responses:
+        '200':
+          description: The account was shared.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accountId:
+                    type: string
+                  flowId:
+                    type: string
+                  shared:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        componentId:
+                          type: string
+                        componentType:
+                          type: string
+                required:
+                - accountId
+                - flowId
+                - shared
+              example:
+                accountId: 5a6e21f3b266224186ac7d03
+                flowId: 9089f275-f5a5-4796-ba23-365412c5666e
+                shared:
+                - componentId: component-1
+                  componentType: appmixer.gmail.SendEmail
+                - componentId: component-2
+                  componentType: appmixer.slack.SendMessage
+        '400':
+          description: Validation failed, or the account doesn't have valid tokens with the required scope for a component type.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                statusCode: 400
+                error: Bad Request
+                message: 'No valid tokens found for componentType: appmixer.gmail.SendEmail'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: The account or the integration template doesn't exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                statusCode: 404
+                error: Not Found
+                message: Flow 9089f275-f5a5-4796-ba23-365412c5666e not found
+  /accounts/{accountId}/unshare:
+    post:
+      tags:
+      - Accounts
+      summary: Unshare Account
+      operationId: unshareAccount
+      description: 'Remove account sharing from an integration template. This immediately revokes access for all
+
+        instances created from the template: components using the shared account lose access and flows may
+
+        stop working.'
+      parameters:
+      - $ref: '#/components/parameters/AccountIdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                flowId:
+                  type: string
+                  description: ID of the integration template to unshare from.
+              required:
+              - flowId
+            example:
+              flowId: integration-template-id
+      responses:
+        '200':
+          description: The account was unshared.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accountId:
+                    type: string
+                  flowId:
+                    type: string
+                required:
+                - accountId
+                - flowId
+              example:
+                accountId: 5a6e21f3b266224186ac7d03
+                flowId: 9089f275-f5a5-4796-ba23-365412c5666e
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: The account or the integration template doesn't exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                statusCode: 404
+                error: Not Found
+                message: Flow 9089f275-f5a5-4796-ba23-365412c5666e not found
+  /auth/ticket:
+    post:
+      tags:
+      - Accounts
+      summary: Generate Authentication Session Ticket
+      operationId: createAuthTicket
+      description: 'Generate an authentication session ticket. This is the first call to be made before the user can
+
+        authenticate to a service. The flow is as follows:
+
+
+        1. Generate an authentication session ticket.
+
+        2. Get an authentication URL (`GET /auth/{componentType}/auth-url/{ticket}`).
+
+        3. Open the authentication URL in a browser to start the authentication flow.
+
+        4. Once the user completes the authentication flow, the browser redirects the user to a special
+
+        Appmixer page which posts a message of the form `appmixer.auth.[success/failure].[ticket]` via the
+
+        `window.postMessage()` call.
+
+        Alternatively, poll `GET /auth/status/{ticket}`.
+
+
+        Note that this is a low-level mechanism that you don''t normally have to deal with. The Appmixer JS SDK
+
+        handles all this for you.'
+      responses:
+        '200':
+          description: A new authentication session ticket.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ticket:
+                    type: string
+                    description: Ticket in the form `<userId>:<uuid>`.
+                required:
+                - ticket
+              example:
+                ticket: 58593f07c3ee4f239dc69ff7:1d2a90df-b192-4a47-aaff-5a80bab66de5
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /auth/{componentType}/auth-url/{ticket}:
+    get:
+      tags:
+      - Accounts
+      summary: Get Authentication URL
+      operationId: getAuthUrl
+      description: 'Get the URL the user should be redirected to (or that should be opened in a popup window) to
+
+        authenticate to the service of the component type. For API key and password based services, the
+
+        response also contains the definition of the form inputs.'
+      parameters:
+      - $ref: '#/components/parameters/AccountComponentTypeParam'
+      - $ref: '#/components/parameters/AccountAuthTicketParam'
+      - name: componentId
+        in: query
+        required: false
+        description: Component ID. The resulting account will be assigned to this component. Can be repeated.
+        schema:
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+      - name: flowId
+        in: query
+        required: false
+        description: Flow ID. If not set, it is derived from `componentId`.
+        schema:
+          type: string
+      - name: configName
+        in: query
+        required: false
+        description: Name of a custom (user-specific) OAuth configuration to use.
         schema:
           type: string
       responses:
         '200':
-          description: Account deleted successfully
+          description: The authentication URL.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  authUrl:
+                    type: string
+                  inputs:
+                    type: object
+                    description: Form inputs definition (API key and password services only).
+                    additionalProperties: true
+                required:
+                - authUrl
+              example:
+                authUrl: https://slack.com/oauth/authorize?response_type=code&client_id=25316748213.218351034294&redirect_uri=http%3A%2F%2Flocalhost%3A2200%2Fauth%2Fslack%2Fcallback&state=38133t07c3ee4f369dc69ff7%3A1d2a90df-b192-4a47-aaff-5a80bab66de5&scope=channels%3Aread%2Cchat%3Awrite%3Auser
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
-          description: Unauthorized
-        '404':
-          description: Account not found
+          $ref: '#/components/responses/Unauthorized'
+  /auth/status/{ticket}:
+    get:
       tags:
       - Accounts
+      summary: Get Authentication Status
+      operationId: getAuthStatus
+      description: 'Get the status of the authentication session identified by the ticket. Use it to poll for the result
+
+        of the authentication flow started with the authentication URL.'
+      parameters:
+      - $ref: '#/components/parameters/AccountAuthTicketParam'
+      responses:
+        '200':
+          description: Status of the authentication session.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountAuthSessionStatus'
+              example:
+                accountId: 5bc0bad6f4cb78001167b173
+                tokenId: 65c49d44e49f774bb587c4e1
+                finished: true
+                updatedAt: 2024-02-08 09:22:12.496000+00:00
+                error: null
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /auth/component/{componentId}:
+    delete:
+      tags:
+      - Accounts
+      summary: Clear Authentication From Component
+      operationId: clearComponentAuth
+      description: 'Clear authentication associated with the component. Note that this call does not remove the account,
+
+        it only removes the association of an account with a component.'
+      parameters:
+      - $ref: '#/components/parameters/AccountAuthComponentIdParam'
+      responses:
+        '200':
+          description: The association was removed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  componentId:
+                    type: string
+                required:
+                - componentId
+              example:
+                componentId: e25dc901-f92a-46a2-8d29-2573d4ad65e5
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /auth/component/{componentId}/{accountId}:
+    put:
+      tags:
+      - Accounts
+      summary: Assign Account To Component
+      operationId: assignAccountToComponent
+      description: 'Assign an account to a component. The account''s service has to match the service of the component
+
+        and the user needs permission to edit the flow the component belongs to.'
+      parameters:
+      - $ref: '#/components/parameters/AccountAuthComponentIdParam'
+      - $ref: '#/components/parameters/AccountIdParam'
+      responses:
+        '200':
+          description: The account was assigned to the component.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accountId:
+                    type: string
+                  componentId:
+                    type: string
+                required:
+                - accountId
+                - componentId
+              example:
+                accountId: 5a6e21f3b266224186ac7d03
+                componentId: e25dc901-f92a-46a2-8d29-2573d4ad65e5
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
 components:
   schemas:
-    Account:
+    AccountComponentTypeAuth:
       type: object
+      properties:
+        componentType:
+          type: string
+        auth:
+          type: object
+          properties:
+            accounts:
+              type: object
+              description: Map of account ID to token status. Missing if there are no accounts.
+              additionalProperties:
+                $ref: '#/components/schemas/AccountTokenAuthStatus'
+            connectAccountButton:
+              type: object
+              additionalProperties: true
+              description: Custom "connect account" button definition from the service manifest, if any.
+      required:
+      - componentType
+      - auth
+    AccountTokenAuthStatus:
+      type: object
+      description: Status of an account's token for a component type.
+      additionalProperties: true
+      properties:
+        accessTokenValid:
+          type: boolean
+        accountId:
+          type: string
+        tokenId:
+          type: string
+        componentAssigned:
+          type: boolean
+          description: Whether the account is assigned to the component given by `componentId`.
+        componentId:
+          type: string
+        scopeValid:
+          type: boolean
+        authorizedScope:
+          type: array
+          items:
+            type: string
+        name:
+          type: string
+        displayName:
+          type:
+          - string
+          - 'null'
+    AccountAuthSessionStatus:
+      type: object
+      description: Status of an authentication session.
+      additionalProperties: true
       properties:
         accountId:
           type: string
-        name:
+        tokenId:
           type: string
+        finished:
+          type: boolean
+          description: Whether the authentication flow has finished.
+        updatedAt:
+          type: string
+          format: date-time
+        error:
+          description: Error message if the authentication failed.
+          type:
+          - string
+          - object
+          - 'null'
+    AccountCreateRequest:
+      type: object
+      additionalProperties: true
+      properties:
         service:
           type: string
+          description: ID (`vendor:service`) of the service, for example `appmixer:google`.
+        token:
+          type: object
+          additionalProperties: true
+          description: The structure of this object depends on the authentication type (OAuth 1, OAuth 2, API Key, password).
+          properties:
+            accessToken:
+              type: string
+              description: Access token (required for OAuth).
+            accessTokenSecret:
+              type: string
+              description: Access token secret (required for OAuth 1).
+            refreshToken:
+              type: string
+              description: Refresh token (OAuth 2).
+            expDate:
+              type: string
+              description: Expiration date of the access token (OAuth 2).
+            scope:
+              type: array
+              items:
+                type: string
+              description: Scopes the access token was granted (OAuth).
         profileInfo:
           type: object
-        valid:
-          type: boolean
-          description: Whether the account credentials are still valid
+          additionalProperties: true
+          description: Can be provided directly. If not, `requestProfileInfo` from the authentication module will be called.
+        name:
+          type: string
+          description: Name of the account. If not set, the authentication module determines the name using `accountNameFromProfileInfo`.
+        displayName:
+          type: string
+          description: Display name of the account. This overrides the name of the account in the frontend.
+      required:
+      - service
+    Account:
+      type: object
+      description: An account (credentials) the user authenticated with to a connector app.
+      properties:
+        accountId:
+          type: string
+          description: Account ID.
+        userId:
+          type: string
+          description: ID of the owner of the account.
+        name:
+          type: string
+          description: Name of the account, usually derived from the profile info.
+        displayName:
+          type:
+          - string
+          - 'null'
+          description: Display name that overrides `name` in the UI.
+        email:
+          type:
+          - string
+          - 'null'
+        service:
+          type: string
+          description: Service ID (`vendor:service`), e.g. `appmixer:slack`.
+        profileInfo:
+          type:
+          - object
+          - 'null'
+          additionalProperties: true
+          description: Profile info returned by the auth module.
+        pre:
+          type:
+          - object
+          - 'null'
+          additionalProperties: true
+          description: Values of the auth module `pre` fields.
+        revoked:
+          type:
+          - boolean
+          - 'null'
+        authVariablesId:
+          type:
+          - string
+          - 'null'
+          description: ID of the custom (user-specific) auth configuration used by the account.
+      required:
+      - accountId
+      - service
+    Error:
+      type: object
+      description: Error response.
+      properties:
+        statusCode:
+          type: integer
+          example: 404
+        error:
+          type: string
+          example: Not Found
+        message:
+          type: string
+          example: Flow not found.
+      required:
+      - statusCode
+      - error
+  parameters:
+    AccountAuthComponentIdParam:
+      name: componentId
+      in: path
+      required: true
+      description: Component ID.
+      schema:
+        type: string
+      example: e25dc901-f92a-46a2-8d29-2573d4ad65e5
+    AccountIdParam:
+      name: accountId
+      in: path
+      required: true
+      description: Account ID.
+      schema:
+        type: string
+      example: 5a6e21f3b266224186ac7d03
+    AccountAuthTicketParam:
+      name: ticket
+      in: path
+      required: true
+      description: Authentication session ticket from `POST /auth/ticket`.
+      schema:
+        type: string
+      example: 58593f07c3ee4f239dc69ff7:1d2a90df-b192-4a47-aaff-5a80bab66de5
+    AccountComponentTypeParam:
+      name: componentType
+      in: path
+      required: true
+      description: 'Component type, e.g. `appmixer.slack.list.SendChannelMessage`. A service (`appmixer.slack`) or
+
+        module (`appmixer.google.spreadsheets`) is accepted as well.
+
+        '
+      schema:
+        type: string
+      example: appmixer.slack.list.SendChannelMessage
+  responses:
+    Unauthorized:
+      description: The access token is missing, invalid or expired.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: The user does not have the permission (or scope) required for this operation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: The request is invalid, for example it failed payload or query validation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
-      description: 'Access token obtained from the /user/auth endpoint. Pass as Authorization: Bearer {token} header.'
+      bearerFormat: JWT
+      description: User access token obtained from `POST /user/auth`.
+externalDocs:
+  description: Appmixer documentation
+  url: https://docs.appmixer.com

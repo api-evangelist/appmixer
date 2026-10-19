@@ -1,0 +1,709 @@
+openapi: 3.2.0
+info:
+  title: Appmixer REST User API
+  version: 6.5.5
+  summary: REST API of the Appmixer workflow automation and embedded iPaaS platform.
+  description: 'Appmixer offers a REST API that mirrors the functionality available in its UI. Use it for
+
+    advanced customizations, additional automations and scripting.
+
+
+    **Base URL.** The base URL depends on your Appmixer tenant, for example `https://api-acme.appmixer.ai`
+
+    (newer hosted tenants), `https://api.acme.appmixer.cloud` (older hosted tenants), or the API URL of
+
+    your Self-Managed installation.
+
+
+    **Authentication.** Most endpoints require a user access token sent as `Authorization: Bearer `.
+
+    Get a token by signing in with `POST /user/auth`. Some endpoints also require the user to have
+
+    the `admin` scope; this is noted in their descriptions.
+
+
+    **Errors.** Errors are returned as JSON objects with `statusCode`, `error` and `message` properties.'
+  contact:
+    name: Appmixer
+    url: https://www.appmixer.com
+servers:
+- url: '{tenantApiUrl}'
+  description: Your Appmixer tenant API
+  variables:
+    tenantApiUrl:
+      default: https://api-acme.appmixer.ai
+      description: API URL of your Appmixer tenant, e.g. https://api-acme.appmixer.ai or https://api.acme.appmixer.cloud.
+security:
+- bearerAuth: []
+tags:
+- name: User
+  description: Sign in, create and manage users, and change or reset passwords.
+paths:
+  /users:
+    get:
+      tags:
+      - User
+      summary: Get all users
+      operationId: getUsers
+      description: 'List users. Admin token required (`admin` scope).
+
+
+        Group users (the internal users that own User Group resources) are excluded unless you ask for
+
+        them with `type=group`, `type=all` or `filter=type:group`.
+
+
+        Examples: get the first 30 users with the scope `acme1`:
+
+        `GET /users?filter=scope:acme1&sort=created:-1&limit=30&offset=0`.
+
+        Get all users whose usernames or emails include a pattern: `GET /users?pattern=joe`.'
+      parameters:
+      - $ref: '#/components/parameters/UserListLimitParam'
+      - $ref: '#/components/parameters/UserListOffsetParam'
+      - $ref: '#/components/parameters/UserListSortParam'
+      - $ref: '#/components/parameters/UserListFilterParam'
+      - $ref: '#/components/parameters/UserListProjectionParam'
+      - $ref: '#/components/parameters/UserListFromIdParam'
+      - $ref: '#/components/parameters/UserListPatternParam'
+      - $ref: '#/components/parameters/UserListUserIdsParam'
+      - $ref: '#/components/parameters/UserListTypeParam'
+      - $ref: '#/components/parameters/UserListGroupIdParam'
+      responses:
+        '200':
+          description: List of users.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserRecord'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /users/count:
+    get:
+      tags:
+      - User
+      summary: Get the number of users
+      operationId: getUsersCount
+      description: 'Get the number of users matching the query. Admin token required (`admin` scope). Accepts the
+
+        same filtering query parameters as `GET /users`.'
+      parameters:
+      - $ref: '#/components/parameters/UserListFilterParam'
+      - $ref: '#/components/parameters/UserListFromIdParam'
+      - $ref: '#/components/parameters/UserListPatternParam'
+      - $ref: '#/components/parameters/UserListUserIdsParam'
+      - $ref: '#/components/parameters/UserListTypeParam'
+      - $ref: '#/components/parameters/UserListGroupIdParam'
+      responses:
+        '200':
+          description: Number of users.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - count
+                properties:
+                  count:
+                    type: integer
+              example:
+                count: 42
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /users/{userId}:
+    get:
+      tags:
+      - User
+      summary: Get User Information
+      operationId: getUser
+      description: Get a user by ID. Admin token required (`admin` scope).
+      responses:
+        '200':
+          description: The user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRecord'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      parameters:
+      - $ref: '#/components/parameters/UserIdParam'
+    put:
+      tags:
+      - User
+      summary: Update user
+      operationId: updateUser
+      description: 'Update a user. Admin token required (`admin` scope). Adding or removing the `admin` scope also adds
+
+        the user to, or removes them from, the default admin user group.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+            example:
+              scope:
+              - user
+              - acme1
+              metadata:
+                department: sales
+              aiContext: 'Timezone: Europe/Prague.'
+      responses:
+        '200':
+          description: The updated user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRecord'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      parameters:
+      - $ref: '#/components/parameters/UserIdParam'
+    delete:
+      tags:
+      - User
+      summary: Delete user
+      operationId: deleteUser
+      description: 'Admin token required (`admin` scope). This operation stops all running flows and deletes all the
+
+        user''s data from the system - logs, accounts, tokens and more. The operation may take a long time,
+
+        so the response is a ticket that you can use to poll for the result with
+
+        `GET /users/{userId}/delete-status/{ticket}`.'
+      responses:
+        '200':
+          description: The deletion started. Returns a ticket for polling the status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserTaskTicket'
+              example:
+                ticket: 830639e3-c53a-42d6-ad43-0276674236b4
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+      parameters:
+      - $ref: '#/components/parameters/UserIdParam'
+  /users/{userId}/delete-status/{ticket}:
+    get:
+      tags:
+      - User
+      summary: Get user deletion status
+      operationId: getUserDeleteStatus
+      description: 'Poll the status of a user deletion started with `DELETE /users/{userId}`. Admin token required
+
+        (`admin` scope). `stepsDone` and `stepsTotal` can be used to display a progress bar.'
+      responses:
+        '200':
+          description: Status of the deletion task.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserTaskStatus'
+              example:
+                status: in-progress
+                stepsDone: 4
+                stepsTotal: 10
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      parameters:
+      - $ref: '#/components/parameters/UserIdParam'
+      - name: ticket
+        in: path
+        required: true
+        description: Ticket returned by `DELETE /users/{userId}`.
+        schema:
+          type: string
+  /user/change-password:
+    post:
+      tags:
+      - User
+      summary: Change user password
+      operationId: changeUserPassword
+      description: 'Change the password of the current user. User token required. Not available for users that sign in
+
+        with SSO.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - oldPassword
+              - newPassword
+              properties:
+                oldPassword:
+                  type: string
+                  description: Old password.
+                newPassword:
+                  type: string
+                  minLength: 12
+                  description: 'New password. The minimum length is set by the `USER_PASSWORD_MIN_LENGTH` environment
+
+                    variable (12 by default).
+
+                    '
+      responses:
+        '200':
+          description: The password was changed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserMessage'
+              example:
+                message: password changed
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: The old password does not match.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /user/reset-password:
+    post:
+      tags:
+      - User
+      summary: Reset user password
+      operationId: resetUserPassword
+      description: 'Set a new password for any user, identified by their email address. Admin token required
+
+        (`admin` scope). Not available for users that sign in with SSO.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - email
+              - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: User email address.
+                password:
+                  type: string
+                  minLength: 12
+                  description: 'New password. The minimum length is set by the `USER_PASSWORD_MIN_LENGTH` environment
+
+                    variable (12 by default).
+
+                    '
+      responses:
+        '200':
+          description: The password was changed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserMessage'
+              example:
+                message: password changed
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /user/forgot-password:
+    post:
+      tags:
+      - User
+      summary: Forgot Password
+      operationId: forgotUserPassword
+      description: 'Start the forgot-password process. If the email address belongs to a user, Appmixer generates a
+
+        unique code and sends the user a link to reset their password (by email, or through the
+
+        forgot-password webhook if one is configured). The response is the same whether or not the email
+
+        exists. See the Forgot Password Service system configuration for more details.'
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: Email address.
+      responses:
+        '200':
+          description: The request was accepted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserMessage'
+              example:
+                message: If provided email exists in our system you will receive an email to reset your password.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          description: Sending the email failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserMessage'
+        '503':
+          description: No email service is configured.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserMessage'
+              example:
+                message: Forgot Password Service is not available, please contact support.
+  /user/forgot-password/reset:
+    post:
+      tags:
+      - User
+      summary: Reset forgotten password
+      operationId: resetForgottenUserPassword
+      description: Reset the user's password with the unique code generated by `POST /user/forgot-password`.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              - password
+              properties:
+                code:
+                  type: string
+                  description: Code generated by `POST /user/forgot-password`.
+                password:
+                  type: string
+                  minLength: 12
+                  description: 'New password. The minimum length is set by the `USER_PASSWORD_MIN_LENGTH` environment
+
+                    variable (12 by default).
+
+                    '
+      responses:
+        '200':
+          description: The password was changed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserMessage'
+              example:
+                message: Password has been changed successfully.
+        '400':
+          description: Invalid payload, or the code is invalid or expired.
+          content:
+            application/json:
+              schema:
+                anyOf:
+                - $ref: '#/components/schemas/UserMessage'
+                - $ref: '#/components/schemas/Error'
+              example:
+                message: Invalid or expired code
+components:
+  parameters:
+    UserListTypeParam:
+      name: type
+      in: query
+      required: false
+      description: 'User type. `personal` (regular users), `group` (internal users that own User Group resources), or
+
+        `all`. When omitted, group users are excluded.
+
+        '
+      schema:
+        type: string
+        enum:
+        - personal
+        - group
+        - all
+    UserListFilterParam:
+      name: filter
+      in: query
+      required: false
+      description: 'Filter by field value, `field:value`, for example `scope:acme1`. Prefix the value with `!` to negate.
+
+        Repeat the parameter to combine several filters.
+
+        '
+      schema:
+        type: string
+    UserIdParam:
+      name: userId
+      in: path
+      required: true
+      description: User ID.
+      schema:
+        type: string
+    UserListUserIdsParam:
+      name: userIds
+      in: query
+      required: false
+      description: Comma-separated list of user IDs.
+      schema:
+        type: string
+    UserListLimitParam:
+      name: limit
+      in: query
+      required: false
+      description: Maximum number of users to return.
+      schema:
+        type: integer
+        default: 100
+    UserListPatternParam:
+      name: pattern
+      in: query
+      required: false
+      description: Case-insensitive regular expression matched against the username and email.
+      schema:
+        type: string
+    UserListFromIdParam:
+      name: fromId
+      in: query
+      required: false
+      description: Return only users with an ID greater than this one (cursor pagination).
+      schema:
+        type: string
+    UserListSortParam:
+      name: sort
+      in: query
+      required: false
+      description: Sort by a field, `field:1` (ascending) or `field:-1` (descending), for example `created:-1`.
+      schema:
+        type: string
+    UserListGroupIdParam:
+      name: groupId
+      in: query
+      required: false
+      description: Return only active members of this user group.
+      schema:
+        type: string
+    UserListProjectionParam:
+      name: projection
+      in: query
+      required: false
+      description: Comma-separated list of fields to include; prefix a field with `-` to exclude it, for example `-metadata`.
+      schema:
+        type: string
+    UserListOffsetParam:
+      name: offset
+      in: query
+      required: false
+      description: Number of users to skip.
+      schema:
+        type: integer
+  schemas:
+    UserTaskStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+          - in-progress
+          - completed
+          - failed
+          - cancelled
+        stepsDone:
+          type: integer
+          description: Number of steps done; can be used to display a progress bar.
+        stepsTotal:
+          type: integer
+          description: Total number of steps; can be used to display a progress bar.
+    UserRecord:
+      type: object
+      description: User record as returned by the admin user endpoints (the stored user without the password).
+      properties:
+        _id:
+          type: string
+          description: User ID.
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        isActive:
+          type: boolean
+        plan:
+          description: Subscription plan.
+          oneOf:
+          - type: string
+          - type: object
+        scope:
+          type: array
+          items:
+            type: string
+        allowedPrivateComponents:
+          type: array
+          items:
+            type: string
+        phoneNumber:
+          type:
+          - string
+          - 'null'
+        title:
+          type:
+          - string
+          - 'null'
+        vendor:
+          oneOf:
+          - type:
+            - string
+            - 'null'
+          - type: array
+            items:
+              type: string
+        created:
+          type:
+          - string
+          - integer
+          description: Creation time (ISO date string, or a timestamp in milliseconds for some users).
+        metadata:
+          type: object
+        aiContext:
+          type:
+          - string
+          - 'null'
+        sso:
+          type:
+          - object
+          - 'null'
+          description: SSO identity details, `null` for users that don't sign in with SSO.
+        type:
+          type: string
+          enum:
+          - personal
+          - group
+      additionalProperties: true
+    UserUpdateRequest:
+      type: object
+      properties:
+        scope:
+          type: array
+          items:
+            type: string
+          description: Array of scopes.
+        vendor:
+          description: One or more vendors.
+          oneOf:
+          - type:
+            - string
+            - 'null'
+          - type: array
+            items:
+              type: string
+        metadata:
+          type: object
+          description: Metadata (replaces the existing metadata).
+        email:
+          type: string
+          format: email
+          description: Email address.
+        username:
+          type: string
+          description: Username.
+        aiContext:
+          type:
+          - string
+          - 'null'
+          description: 'Optional per-user context for AI Copilot. Send `null` to clear it. The maximum length is set by
+
+            `USER_AI_CONTEXT_MAX_LENGTH`.
+
+            '
+    Error:
+      type: object
+      description: Error response.
+      properties:
+        statusCode:
+          type: integer
+          example: 404
+        error:
+          type: string
+          example: Not Found
+        message:
+          type: string
+          example: Flow not found.
+      required:
+      - statusCode
+      - error
+    UserMessage:
+      type: object
+      properties:
+        message:
+          type: string
+    UserTaskTicket:
+      type: object
+      required:
+      - ticket
+      properties:
+        ticket:
+          type: string
+          description: Ticket of the background task.
+  responses:
+    Forbidden:
+      description: The user does not have the permission (or scope) required for this operation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: The request is invalid, for example it failed payload or query validation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: The access token is missing, invalid or expired.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: User access token obtained from `POST /user/auth`.
+externalDocs:
+  description: Appmixer documentation
+  url: https://docs.appmixer.com

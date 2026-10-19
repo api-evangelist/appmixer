@@ -1,55 +1,866 @@
 openapi: 3.2.0
 info:
-  title: Appmixer Insights API
-  description: The Appmixer REST API provides programmatic access to manage workflows, users, accounts, apps/connectors, files, data stores, insights, and people tasks within the Appmixer embedded iPaaS platform. The API allows you to access all the features that the Appmixer UI works with.
-  version: 6.1.0
+  title: Appmixer REST Insights API
+  version: 6.5.5
+  summary: REST API of the Appmixer workflow automation and embedded iPaaS platform.
+  description: 'Appmixer offers a REST API that mirrors the functionality available in its UI. Use it for
+
+    advanced customizations, additional automations and scripting.
+
+
+    **Base URL.** The base URL depends on your Appmixer tenant, for example `https://api-acme.appmixer.ai`
+
+    (newer hosted tenants), `https://api.acme.appmixer.cloud` (older hosted tenants), or the API URL of
+
+    your Self-Managed installation.
+
+
+    **Authentication.** Most endpoints require a user access token sent as `Authorization: Bearer `.
+
+    Get a token by signing in with `POST /user/auth`. Some endpoints also require the user to have
+
+    the `admin` scope; this is noted in their descriptions.
+
+
+    **Errors.** Errors are returned as JSON objects with `statusCode`, `error` and `message` properties.'
   contact:
     name: Appmixer
-    url: https://www.appmixer.com/
-  license:
-    name: Proprietary
-    url: https://www.appmixer.com/terms-and-conditions
+    url: https://www.appmixer.com
 servers:
-- url: https://api.{tenant}.appmixer.cloud
-  description: Appmixer Cloud Tenant API
+- url: '{tenantApiUrl}'
+  description: Your Appmixer tenant API
   variables:
-    tenant:
-      default: YOUR_TENANT
-      description: Your Appmixer tenant identifier
+    tenantApiUrl:
+      default: https://api-acme.appmixer.ai
+      description: API URL of your Appmixer tenant, e.g. https://api-acme.appmixer.ai or https://api.acme.appmixer.cloud.
 security:
 - bearerAuth: []
 tags:
 - name: Insights
-  description: Analytics and insights
+  description: 'Get the list of all messages passing through your flows (logs) and usage information (telemetry).
+
+
+    Logs contain data messages getting into a component''s input port(s) and messages sent to a
+
+    component''s output port(s), as well as errors that occurred during a flow run or while
+
+    starting/stopping a flow. Log records come in several variants (component data event, input
+
+    queue data event, flow event, component error event, system retry error event); see the
+
+    `LogRecord` schema.'
 paths:
-  /insights:
+  /logs:
     get:
-      operationId: listInsights
-      summary: Appmixer List insights
-      description: Get all Insights charts of the authenticated user.
+      tags:
+      - Insights
+      summary: Get Logs and Histogram
+      operationId: getLogs
+      description: 'Get logs for a single flow, a list of flows, or all the user''s flows (including flows shared
+
+        with the signed-in user). Filtering and sorting are supported. Logs contain data messages
+
+        getting into the component''s input port(s) and messages sent to the component''s output
+
+        port(s). They also contain any errors that occurred during the flow run or while trying to
+
+        start/stop a flow.
+
+
+        Besides the log records (`hits`), the response contains a daily histogram (`buckets`) of the
+
+        matched records.
+
+
+        **Pagination with `searchAfter`.** For efficient pagination through large result sets, use
+
+        `searchAfter` instead of `from`. Rather than skipping over results (which gets slower on
+
+        deeper pages), `searchAfter` picks up exactly where the previous page left off:
+
+
+        1. Make your first request normally (without `searchAfter`).
+
+        2. From the last log entry in the response, take its sort field value(s) and `_id`.
+
+        3. Pass those values back as `searchAfter` parameters in the next request.
+
+        4. Repeat for each subsequent page.
+
+
+        The number of `searchAfter` values must match the number of `sort` parameters. Each
+
+        `searchAfter` value corresponds to a `sort` field in the same order. Using `_id` as a
+
+        secondary sort ensures no duplicates or missed records when multiple logs share the same
+
+        timestamp, for example:
+
+
+        `/logs?flowId=9c4673d7-a550-45a2-91c1-ad057fac0385&size=30&sort=gridTimestamp:asc&sort=_id:asc&query=gridTimestamp:[* TO *]&searchAfter=2023-10-25T15:03:17.721Z&searchAfter=wC5cZ4sB5dpG2lX0gmxi`
+
+
+        Admin users can read logs of all flows.'
+      parameters:
+      - $ref: '#/components/parameters/LogPortTypeParam'
+      - $ref: '#/components/parameters/LogFlowIdParam'
+      - $ref: '#/components/parameters/LogExcludesParam'
+      - $ref: '#/components/parameters/LogIncludesParam'
+      - $ref: '#/components/parameters/LogQueryParam'
+      - $ref: '#/components/parameters/LogSortParam'
+      - $ref: '#/components/parameters/LogSizeParam'
+      - $ref: '#/components/parameters/LogFromParam'
+      - $ref: '#/components/parameters/LogSearchAfterParam'
+      - $ref: '#/components/parameters/LogTestRunIdParam'
+      - $ref: '#/components/parameters/LogUserIdParam'
+      - $ref: '#/components/parameters/LogTraceParam'
+      - $ref: '#/components/parameters/LogExcludePluginLogsParam'
       responses:
         '200':
-          description: List of insights returned successfully
+          description: Matched log records and a daily histogram.
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                    name:
-                      type: string
-                    type:
-                      type: string
+                $ref: '#/components/schemas/LogSearchResult'
+              example:
+                buckets:
+                - key_as_string: 2018-04-16 00:00:00+00:00
+                  key: 1523836800000
+                  doc_count: 35
+                - key_as_string: 2018-04-17 00:00:00+00:00
+                  key: 1523923200000
+                  doc_count: 60
+                hits:
+                - severity: info
+                  componentType: appmixer.slack.list.SendChannelMessage
+                  componentId: a1cda3ff-8e20-41df-8e7d-8e52419e6d17
+                  portType: in
+                  senderId: c062e744-2de1-4c80-afce-713be3145315
+                  '@timestamp': 2018-04-06 14:02:04.517000+00:00
+                  port: message
+                  senderType: appmixer.utils.controls.OnStart
+                  correlationId: a5128135-3a23-4837-92f8-9dc099ff0700
+                  id: 339d216c-48e0-4110-9210-a4c176b30f84:a1cda3ff-8e20-41df-8e7d-8e52419e6d17:input-queue
+                  gridTimestamp: 2018-04-06 14:02:04.472000+00:00
+                  flowId: 339d216c-48e0-4110-9210-a4c176b30f84
+                  entity: input-queue
+                  _id: AWKbQ6Vr9I6rzDWu4NbG
+                  _index: appmixer-201804
+                - severity: info
+                  componentType: appmixer.slack.list.SendChannelMessage
+                  componentId: a1cda3ff-8e20-41df-8e7d-8e52419e6d17
+                  portType: in
+                  senderId: c062e744-2de1-4c80-afce-713be3145315
+                  '@timestamp': 2018-04-03 20:22:10.971000+00:00
+                  port: message
+                  senderType: appmixer.utils.controls.OnStart
+                  correlationId: 7ed0bbb4-0b05-4469-8168-401cd909e5d2
+                  id: 339d216c-48e0-4110-9210-a4c176b30f84:a1cda3ff-8e20-41df-8e7d-8e52419e6d17:input-queue
+                  gridTimestamp: 2018-04-03 20:22:10.927000+00:00
+                  flowId: 339d216c-48e0-4110-9210-a4c176b30f84
+                  entity: input-queue
+                  _id: AWKNLJEg9I6rzDWu3F8E
+                  _index: appmixer-201804
+                size: 30
+                nextFrom: 30
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
-          description: Unauthorized
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
       tags:
       - Insights
+      summary: Get Logs (Aggregations)
+      operationId: getLogsAggregations
+      description: 'Works the same as its `GET /logs` counterpart, but also allows you to get aggregations within
+
+        the matched data by passing a request body specifying the desired aggregations.
+
+
+        The response is dynamic and its structure depends on the body of the request. For example,
+
+        aggregation names used in the request are used in the response as well. It is also possible
+
+        to query nested aggregations, leading to a more complex response.
+
+
+        If no aggregations are passed, the default daily histogram is computed and returned as
+
+        `buckets` (same as `GET /logs`).'
+      parameters:
+      - $ref: '#/components/parameters/LogPortTypeParam'
+      - $ref: '#/components/parameters/LogFlowIdParam'
+      - $ref: '#/components/parameters/LogExcludesParam'
+      - $ref: '#/components/parameters/LogIncludesParam'
+      - $ref: '#/components/parameters/LogQueryParam'
+      - $ref: '#/components/parameters/LogSortParam'
+      - $ref: '#/components/parameters/LogSizeParam'
+      - $ref: '#/components/parameters/LogFromParam'
+      - $ref: '#/components/parameters/LogSearchAfterParam'
+      - $ref: '#/components/parameters/LogTestRunIdParam'
+      - $ref: '#/components/parameters/LogUserIdParam'
+      - $ref: '#/components/parameters/LogTraceParam'
+      - $ref: '#/components/parameters/LogExcludePluginLogsParam'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogAggregationRequest'
+            example:
+              aggs:
+                avg_price:
+                  avg:
+                    field: price
+                sum_income:
+                  sum:
+                    field: income
+      responses:
+        '200':
+          description: Matched log records and the requested aggregations.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogSearchResult'
+              example:
+                aggregations:
+                  avg_price:
+                    value: 10
+                  sum_income:
+                    value: 2000
+                hits:
+                - flowId: 78230318-37b8-40ac-97a5-996ba9a6c48f
+                - flowId: 78230318-37b8-40ac-97a5-996ba9a6c48f
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /logs/{index}/{id}:
+    get:
+      tags:
+      - Insights
+      summary: Get Log Detail
+      operationId: getLogDetail
+      deprecated: true
+      description: 'DEPRECATED. You can get the log details with the `GET /logs` API instead, e.g.
+
+        `/logs?query=_id:AWKbQ6Vr9I6rzDWu4NbG&sort=@timestamp:desc`.
+
+
+        Get a detail of a log. Log detail gives you information on the actual data of the message
+
+        between two components. The log must belong to the signed-in user or to a flow shared with
+
+        the user (read permission).'
+      parameters:
+      - name: index
+        in: path
+        required: true
+        description: Log index. Use the `_index` property of the log object returned from flow logs.
+        schema:
+          type: string
+        example: appmixer-201804
+      - name: id
+        in: path
+        required: true
+        description: Log ID. Use the `_id` property of the log object returned from flow logs.
+        schema:
+          type: string
+        example: AWKbQ6Vr9I6rzDWu4NbG
+      responses:
+        '200':
+          description: The raw Elasticsearch document of the log.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogDetail'
+              example:
+                _index: appmixer-201804
+                _type: engine
+                _id: AWKbQ6Vr9I6rzDWu4NbG
+                _version: 1
+                _source:
+                  severity: info
+                  msg:
+                    text: Hey Slack!
+                  componentType: appmixer.slack.list.SendChannelMessage
+                  componentId: a1cda3ff-8e20-41df-8e7d-8e52419e6d17
+                  bundleId: 86a83327-1b13-4cab-a7cd-bbcce5f2402d
+                  portType: in
+                  senderId: c062e744-2de1-4c80-afce-713be3145315
+                  '@timestamp': 2018-04-06 14:02:04.517000+00:00
+                  port: message
+                  '@version': '1'
+                  senderType: appmixer.utils.controls.OnStart
+                  correlationId: a5128135-3a23-4837-92f8-9dc099ff0700
+                  id: 339d216c-48e0-4110-9210-a4c176b30f84:a1cda3ff-8e20-41df-8e7d-8e52419e6d17:input-queue
+                  gridTimestamp: 2018-04-06 14:02:04.472000+00:00
+                  flowId: 339d216c-48e0-4110-9210-a4c176b30f84
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /telemetry:
+    get:
+      tags:
+      - Insights
+      summary: Get Usage Information for Current User
+      operationId: getTelemetry
+      description: 'Get usage information for the signed-in user: number of messages in the given period,
+
+        number of running flows, number of active connectors (components in running flows) and the
+
+        list of apps used.'
+      parameters:
+      - name: from
+        in: query
+        description: From date, in the `YYYY-MM-DD` format.
+        schema:
+          type: string
+          format: date
+        example: 2018-03-17
+      - name: to
+        in: query
+        description: To date, in the `YYYY-MM-DD` format.
+        schema:
+          type: string
+          format: date
+        example: 2018-04-17
+      responses:
+        '200':
+          description: Usage information.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TelemetryUsage'
+              example:
+                messageCounts:
+                  from: 2018-03-17
+                  to: 2018-04-17
+                  count: 348
+                  userId: 58593f07c3ee4f239dc69ff7
+                runningFlows:
+                  userId: 58593f07c3ee4f239dc69ff7
+                  count: 4
+                activeConnectors:
+                  userId: 58593f07c3ee4f239dc69ff7
+                  count: 8
+                usedApps:
+                - appmixer.utils
+                - appmixer.slack
+                - appmixer.asana
+                - appmixer.salesforce
+                - appmixer.twilio
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /telemetry/messages:
+    get:
+      tags:
+      - Insights
+      summary: Get Usage Information For Other Users
+      operationId: getTelemetryMessages
+      description: 'Get message usage information (message count and size, grouped by month) for users
+
+        identified by the `userId` query parameter. If `userId` is omitted, the statistics are
+
+        computed across all users.
+
+
+        Requires the `admin` scope.'
+      parameters:
+      - name: userId
+        in: query
+        description: A user ID. Can be repeated to aggregate statistics for multiple users.
+        schema:
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        style: form
+        explode: true
+        example: '54324413432141432'
+      - name: from
+        in: query
+        description: From date, in the `YYYY-MM-DD` format.
+        schema:
+          type: string
+          format: date
+        example: 2024-01-01
+      - name: to
+        in: query
+        description: To date, in the `YYYY-MM-DD` format.
+        schema:
+          type: string
+          format: date
+        example: 2024-02-01
+      responses:
+        '200':
+          description: Message usage statistics.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TelemetryMessageStats'
+              example:
+                from: 2024-01-01
+                to: 2024-02-01
+                totalCount: 24
+                totalSize: 8050
+                stats:
+                - size: 1772
+                  count: 4
+                  date: 2024-02
+                - size: 6278
+                  count: 20
+                  date: 2024-01
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /telemetry/flows/{flowId}:
+    get:
+      tags:
+      - Insights
+      summary: Get Flow Usage Information
+      operationId: getFlowTelemetry
+      description: 'Get usage information (total message count and size) for a flow identified by `flowId`.
+
+        The user must own the flow, have it shared with them, or have the `admin` scope.'
+      parameters:
+      - name: flowId
+        in: path
+        required: true
+        description: The flow ID.
+        schema:
+          type: string
+        example: ef4324-431ff-434fadf-424
+      responses:
+        '200':
+          description: Flow usage information.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TelemetryFlowStats'
+              example:
+                totalCount: 10
+                totalSize: 9220
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
 components:
+  parameters:
+    LogFlowIdParam:
+      name: flowId
+      in: query
+      description: The flow ID to filter on. Can be repeated to filter on more flows. If not present, logs for all the user's flows (including flows shared with the user) are returned.
+      schema:
+        oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
+      style: form
+      explode: true
+    LogSizeParam:
+      name: size
+      in: query
+      description: Maximum number of logs returned. Useful for pagination.
+      schema:
+        type: integer
+        default: 50
+    LogTraceParam:
+      name: trace
+      in: query
+      description: Include `trace` severity logs in addition to `info` and `error`.
+      schema:
+        type: boolean
+        default: false
+    LogUserIdParam:
+      name: userId
+      in: query
+      description: Return only logs of the given user. Non-admin users can only pass their own user ID.
+      schema:
+        type: string
+    LogSearchAfterParam:
+      name: searchAfter
+      in: query
+      description: Cursor-based pagination, more efficient than `from` for deep pagination. Pass the sort value(s) and `_id` of the last document from the previous page. The number of `searchAfter` values must match the number of `sort` parameters.
+      schema:
+        oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
+      style: form
+      explode: true
+    LogExcludePluginLogsParam:
+      name: excludePluginLogs
+      in: query
+      description: Exclude logs generated by plugins.
+      schema:
+        type: boolean
+        default: false
+    LogExcludesParam:
+      name: excludes
+      in: query
+      description: Comma-separated field names to exclude from the returned log objects.
+      schema:
+        type: string
+      example: msg,err
+    LogQueryParam:
+      name: query
+      in: query
+      description: Query string in the Lucene query syntax (Elasticsearch `query_string`), e.g. `gridTimestamp:[2019-03-04 TO 2019-03-08]`.
+      schema:
+        type: string
+      example: gridTimestamp:[2019-03-04 TO 2019-03-08]
+    LogFromParam:
+      name: from
+      in: query
+      description: Index of the first log returned. Useful for pagination.
+      schema:
+        type: integer
+        default: 0
+    LogTestRunIdParam:
+      name: testRunId
+      in: query
+      description: Return only records produced by the given flow test run(s). Can be repeated.
+      schema:
+        oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
+      style: form
+      explode: true
+    LogIncludesParam:
+      name: includes
+      in: query
+      description: Comma-separated field names to include in the returned log objects (only these fields are returned).
+      schema:
+        type: string
+    LogSortParam:
+      name: sort
+      in: query
+      description: Sort the result by a field, optionally followed by `:desc` (or `:asc`). Can be repeated to use multiple sortings.
+      schema:
+        oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
+        default: gridTimestamp:asc
+      style: form
+      explode: true
+      example: gridTimestamp:desc
+    LogPortTypeParam:
+      name: portType
+      in: query
+      description: Filter only input (`in`) or output (`out`) messages. Can be repeated (`portType=in&portType=out`). Both by default.
+      schema:
+        oneOf:
+        - type: string
+          enum:
+          - in
+          - out
+        - type: array
+          items:
+            type: string
+            enum:
+            - in
+            - out
+      style: form
+      explode: true
+  schemas:
+    TelemetryFlowStats:
+      type: object
+      properties:
+        totalCount:
+          type: integer
+        totalSize:
+          type: integer
+          description: Total size of the messages in bytes.
+    TelemetryUsage:
+      type: object
+      properties:
+        messageCounts:
+          type: object
+          properties:
+            from:
+              type:
+              - string
+              - 'null'
+            to:
+              type:
+              - string
+              - 'null'
+            count:
+              type: integer
+            userId:
+              type: string
+        runningFlows:
+          $ref: '#/components/schemas/TelemetryCount'
+        activeConnectors:
+          $ref: '#/components/schemas/TelemetryCount'
+        usedApps:
+          type: array
+          items:
+            type: string
+    LogDetail:
+      type: object
+      description: Raw Elasticsearch document of a log.
+      properties:
+        _index:
+          type: string
+        _type:
+          type: string
+        _id:
+          type: string
+        _version:
+          type: integer
+        _source:
+          $ref: '#/components/schemas/LogRecord'
+    Error:
+      type: object
+      description: Error response.
+      properties:
+        statusCode:
+          type: integer
+          example: 404
+        error:
+          type: string
+          example: Not Found
+        message:
+          type: string
+          example: Flow not found.
+      required:
+      - statusCode
+      - error
+    LogRecord:
+      type: object
+      description: 'A log record (Elasticsearch document source). The set of fields depends on the variant,
+
+        which can be identified by the `id`, `indexPrefix`, `severity`, `type` and `portType` fields:
+
+
+        | Variant | id | indexPrefix | severity | type | portType |
+
+        | --- | --- | --- | --- | --- | --- |
+
+        | Component data event | `component` | `logstash` | `info` | `data` | `out` |
+
+        | Input queue data event | `input-queue` | `logstash` | `info` | `data` | `in` |
+
+        | Flow event | `flow` | `logstash` | `info` | `flow` | - |
+
+        | Component error event | `component` | `logstash` | `error` | - | - |
+
+        | System retry error event | `retry` | `system` | `error` | - | - |
+
+        '
+      additionalProperties: true
+      properties:
+        _id:
+          type: string
+          description: Elasticsearch document ID.
+        _index:
+          type: string
+          description: Elasticsearch index name.
+        es_index:
+          type: string
+          description: Source index name.
+        id:
+          type: string
+          description: Discriminator; observed values include `component`, `input-queue`, `flow`, `retry`.
+        indexPrefix:
+          type: string
+          description: Discriminator; observed values include `logstash`, `system`.
+        severity:
+          type: string
+          description: Severity; observed values include `info`, `error` (and `trace` with `trace=true`).
+        type:
+          type: string
+          description: Record type; observed values include `data`, `flow`.
+        tenantId:
+          type: string
+        flowId:
+          type: string
+        flowName:
+          type: string
+        flowType:
+          type: string
+          description: Observed value `automation`.
+        userId:
+          type: string
+        componentId:
+          type: string
+        componentType:
+          type: string
+        bundleId:
+          type: string
+        correlationId:
+          type: string
+        messageId:
+          type: string
+        senderId:
+          type: string
+        senderType:
+          type: string
+        senderPort:
+          type: string
+        port:
+          type: string
+        portType:
+          type: string
+          enum:
+          - in
+          - out
+        level:
+          type: integer
+        dataMessageType:
+          type: string
+          description: Observed value `componentLog`.
+        testRunId:
+          type: string
+          description: Present only on records produced by a flow test run.
+        staticCall:
+          type: boolean
+          description: 'Present only on records produced by a static component call with `log: true`.'
+        msg:
+          description: The message data (for data events).
+        err:
+          description: Error details (for error events).
+        gridTimestamp:
+          type: string
+          format: date-time
+        timestamp:
+          type: string
+          format: date-time
+    LogHistogramBucket:
+      type: object
+      properties:
+        key_as_string:
+          type: string
+          format: date-time
+        key:
+          type: integer
+          description: Bucket start as a Unix timestamp in milliseconds.
+        doc_count:
+          type: integer
+    TelemetryCount:
+      type: object
+      properties:
+        userId:
+          type: string
+        count:
+          type: integer
+    LogAggregationRequest:
+      type: object
+      properties:
+        aggs:
+          type: object
+          additionalProperties: true
+          description: Elasticsearch aggregations definition (https://elastic.co/guide/en/elasticsearch/reference/current/search-aggregations.html). `aggregations` is accepted as an alias.
+        aggregations:
+          type: object
+          additionalProperties: true
+          description: Alias of `aggs`.
+    LogSearchResult:
+      type: object
+      properties:
+        hits:
+          type: array
+          items:
+            $ref: '#/components/schemas/LogRecord'
+        buckets:
+          type: array
+          description: Daily histogram of the matched records (`gridTimestamp`). Present when no custom aggregations were requested.
+          items:
+            $ref: '#/components/schemas/LogHistogramBucket'
+        aggregations:
+          type: object
+          additionalProperties: true
+          description: Results of custom aggregations (POST only); keyed by the aggregation names used in the request.
+        size:
+          type: integer
+          description: The `size` query parameter echoed back.
+        nextFrom:
+          type: integer
+          description: '`from` + `size`; the `from` value for the next page.'
+      required:
+      - hits
+    TelemetryMessageStats:
+      type: object
+      properties:
+        from:
+          type:
+          - string
+          - 'null'
+        to:
+          type:
+          - string
+          - 'null'
+        totalCount:
+          type: integer
+        totalSize:
+          type: integer
+          description: Total size of the messages in bytes.
+        stats:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                description: Month in the `YYYY-MM` format.
+              count:
+                type: integer
+              size:
+                type: integer
+  responses:
+    Forbidden:
+      description: The user does not have the permission (or scope) required for this operation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: The request is invalid, for example it failed payload or query validation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: The access token is missing, invalid or expired.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
-      description: 'Access token obtained from the /user/auth endpoint. Pass as Authorization: Bearer {token} header.'
+      bearerFormat: JWT
+      description: User access token obtained from `POST /user/auth`.
+externalDocs:
+  description: Appmixer documentation
+  url: https://docs.appmixer.com

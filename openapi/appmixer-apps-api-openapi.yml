@@ -1,123 +1,799 @@
 openapi: 3.2.0
 info:
-  title: Appmixer Apps API
-  description: The Appmixer REST API provides programmatic access to manage workflows, users, accounts, apps/connectors, files, data stores, insights, and people tasks within the Appmixer embedded iPaaS platform. The API allows you to access all the features that the Appmixer UI works with.
-  version: 6.1.0
+  title: Appmixer REST Apps API
+  version: 6.5.5
+  summary: REST API of the Appmixer workflow automation and embedded iPaaS platform.
+  description: 'Appmixer offers a REST API that mirrors the functionality available in its UI. Use it for
+
+    advanced customizations, additional automations and scripting.
+
+
+    **Base URL.** The base URL depends on your Appmixer tenant, for example `https://api-acme.appmixer.ai`
+
+    (newer hosted tenants), `https://api.acme.appmixer.cloud` (older hosted tenants), or the API URL of
+
+    your Self-Managed installation.
+
+
+    **Authentication.** Most endpoints require a user access token sent as `Authorization: Bearer `.
+
+    Get a token by signing in with `POST /user/auth`. Some endpoints also require the user to have
+
+    the `admin` scope; this is noted in their descriptions.
+
+
+    **Errors.** Errors are returned as JSON objects with `statusCode`, `error` and `message` properties.'
   contact:
     name: Appmixer
-    url: https://www.appmixer.com/
-  license:
-    name: Proprietary
-    url: https://www.appmixer.com/terms-and-conditions
+    url: https://www.appmixer.com
 servers:
-- url: https://api.{tenant}.appmixer.cloud
-  description: Appmixer Cloud Tenant API
+- url: '{tenantApiUrl}'
+  description: Your Appmixer tenant API
   variables:
-    tenant:
-      default: YOUR_TENANT
-      description: Your Appmixer tenant identifier
+    tenantApiUrl:
+      default: https://api-acme.appmixer.ai
+      description: API URL of your Appmixer tenant, e.g. https://api-acme.appmixer.ai or https://api.acme.appmixer.cloud.
 security:
 - bearerAuth: []
 tags:
 - name: Apps
-  description: Applications and connectors management
+  description: Control the connectors (apps, components, bundles) that are installed in your Appmixer tenant. You can also publish new and uninstall existing connectors, and call components statically.
 paths:
   /apps:
     get:
-      operationId: listApps
-      summary: Appmixer List apps
-      description: Get all applications (services or modules) available in the Appmixer tenant.
+      tags:
+      - Apps
+      summary: Get Apps
+      operationId: getApps
+      description: 'Returns all applications available to the authenticated user.
+
+
+        An "app" is either a **module** (e.g. `appmixer.google.gmail`) or a **service** that does not
+
+        declare any modules (e.g. `appmixer.calendly`). When a service contains at least one module, the
+
+        modules are returned as the apps and the service itself is omitted. The result is keyed by the app
+
+        name and respects the user''s ACL (private apps the user cannot see are filtered out).
+
+
+        By default the `icon` of each app is replaced by a URL pointing to the icon; set
+
+        `compressIcons=false` to get the original inline data URI.
+
+
+        The access token is optional: without it the request is served as the anonymous public user.'
+      security:
+      - bearerAuth: []
+      - {}
+      parameters:
+      - $ref: '#/components/parameters/AppIgnoreACLQuery'
+      - $ref: '#/components/parameters/AppCompressIconsQuery'
       responses:
         '200':
-          description: List of apps returned successfully
+          description: Apps successfully retrieved, keyed by app name.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/App'
+              example:
+                appmixer.asana:
+                  name: appmixer.asana
+                  label: Asana
+                  category: applications
+                  description: Asana is a collaborative information manager for workspace. It helps you organize people and tasks effectively.
+                  icon: data:image/png;base64,iVBORw0KGgoA....kJggg==
+                appmixer.calendly:
+                  name: appmixer.calendly
+                  label: Calendly
+                  category: applications
+                  description: Calendly helps you schedule meetings without the back-and-forth emails. It does not work with the free Basic account. It works with Premium or Pro account.
+                  icon: data:image/png;base64,iVBORw0KGgoA....kJggg==
+                appmixer.dropbox:
+                  name: appmixer.dropbox
+                  label: Dropbox
+                  category: applications
+                  description: Dropbox is a home for all your photos, documents, videos, and other files. Dropbox lets you access your stuff from anywhere and makes it easy to share with others.
+                  icon: data:image/svg+xml;base64,PHN2Z....3N2Zz4=
+        '400':
+          description: '`ignoreACL=true` was used by a non-admin user.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /bundles:
+    get:
+      tags:
+      - Apps
+      summary: Get Bundles
+      operationId: getBundles
+      description: 'Returns the installed bundle versions. Each connector is packaged as a bundle (defined by its
+
+        `bundle.json`); this endpoint reports the currently installed `version` of every bundle, keyed by
+
+        the bundle name. It is useful for checking which connector versions are deployed in your tenant.
+
+
+        The access token is optional: without it the request is served as the anonymous public user.'
+      security:
+      - bearerAuth: []
+      - {}
+      responses:
+        '200':
+          description: Installed bundle versions keyed by bundle name.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/AppBundle'
+              example:
+                appmixer.asana:
+                  version: 1.2.0
+                appmixer.calendly:
+                  version: 2.0.1
+                appmixer.dropbox:
+                  version: 1.5.3
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /apps/components:
+    get:
+      tags:
+      - Apps
+      summary: Get App Components
+      operationId: getAppComponents
+      description: 'Returns all components of a single app including their manifest files. Only components the user
+
+        is allowed to use (ACL) are returned.
+
+
+        The access token is optional: without it the request is served as the anonymous public user.'
+      security:
+      - bearerAuth: []
+      - {}
+      parameters:
+      - name: app
+        in: query
+        required: true
+        description: ID of an app as defined in `service.json` or `module.json` (e.g. `appmixer.dropbox` or `appmixer.google.gmail`).
+        schema:
+          type: string
+        example: appmixer.twilio
+      responses:
+        '200':
+          description: Component manifests of the app.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/App'
+                  $ref: '#/components/schemas/ComponentManifest'
+              example:
+              - name: appmixer.twilio.sms.SendSMS
+                author: David Durman <david@client.io>
+                icon: data:image/png;base64,iVBORw...gg==
+                description: Send SMS text message through Twilio.
+                auth:
+                  service: appmixer:twilio
+                inPorts:
+                - name: message
+                  schema:
+                    type: object
+                    properties:
+                      body:
+                        type: string
+                      to:
+                        type: string
+                    required:
+                    - to
+                  inspector:
+                    inputs:
+                      body:
+                        type: text
+                        label: Text message
+                        tooltip: Text message that should be sent.
+                        index: 1
+                      to:
+                        type: text
+                        label: To number
+                        tooltip: The destination phone number in E.164 format.
+                        index: 2
+                properties:
+                  schema:
+                    properties:
+                      fromNumber:
+                        type: string
+                    required:
+                    - fromNumber
+                  inspector:
+                    inputs:
+                      fromNumber:
+                        type: select
+                        label: From number
+                        tooltip: Select Twilio phone number.
+                        index: 1
+                        source:
+                          url: /component/appmixer/twilio/sms/ListFromNumbers?outPort=numbers
+                          data:
+                            transform: ./transformers#fromNumbersToSelectArray
+              - name: appmixer.twilio.calls.NewCall
+                author: David Durman <david@client.io>
+                icon: data:image/png;base64,iVBORw...gg==
+                description: Receive a call through Twilio.
+                auth:
+                  service: appmixer:twilio
+                webhook: true
+                webhookAsync: true
+                outPorts:
+                - name: call
+                  options: []
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
-          description: Unauthorized
-      tags:
-      - Apps
+          $ref: '#/components/responses/Unauthorized'
   /components:
     get:
-      operationId: listComponents
-      summary: Appmixer List components
-      description: Get all available components (connectors) in the tenant.
+      tags:
+      - Apps
+      summary: Get All Components
+      operationId: getComponents
+      description: 'Get all available components (including custom ones) that the user is allowed to use.
+
+
+        By default the endpoint returns the **full manifest** of every component. To retrieve only the
+
+        list of component type names, set `manifest=no`. When full manifests are returned, the `icon`
+
+        field is, by default, replaced by a URL pointing to the icon (instead of an inline base64 data
+
+        URI) to keep the payload small; set `compressIcons=false` to keep the original inline icons.
+
+
+        The access token is optional: without it the request is served as the anonymous public user.'
+      security:
+      - bearerAuth: []
+      - {}
+      parameters:
+      - name: manifest
+        in: query
+        description: When set to `no`, the endpoint returns only an array of component type names. Otherwise (default) it returns the full manifest of each component.
+        schema:
+          type: string
+          examples:
+          - 'no'
+      - name: selector
+        in: query
+        description: Restrict the result to a subset of components. A `[vendor].[service].[module].[component]` selector (e.g. `appmixer.google` or `appmixer.google.gmail`).
+        schema:
+          type: string
+      - name: selectors[]
+        in: query
+        description: Request multiple component patterns in a single call (OR logic), e.g. `?selectors[]=appmixer.google.gmail&selectors[]=appmixer.slack.list.SendChannelMessage`. Useful for progressively loading only the manifests a client needs. `selectors` (without brackets) is accepted as well.
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - $ref: '#/components/parameters/AppCompressIconsQuery'
+      - $ref: '#/components/parameters/AppIgnoreACLQuery'
       responses:
         '200':
-          description: List of components returned successfully
+          description: Array of component manifests, or of component type names when `manifest=no`.
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                    label:
-                      type: string
-                    type:
-                      type: string
+                oneOf:
+                - type: array
+                  items:
+                    $ref: '#/components/schemas/ComponentManifest'
+                - type: array
+                  items:
+                    type: string
+              examples:
+                manifestNo:
+                  summary: manifest=no
+                  value:
+                  - appmixer.asana.projects.CreateProject
+                  - appmixer.asana.projects.NewProject
+                  - appmixer.asana.tasks.CreateStory
+                  - appmixer.calendly.events.InviteeCanceled
+                  - appmixer.calendly.events.InviteeCreated
+                  - appmixer.clearbit.enrichment.FindCompany
+                  - appmixer.clearbit.enrichment.FindPerson
+                fullManifests:
+                  summary: Default (full manifests)
+                  value:
+                  - name: appmixer.asana.tasks.CreateStory
+                    author: David Durman <david@client.io>
+                    description: Create a story (comment) on a task.
+                    icon: https://api.appmixer.com/icons/appmixer.asana.tasks.CreateStory
+                    auth:
+                      service: appmixer:asana
+                    inPorts: []
+                    outPorts: []
+                    properties: {}
+        '400':
+          description: Query validation failed, or `ignoreACL=true` was used by a non-admin user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '401':
-          description: Unauthorized
+          $ref: '#/components/responses/Unauthorized'
+    post:
       tags:
       - Apps
-    post:
+      summary: Publish A Component/Module/Service
       operationId: publishComponent
-      summary: Appmixer Publish a component
-      description: Publish a new component, module, or service to the Appmixer tenant.
+      description: 'Publish a new component, new module or an entire service or update an existing
+
+        component/module/service. The uploaded entity must be zipped and must have a proper
+
+        directory/file structure inside (see Basic Component Structure for more details). You can use the
+
+        Appmixer CLI tool to pack your component/service/module to a zip archive (`appmixer pack`
+
+        command). Alternatively, you can use a regular zip command line utility but you should omit the
+
+        `node_modules/` directories before archiving and the root directory of the zip archive must match
+
+        the vendor name. The directory hierarchy must be `[vendor]/[service]/[module]/[component]`.
+
+
+        The size limit of the zip archive is configured per tenant (10MB by default).
+
+
+        Publishing can take more time than the lifespan of a single HTTP request. Therefore, the result is
+
+        a JSON object with a `ticket` property. Use the ticket to check the progress of the publish with
+
+        `GET /components/uploader/{ticket}`.
+
+
+        Admin users can publish any vendor; other users must have a vendor assigned.'
+      parameters:
+      - name: replaceAll
+        in: query
+        description: When `true`, existing files of the published service/module/component that are not present in the uploaded archive are removed (full replace).
+        schema:
+          type: boolean
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+              description: Zip archive with the component/module/service.
+      responses:
+        '200':
+          description: Upload accepted; use the ticket to poll for progress.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentUploadTicket'
+              example:
+                ticket: a194d145-3768-4a8a-84a4-4f1e4e08c4ad
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '413':
+          description: The zip archive exceeds the configured size limit.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: The request content type is not `application/octet-stream`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /components/{selector}:
+    get:
+      tags:
+      - Apps
+      summary: Download a Component/Module/Service
+      operationId: downloadComponent
+      description: 'Download the source files of a component, module or an entire service as a zip archive
+
+        (`application/octet-stream`). Compiled code and internal `node_modules.zip` files are excluded
+
+        from the archive. The user must own the selected component(s): admin users can download
+
+        anything, other users only components of their own vendor(s).
+
+
+        The selector can also target an individual file
+
+        (`appmixer.myservice.mymodule.MyComponent/MyComponent.js`); the `/` must then be URL-encoded
+
+        (`%2F`).'
+      responses:
+        '200':
+          description: Zip archive with the source files.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Nothing corresponds to the selector.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                statusCode: 404
+                error: Not Found
+                message: There is nothing that corresponds to appmixer.myservice.
+      parameters:
+      - name: selector
+        in: path
+        required: true
+        description: A selector of the form `[vendor].[service].[module].[component]`, e.g. `appmixer.google.calendar.CreateEvent` (one component), `appmixer.google.calendar` (the calendar module) or `appmixer.google` (the entire Google service).
+        schema:
+          type: string
+        example: appmixer.myservice
+    delete:
+      tags:
+      - Apps
+      summary: Delete a Component/Module/Service
+      operationId: deleteComponent
+      description: 'Delete a component/module or an entire service. Admin users can delete anything, other users only
+
+        components of their own vendor(s).'
+      parameters:
+      - name: selector
+        in: path
+        required: true
+        description: A selector of the form `[vendor].[service].[module].[component]`, e.g. `appmixer.google.calendar.CreateEvent` (one component), `appmixer.google.calendar` (the calendar module) or `appmixer.google` (the entire Google service).
+        schema:
+          type: string
+        example: appmixer.myservice
+      - name: doNotRemoveCollections
+        in: query
+        description: When `true`, the database collections associated with the deleted component(s) are preserved instead of being dropped.
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Empty object. Note that errors during deletion are only recorded in the audit log; the response is always `{}`.
+          content:
+            application/json:
+              schema:
+                type: object
+              example: {}
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /components/uploader/{ticket}:
+    get:
+      tags:
+      - Apps
+      summary: Check for Publishing Progress
+      operationId: getComponentUploadStatus
+      description: Check for progress of publishing a component.
+      parameters:
+      - name: ticket
+        in: path
+        required: true
+        description: Ticket that you got from the `POST /components` request.
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Upload status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentUploadStatus'
+              examples:
+                success:
+                  summary: Successful upload, no errors
+                  value:
+                    finished: 2020-02-28 15:57:34.549000+00:00
+                failure:
+                  summary: Upload finished with errors
+                  value:
+                    finished: 2020-02-28 15:25:39.515000+00:00
+                    err: Invalid schema for appmixer/utils/service.json
+                    data:
+                    - keyword: required
+                      dataPath: ''
+                      schemaPath: '#/required'
+                      params:
+                        missingProperty: label
+                      message: should have required property 'label'
+                    - keyword: required
+                      dataPath: ''
+                      schemaPath: '#/required'
+                      params:
+                        missingProperty: description
+                      message: should have required property 'description'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: There is no upload under the ticket.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                statusCode: 404
+                error: Not Found
+                message: There's no upload under ticket 2e9dd726-2b7f-46f7-bea4-8db7f7175aa8
+  /component/{vendor}/{service}/{module}/{component}:
+    post:
+      tags:
+      - Apps
+      summary: Call a Component Statically
+      operationId: callComponentStatic
+      description: 'Execute a single component outside of a running flow ("static call"). This is the mechanism used
+
+        internally to resolve dynamic dropdown options in the Inspector, and by the AI Agent to invoke its
+
+        tools. Either `componentId` or `callerId` is required; the user must own the flow that contains
+
+        that component instance.'
+      parameters:
+      - name: vendor
+        in: path
+        required: true
+        schema:
+          type: string
+        example: appmixer
+      - name: service
+        in: path
+        required: true
+        schema:
+          type: string
+        example: twilio
+      - name: module
+        in: path
+        required: true
+        schema:
+          type: string
+        example: sms
+      - name: component
+        in: path
+        required: true
+        schema:
+          type: string
+        example: ListFromNumbers
+      - name: outPort
+        in: query
+        description: The output port whose result should be returned.
+        schema:
+          type: string
+        example: numbers
+      - name: ignoreAuth
+        in: query
+        description: When `true`, skip authentication (account resolution) for the component.
+        schema:
+          type: string
+          enum:
+          - 'true'
+          - 'false'
+      - name: silentAuth
+        in: query
+        description: When `true`, try to authenticate but do not fail when no token is found.
+        schema:
+          type: string
+          enum:
+          - 'true'
+          - 'false'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
+              $ref: '#/components/schemas/ComponentStaticCallRequest'
+            example:
+              componentId: e25dc901-f92a-46a2-8d29-2573d4ad65e5
       responses:
         '200':
-          description: Component published successfully
+          description: The output of the component on the requested output port. The shape depends on the component.
+          content:
+            application/json:
+              schema: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
-          description: Unauthorized
-      tags:
-      - Apps
-  /components/{componentId}:
-    delete:
-      operationId: deleteComponent
-      summary: Appmixer Delete a component
-      description: Delete (uninstall) a component, module, or service.
-      parameters:
-      - name: componentId
-        in: path
-        required: true
-        schema:
-          type: string
-        description: Component identifier (e.g. appmixer.myservice)
-      responses:
-        '200':
-          description: Component deleted successfully
-        '401':
-          description: Unauthorized
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: Component not found
-      tags:
-      - Apps
+          $ref: '#/components/responses/NotFound'
 components:
+  parameters:
+    AppCompressIconsQuery:
+      name: compressIcons
+      in: query
+      description: Default `true`. When `true`, the `icon` field is returned as a URL; set to `false` to return the original inline base64 icon.
+      schema:
+        type: boolean
+        default: true
+    AppIgnoreACLQuery:
+      name: ignoreACL
+      in: query
+      description: Admin only. When `true`, returns every item regardless of ACL. Non-admin users receive a `400` error.
+      schema:
+        type: boolean
+  responses:
+    Unauthorized:
+      description: The access token is missing, invalid or expired.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: The user does not have the permission (or scope) required for this operation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: The request is invalid, for example it failed payload or query validation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   schemas:
-    App:
+    ComponentManifest:
       type: object
+      description: Component manifest (`component.json`). See the component manifest documentation for all fields.
       properties:
         name:
           type: string
+          examples:
+          - appmixer.twilio.sms.SendSMS
         label:
           type: string
-        icon:
+        author:
           type: string
         description:
           type: string
+        icon:
+          type: string
+        auth:
+          type: object
+          additionalProperties: true
+        webhook:
+          type: boolean
+        webhookAsync:
+          type: boolean
+        private:
+          type: boolean
+        inPorts:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        outPorts:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        properties:
+          type: object
+          additionalProperties: true
+      additionalProperties: true
+    ComponentUploadTicket:
+      type: object
+      properties:
+        ticket:
+          type: string
+          format: uuid
+      required:
+      - ticket
+    Error:
+      type: object
+      description: Error response.
+      properties:
+        statusCode:
+          type: integer
+          example: 404
+        error:
+          type: string
+          example: Not Found
+        message:
+          type: string
+          example: Flow not found.
+      required:
+      - statusCode
+      - error
+    ComponentStaticCallRequest:
+      type: object
+      description: Either `componentId` or `callerId` is required.
+      properties:
+        componentId:
+          type: string
+          description: ID of a component instance (used to resolve the connected account).
+        callerId:
+          type: string
+          description: ID of the calling component instance.
+        properties:
+          type: object
+          additionalProperties: true
+          description: Component properties.
+        messages:
+          type: object
+          additionalProperties: true
+          description: Input messages keyed by input port.
+        log:
+          type: boolean
+          default: false
+          description: 'When `true`, the call is recorded in the execution logs (marked with `staticCall: true`) and surfaces in the Logs API and the Insights UI. Primarily used for AI Agent tools observability.'
+        correlationId:
+          type: string
+          description: Optional correlation ID stored in the log record when `log` is `true`.
+        testRunId:
+          type: string
+          description: Marks the log records as produced by a flow test run.
+      additionalProperties: true
+    AppBundle:
+      type: object
+      properties:
+        version:
+          type: string
+          examples:
+          - 1.2.0
+    App:
+      type: object
+      description: An app (module, or service without modules) as defined in its `module.json`/`service.json`.
+      properties:
+        name:
+          type: string
+          examples:
+          - appmixer.asana
+        label:
+          type: string
+        category:
+          type: string
+        description:
+          type: string
+        icon:
+          type: string
+          description: Icon URL (default) or inline data URI (with `compressIcons=false`).
+      additionalProperties: true
+    ComponentUploadStatus:
+      type: object
+      properties:
+        finished:
+          type: string
+          format: date-time
+          description: Present when the upload finished.
+        err:
+          type: string
+          description: Error message when the upload failed.
+        data:
+          description: Error details, e.g. schema validation errors.
+      additionalProperties: true
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
-      description: 'Access token obtained from the /user/auth endpoint. Pass as Authorization: Bearer {token} header.'
+      bearerFormat: JWT
+      description: User access token obtained from `POST /user/auth`.
+externalDocs:
+  description: Appmixer documentation
+  url: https://docs.appmixer.com

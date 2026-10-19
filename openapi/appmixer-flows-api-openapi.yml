@@ -1,259 +1,2298 @@
 openapi: 3.2.0
 info:
-  title: Appmixer Flows API
-  description: The Appmixer REST API provides programmatic access to manage workflows, users, accounts, apps/connectors, files, data stores, insights, and people tasks within the Appmixer embedded iPaaS platform. The API allows you to access all the features that the Appmixer UI works with.
-  version: 6.1.0
+  title: Appmixer REST Flows API
+  version: 6.5.5
+  summary: REST API of the Appmixer workflow automation and embedded iPaaS platform.
+  description: 'Appmixer offers a REST API that mirrors the functionality available in its UI. Use it for
+
+    advanced customizations, additional automations and scripting.
+
+
+    **Base URL.** The base URL depends on your Appmixer tenant, for example `https://api-acme.appmixer.ai`
+
+    (newer hosted tenants), `https://api.acme.appmixer.cloud` (older hosted tenants), or the API URL of
+
+    your Self-Managed installation.
+
+
+    **Authentication.** Most endpoints require a user access token sent as `Authorization: Bearer `.
+
+    Get a token by signing in with `POST /user/auth`. Some endpoints also require the user to have
+
+    the `admin` scope; this is noted in their descriptions.
+
+
+    **Errors.** Errors are returned as JSON objects with `statusCode`, `error` and `message` properties.'
   contact:
     name: Appmixer
-    url: https://www.appmixer.com/
-  license:
-    name: Proprietary
-    url: https://www.appmixer.com/terms-and-conditions
+    url: https://www.appmixer.com
 servers:
-- url: https://api.{tenant}.appmixer.cloud
-  description: Appmixer Cloud Tenant API
+- url: '{tenantApiUrl}'
+  description: Your Appmixer tenant API
   variables:
-    tenant:
-      default: YOUR_TENANT
-      description: Your Appmixer tenant identifier
+    tenantApiUrl:
+      default: https://api-acme.appmixer.ai
+      description: API URL of your Appmixer tenant, e.g. https://api-acme.appmixer.ai or https://api.acme.appmixer.cloud.
 security:
 - bearerAuth: []
 tags:
 - name: Flows
-  description: Workflow flow management
+  description: 'Create, read, update, delete, clone, start and stop flows; manage flow drafts and flow
+
+    versions; validate and test flows; and send HTTP requests (webhooks) to flow components.'
 paths:
   /flows:
     get:
-      operationId: listFlows
-      summary: Appmixer List flows
-      description: Get all flows of the authenticated user. Supports filtering, sorting, and pagination.
+      tags:
+      - Flows
+      summary: Get Flows
+      operationId: getFlows
+      description: 'Return all flows of a user (the user''s own flows plus flows shared with the user). Users with
+
+        the `admin` scope (that are not group users) see flows of all users.
+
+
+        To list all published Integration Templates use
+
+        `GET /flows?filter=templateId:!&filter=wizard.fields`; to list a user''s integration instances
+
+        use `GET /flows?filter=templateId`.'
       parameters:
-      - name: limit
-        in: query
-        schema:
-          type: integer
-        description: Maximum number of flows to return
-      - name: offset
-        in: query
-        schema:
-          type: integer
-        description: Number of flows to skip
-      - name: pattern
-        in: query
-        schema:
-          type: string
-        description: Filter flows by name pattern
-      - name: sort
-        in: query
-        schema:
-          type: string
-        description: Sort field and direction
-      - name: projection
-        in: query
-        schema:
-          type: string
-        description: Comma-separated list of properties to exclude
       - name: filter
         in: query
+        description: 'Filter flows by their property values, in the form `property:value`. Example: `userId:123abc`
+
+          returns only flows whose owner is the user with ID `123abc` (i.e. shared flows are excluded).
+
+          Nested fields can be used too, which is especially useful with the `customFields` metadata
+
+          object, e.g. `customFields.category:healthcare`. Prefix the value with `!` to negate. The
+
+          parameter can be repeated to combine several filters.
+
+          '
+        schema:
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        style: form
+        explode: true
+        example: customFields.category:healthcare
+      - name: sharedWithPermissions
+        in: query
+        description: 'Filter shared flows by their sharing permissions, comma separated. Possible permissions are
+
+          `read`, `start` and `stop`.
+
+          '
         schema:
           type: string
-        description: Filter expression
+        example: read,start
+      - name: projection
+        in: query
+        description: Comma separated list of flow properties to include, or to exclude when prefixed with `-`.
+        schema:
+          type: string
+        example: -flow,-thumbnail
+      - name: sort
+        in: query
+        description: 'Sorting parameter. Any flow property followed by a colon and `1` (ascending) or `-1`
+
+          (descending).
+
+          '
+        schema:
+          type: string
+        example: mtime:-1
+      - name: pattern
+        in: query
+        description: A term to filter flows containing the pattern in their `name` or `flowId` property (case-insensitive).
+        schema:
+          type: string
+      - name: offset
+        in: query
+        description: The index of the first item returned. Useful for paging.
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+      - name: limit
+        in: query
+        description: Maximum number of items returned. Useful for paging.
+        schema:
+          type: integer
+          default: 100
+      - name: fromId
+        in: query
+        description: Internal `_id` of the flow after which the page starts (the flow itself is excluded).
+        schema:
+          type: string
+      - name: published
+        in: query
+        description: 'Only applied together with `filter=type:integration-draft`. `true` returns only drafts whose
+
+          Integration Template is published (shared), `false` only drafts without a published template.
+
+          '
+        schema:
+          type: string
+          enum:
+          - 'true'
+          - 'false'
+      - name: escapePattern
+        in: query
+        description: Accepted for backwards compatibility; the pattern is always escaped.
+        deprecated: true
+        schema:
+          type: string
       responses:
         '200':
-          description: List of flows returned successfully
+          description: Flows successfully retrieved.
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Flow'
+              example:
+              - userId: 58593f07c3ee4f239dc69ff7
+                flowId: 9089f275-f5a5-4796-ba23-365412c5666e
+                stage: stopped
+                name: 'Flow #4'
+                btime: 2018-03-29 19:24:08.950000+00:00
+                mtime: 2018-04-05 12:50:15.952000+00:00
+                sharedWith:
+                - email: david@client.io
+                  permissions:
+                  - read
+                  - start
+                  - stop
+                flow:
+                  e15ef119-8fcb-459b-aaae-2a3f9ee41f15:
+                    type: appmixer.utils.http.Uptime
+                    label: Uptime
+                    source: {}
+                    x: 110
+                    y: 90
+                    config: {}
+                  43f1f63a-ecd2-42dc-a618-8c96b4acc767:
+                    type: appmixer.utils.email.SendEmail
+                    label: SendEmail
+                    source:
+                      in:
+                        e15ef119-8fcb-459b-aaae-2a3f9ee41f15:
+                        - up
+                    x: 320
+                    y: -10
+                    config:
+                      transform:
+                        in:
+                          e15ef119-8fcb-459b-aaae-2a3f9ee41f15:
+                            up:
+                              type: json2new
+                              lambda:
+                                from_email: info@appmixer.com
+                                subject: 'Appmixer: Site UP ({{{$.e15ef119-8fcb-459b-aaae-2a3f9ee41f15.up.target}}})'
+                                text: Site {{{$.e15ef119-8fcb-459b-aaae-2a3f9ee41f15.up.target}}} is back UP.
+                mode: module
+                thumbnail: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22...
+                started: 2018-04-05 12:33:15.357000+00:00
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
-          description: Unauthorized
-      tags:
-      - Flows
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
     post:
+      tags:
+      - Flows
+      summary: Create Flow
       operationId: createFlow
-      summary: Appmixer Create a flow
-      description: Create a new flow in Appmixer.
+      description: 'Create a new flow. The `flow` descriptor is required (an empty object `{}` is a valid blank
+
+        canvas).
+
+
+        **Automatic account connection.** Pass `?autoConnectAccounts=true` to connect the user''s
+
+        available account to every component that needs one, after the flow has been saved. With
+
+        `preferred`, when several accounts are available, an account already connected to another
+
+        component of the same flow is reused; otherwise the first one is taken deterministically.
+
+        Account assignment runs after the flow is persisted and never fails the request.
+
+
+        The request is rejected when the user''s storage quota or flow limits (number of flows,
+
+        components per flow) are exceeded.'
+      parameters:
+      - $ref: '#/components/parameters/FlowAutoConnectAccountsParam'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  description: Name of the flow
-                flow:
-                  type: object
-                  description: Flow definition object
-                customFields:
-                  type: object
-                  description: Custom metadata for the flow
+              $ref: '#/components/schemas/FlowCreatePayload'
+            example:
+              name: 'My Flow #1'
+              flow: {}
+              customFields:
+                category: healthcare
       responses:
-        '200':
-          description: Flow created successfully
+        '201':
+          description: Flow successfully created.
+          headers:
+            Location:
+              description: URL path of the new flow (`/flows/{flowId}`).
+              schema:
+                type: string
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Flow'
+                type: object
+                properties:
+                  flowId:
+                    type: string
+                  categories:
+                    type:
+                    - array
+                    - 'null'
+                    items:
+                      type: string
+                required:
+                - flowId
+              example:
+                flowId: 26544d8c-5209-44ac-9bdf-ef786924b07b
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '401':
-          description: Unauthorized
-      tags:
-      - Flows
-  /flows/{flowId}:
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /flows/count:
     get:
-      operationId: getFlow
-      summary: Appmixer Get a flow
-      description: Get details of a specific flow by its ID.
-      parameters:
-      - name: flowId
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Flow returned successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Flow'
-        '401':
-          description: Unauthorized
-        '404':
-          description: Flow not found
       tags:
       - Flows
-    put:
-      operationId: updateFlow
-      summary: Appmixer Update a flow
-      description: Update an existing flow. A running flow cannot be updated without the forceUpdate query parameter.
+      summary: Get Flows Count
+      operationId: getFlowsCount
+      description: Return the number of all flows of a user. Accepts the same filtering parameters as Get Flows.
       parameters:
-      - name: flowId
-        in: path
-        required: true
-        schema:
-          type: string
-      - name: forceUpdate
+      - name: filter
         in: query
+        description: Filter flows by their property values (`property:value`). Can be repeated.
         schema:
-          type: boolean
-        description: Force update a running flow
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                flow:
-                  type: object
-                customFields:
-                  type: object
-      responses:
-        '200':
-          description: Flow updated successfully
-        '401':
-          description: Unauthorized
-        '404':
-          description: Flow not found
-      tags:
-      - Flows
-    delete:
-      operationId: deleteFlow
-      summary: Appmixer Delete a flow
-      description: Delete an existing flow by its ID.
-      parameters:
-      - name: flowId
-        in: path
-        required: true
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        style: form
+        explode: true
+      - name: pattern
+        in: query
+        description: A term to filter flows containing the pattern in their `name` or `flowId` property.
         schema:
           type: string
-      responses:
-        '200':
-          description: Flow deleted successfully
-        '401':
-          description: Unauthorized
-        '404':
-          description: Flow not found
-      tags:
-      - Flows
-  /flows/{flowId}/start:
-    put:
-      operationId: startFlow
-      summary: Appmixer Start a flow
-      description: Start a stopped flow.
-      parameters:
-      - name: flowId
-        in: path
-        required: true
+      - name: sharedWithPermissions
+        in: query
+        description: Filter shared flows by their sharing permissions, comma separated (`read`, `start`, `stop`).
         schema:
           type: string
-      responses:
-        '200':
-          description: Flow started successfully
-        '401':
-          description: Unauthorized
-        '404':
-          description: Flow not found
-      tags:
-      - Flows
-  /flows/{flowId}/stop:
-    put:
-      operationId: stopFlow
-      summary: Appmixer Stop a flow
-      description: Stop a running flow.
-      parameters:
-      - name: flowId
-        in: path
-        required: true
+      - name: published
+        in: query
+        description: Only applied together with `filter=type:integration-draft`; see Get Flows.
         schema:
-          type: string
-      responses:
-        '200':
-          description: Flow stopped successfully
-        '401':
-          description: Unauthorized
-        '404':
-          description: Flow not found
-      tags:
-      - Flows
-components:
-  schemas:
-    Flow:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        flow:
-          type: object
-          description: Flow definition object
-        stage:
           type: string
           enum:
-          - running
-          - stopped
+          - 'true'
+          - 'false'
+      - name: escapePattern
+        in: query
+        description: Accepted for backwards compatibility; the pattern is always escaped.
+        deprecated: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Number of flows.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                required:
+                - count
+              example:
+                count: 29
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /flows/{flowId}:
+    parameters:
+    - $ref: '#/components/parameters/FlowIdParam'
+    get:
+      tags:
+      - Flows
+      summary: Get Flow
+      operationId: getFlow
+      description: 'Return one flow. For a running flow the response also contains `runtimeErrors` (up to 100
+
+        error log records since the flow was started). For a draft the response contains
+
+        `draft.hasChanges`, telling whether publishing the draft would change the original flow.'
+      parameters:
+      - name: projection
+        in: query
+        description: Comma separated list of flow properties to include, or to exclude when prefixed with `-`.
+        schema:
+          type: string
+        example: -thumbnail
+      responses:
+        '200':
+          description: Flow successfully retrieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flow'
+              example:
+                userId: 58593f07c3ee4f239dc69ff7
+                flowId: 9089f275-f5a5-4796-ba23-365412c5666e
+                stage: stopped
+                name: 'Flow #4'
+                btime: 2018-03-29 19:24:08.950000+00:00
+                mtime: 2018-04-05 12:50:15.952000+00:00
+                flow:
+                  e15ef119-8fcb-459b-aaae-2a3f9ee41f15:
+                    type: appmixer.utils.http.Uptime
+                    label: Uptime
+                    source: {}
+                    x: 110
+                    y: 90
+                    config: {}
+                  416150af-b0d4-4d06-8ad1-75b17e578532:
+                    type: appmixer.utils.email.SendEmail
+                    label: SendEmail
+                    source:
+                      in:
+                        e15ef119-8fcb-459b-aaae-2a3f9ee41f15:
+                        - down
+                    x: 320
+                    y: 195
+                    config:
+                      transform:
+                        in:
+                          e15ef119-8fcb-459b-aaae-2a3f9ee41f15:
+                            down:
+                              type: json2new
+                              lambda:
+                                from_email: info@appmixer.com
+                                subject: 'Appmixer: Site DOWN ({{{$.e15ef119-8fcb-459b-aaae-2a3f9ee41f15.down.target}}})'
+                                text: Site {{{$.e15ef119-8fcb-459b-aaae-2a3f9ee41f15.down.target}}} is DOWN.
+                mode: module
+                thumbnail: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22...
+                started: 2018-04-05 12:33:15.357000+00:00
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+      - Flows
+      summary: Update Flow
+      operationId: updateFlow
+      description: 'Update an existing flow. This is a partial update: send only the properties you want to
+
+        change (`flow`, `name`, `customFields`, `thumbnail`, `sharedWith`, `wizard`, `notes`, ...).
+
+        `flow` is the flow descriptor.
+
+
+        A running flow cannot be updated unless `forceUpdate=true`.
+
+
+        This route is an upsert: if no flow with the given ID exists, a new flow is created (then the
+
+        payload must include the `flow` descriptor, as for Create Flow) and `201` is returned.
+
+
+        Supports `?autoConnectAccounts=true|preferred` (see Create Flow).'
+      parameters:
+      - name: forceUpdate
+        in: query
+        description: A running flow cannot be updated unless `forceUpdate=true`.
+        schema:
+          type: string
+          enum:
+          - 'true'
+          - 'false'
+      - name: validate
+        in: query
+        description: Validate the new flow descriptor when updating a running flow. Default `true`.
+        schema:
+          type: string
+          enum:
+          - 'true'
+          - 'false'
+      - name: inProgressData
+        in: query
+        description: When `delete`, in-progress data of a running flow is deleted during the update.
+        schema:
+          type: string
+          enum:
+          - delete
+      - $ref: '#/components/parameters/FlowAutoConnectAccountsParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlowPayload'
+            example:
+              name: 'My Flow #2'
+      responses:
+        '200':
+          description: Flow updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlowUpdateResult'
+              example:
+                flowId: 26544d8c-5209-44ac-9bdf-ef786924b07b
+                result: updated
+        '201':
+          description: Flow did not exist and was created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlowUpdateResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    delete:
+      tags:
+      - Flows
+      summary: Delete Flow
+      operationId: deleteFlow
+      description: Delete an existing flow. Versions of the flow are deleted too.
+      responses:
+        '200':
+          description: Flow deleted.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  flowId:
+                    type: string
+                required:
+                - flowId
+              example:
+                flowId: 26544d8c-5209-44ac-9bdf-ef786924b07b
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /flows/{flowId}/clone:
+    parameters:
+    - $ref: '#/components/parameters/FlowIdParam'
+    post:
+      tags:
+      - Flows
+      summary: Clone Flow
+      operationId: cloneFlow
+      description: 'Clone a flow. Requires read permission on the source flow.
+
+
+        **Create a draft.** Flow Drafts are editable copies of a flow that don''t affect the original
+
+        (running) flow; they are primarily used to change integration instances while the original
+
+        keeps running. To create a draft, clone the flow with `setOriginFlowId: true`,
+
+        `setComponentIdMap: true`, `connectAccounts: true` (recommended) and `additional.type` set to
+
+        `automation-draft` or `integration-instance-draft`. Only one draft per flow can exist: if an
+
+        up-to-date draft already exists, its ID is returned instead of creating a duplicate (an
+
+        outdated draft is replaced). Publish the draft with `POST /drafts/{flowId}/publish`.
+
+
+        Supports `autoConnectAccounts` (in the body or as a query parameter, see Create Flow).'
+      parameters:
+      - $ref: '#/components/parameters/FlowAutoConnectAccountsParam'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlowClonePayload'
+            examples:
+              clone:
+                summary: Clone a flow
+                value:
+                  prefix: 'Copy of '
+                  connectAccounts: true
+              draft:
+                summary: Create a draft
+                value:
+                  setOriginFlowId: true
+                  setComponentIdMap: true
+                  connectAccounts: true
+                  additional:
+                    type: integration-instance-draft
+      responses:
+        '201':
+          description: Flow cloned (or the existing draft returned).
+          headers:
+            Location:
+              description: URL path of the clone (`/flows/{cloneId}`).
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlowCloneResult'
+              example:
+                cloneId: cloned-flow-id
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /drafts/{flowId}/publish:
+    parameters:
+    - name: flowId
+      in: path
+      required: true
+      description: ID of the draft flow to publish.
+      schema:
+        type: string
+    post:
+      tags:
+      - Flows
+      summary: Publish a Draft
+      operationId: publishFlowDraft
+      description: 'Publish a draft to update the original flow with the draft''s changes. Only the owner of the
+
+        draft can publish it. Publishing:
+
+
+        1. snapshots the original flow as a `publish` version,
+
+        2. maps the draft component IDs back to the original flow''s component IDs,
+
+        3. updates the original flow with the draft''s configuration (if the original flow is running,
+
+        the changes take effect immediately),
+
+        4. moves account connections to the original flow, and
+
+        5. deletes the draft.'
+      parameters:
+      - name: forceUpdate
+        in: query
+        description: Required as `true` to update a running original flow in some situations (same as Update Flow).
+        schema:
+          type: string
+          enum:
+          - 'true'
+          - 'false'
+      - name: validate
+        in: query
+        description: Validate the flow when updating a running original flow. Default `true`.
+        schema:
+          type: string
+          enum:
+          - 'true'
+          - 'false'
+      - name: inProgressData
+        in: query
+        description: When `delete`, in-progress data of the running original flow is deleted.
+        schema:
+          type: string
+          enum:
+          - delete
+      responses:
+        '200':
+          description: Draft published successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  flowId:
+                    type: string
+                    description: ID of the original flow.
+                  draftId:
+                    type: string
+                    description: ID of the (now deleted) draft.
+                  result:
+                    $ref: '#/components/schemas/FlowUpdateResult'
+                required:
+                - flowId
+                - draftId
+              example:
+                flowId: original-flow-id
+                draftId: draft-flow-id
+                result:
+                  flowId: original-flow-id
+                  result: updated
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: User does not own the draft.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                statusCode: 403
+                error: Forbidden
+                message: You do not have permission to publish this draft.
+        '404':
+          description: Draft or its origin flow not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /flows/{flowId}/versions:
+    parameters:
+    - $ref: '#/components/parameters/FlowIdParam'
+    post:
+      tags:
+      - Flows
+      summary: Create Version
+      operationId: createFlowVersion
+      description: 'Create a new version snapshot of the current state of the flow. A version stores the flow
+
+        descriptor together with the flow''s `name`, `customFields`, `wizard` and `notes`.
+
+
+        Version types: `manual` (created explicitly by the user), `autosave` (created automatically
+
+        while editing), `publish` (created when a draft is published) and `restore-point` (created
+
+        before a restore). Only `manual` and `autosave` can be created via the API. Old `autosave`
+
+        and `restore-point` versions are garbage-collected automatically.
+
+
+        Allowed for the flow owner and for users with the `admin` scope.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                  - manual
+                  - autosave
+                  description: Version type.
+                label:
+                  type: string
+                  maxLength: 255
+                  description: Optional human readable label.
+              required:
+              - type
+            example:
+              type: manual
+              label: Before big refactoring
+      responses:
+        '200':
+          description: Version created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  versionId:
+                    type: string
+                    format: uuid
+                  versionNumber:
+                    type: integer
+                required:
+                - versionId
+                - versionNumber
+              example:
+                versionId: e1a7a2a4-9d5e-4c8f-a1c9-2f7f7f9b1a10
+                versionNumber: 4
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    get:
+      tags:
+      - Flows
+      summary: List Versions
+      operationId: getFlowVersions
+      description: Return the versions of a flow (metadata only, without the flow descriptors).
+      parameters:
+      - name: type
+        in: query
+        description: Filter by version type.
+        schema:
+          $ref: '#/components/schemas/FlowVersionType'
+      - name: limit
+        in: query
+        description: Maximum number of items returned.
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 50
+      - name: offset
+        in: query
+        description: The index of the first item returned. Useful for paging.
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+      responses:
+        '200':
+          description: Versions successfully retrieved.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FlowVersion'
+                  totalCount:
+                    type: integer
+                required:
+                - items
+                - totalCount
+              example:
+                items:
+                - versionId: e1a7a2a4-9d5e-4c8f-a1c9-2f7f7f9b1a10
+                  flowId: 9089f275-f5a5-4796-ba23-365412c5666e
+                  versionNumber: 4
+                  type: manual
+                  label: Before big refactoring
+                  name: My Flow
+                  btime: 2026-07-01 09:12:33.001000+00:00
+                totalCount: 4
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /flows/{flowId}/versions/{versionId}:
+    parameters:
+    - $ref: '#/components/parameters/FlowIdParam'
+    - $ref: '#/components/parameters/FlowVersionIdParam'
+    get:
+      tags:
+      - Flows
+      summary: Get Version
+      operationId: getFlowVersion
+      description: Return a single version including its stored flow descriptor, notes, custom fields and wizard.
+      responses:
+        '200':
+          description: Version retrieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlowVersion'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+      - Flows
+      summary: Update Version
+      operationId: updateFlowVersion
+      description: Update the label of a version. Only the flow owner can update versions.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                label:
+                  type: string
+                  maxLength: 255
+                  description: New version label.
+              required:
+              - label
+            example:
+              label: My milestone
+      responses:
+        '200':
+          description: Version updated.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  versionId:
+                    type: string
+                    format: uuid
+                  label:
+                    type: string
+              example:
+                versionId: e1a7a2a4-9d5e-4c8f-a1c9-2f7f7f9b1a10
+                label: My milestone
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+      - Flows
+      summary: Delete Version
+      operationId: deleteFlowVersion
+      description: Permanently delete a version. Only the flow owner can delete versions.
+      responses:
+        '200':
+          description: Version deleted.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  versionId:
+                    type: string
+                    format: uuid
+                  deleted:
+                    type: boolean
+                    const: true
+              example:
+                versionId: e1a7a2a4-9d5e-4c8f-a1c9-2f7f7f9b1a10
+                deleted: true
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /flows/{flowId}/versions/{versionId}/restore:
+    parameters:
+    - $ref: '#/components/parameters/FlowIdParam'
+    - $ref: '#/components/parameters/FlowVersionIdParam'
+    post:
+      tags:
+      - Flows
+      summary: Restore Version
+      operationId: restoreFlowVersion
+      description: 'Restore the flow to the state stored in the version. Only the flow owner can restore
+
+        versions. The behaviour depends on the flow''s state:
+
+
+        * **Running flow**: the version is restored into a draft (an existing draft is replaced); the
+
+        live flow keeps running unchanged. Publish the draft to apply the restored state.
+
+        * **Stopped flow with a draft**: the draft is replaced with the version''s content; the
+
+        original flow is untouched.
+
+        * **Stopped flow without a draft**: the flow itself is restored in place.
+
+        * **Draft**: when called on a draft flow, the draft is overwritten in place.
+
+
+        The pre-restore state is snapshotted as a `restore-point` version first (except when a new
+
+        draft is created, where nothing is overwritten).'
+      responses:
+        '200':
+          description: Version restored.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  flowId:
+                    type: string
+                  draftFlowId:
+                    type: string
+                    description: Present when the version was restored into a draft.
+                  restoredFromVersionId:
+                    type: string
+                  restoredFromVersionNumber:
+                    type: integer
+                  restorePointVersionId:
+                    type: string
+                    description: ID of the `restore-point` version created before the restore (absent when a new draft was created).
+                  restorePointVersionNumber:
+                    type: integer
+                required:
+                - flowId
+                - restoredFromVersionId
+                - restoredFromVersionNumber
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /flows/{flowId}/versions/{versionId}/clone:
+    parameters:
+    - $ref: '#/components/parameters/FlowIdParam'
+    - $ref: '#/components/parameters/FlowVersionIdParam'
+    post:
+      tags:
+      - Flows
+      summary: Clone Version
+      operationId: cloneFlowVersion
+      description: 'Clone a historical version into a new, independent flow. The request body accepts the same
+
+        options as Clone Flow (`prefix`, `connectAccounts`, ...).'
+      parameters:
+      - $ref: '#/components/parameters/FlowAutoConnectAccountsParam'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlowClonePayload'
+            example: {}
+      responses:
+        '201':
+          description: Version cloned into a new flow.
+          headers:
+            Location:
+              description: URL path of the new flow.
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlowCloneResult'
+              example:
+                cloneId: 26544d8c-5209-44ac-9bdf-ef786924b07b
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /flows/{flowId}/validate:
+    parameters:
+    - $ref: '#/components/parameters/FlowIdParam'
+    get:
+      tags:
+      - Flows
+      summary: Validate Flow
+      operationId: validateFlow
+      description: 'Validate a flow and return validation errors grouped by component. The validator checks,
+
+        among other things:
+
+
+        * Required input fields (including fields defined inside expression-type inspector fields).
+
+        * Components that require authentication but have no connected account.
+
+        * The shape of the per-component `errorHandling` settings.
+
+        * Components whose type cannot be resolved; an unknown or malformed component type is
+
+        reported on the component itself rather than failing the request.'
+      responses:
+        '200':
+          description: Validation results.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        componentId:
+                          type: string
+                        errors:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              keyword:
+                                type: string
+                              message:
+                                type: string
+                              componentId:
+                                type: string
+                            additionalProperties: true
+                required:
+                - errors
+              example:
+                errors:
+                - componentId: a1b2c3
+                  errors:
+                  - keyword: authentication
+                    message: Component is not authenticated. Connect an account.
+                    componentId: a1b2c3
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /flows/{flowId}/test:
+    parameters:
+    - $ref: '#/components/parameters/FlowIdParam'
+    post:
+      tags:
+      - Flows
+      summary: Test Flow
+      operationId: testFlow
+      description: 'Execute a single test run of a flow **without the flow having to be running**. The endpoint
+
+        executes the selected component and traverses the flow graph downstream, streaming
+
+        per-component results in real time as Server-Sent Events (SSE). The flow''s stage is not
+
+        changed and the flow''s own state inside Appmixer is left untouched. This is the API behind
+
+        the **Test flow** button in the Designer. Requires the `start` permission on the flow.
+
+
+        **A test run executes the downstream components for real.** Only the entry component''s data
+
+        can be mocked: every component the run traverses has `receive()` called with a real context
+
+        and a real connected account, so actions such as sending a message or changing a record are
+
+        performed for real. Component, flow and service state is in-memory and ephemeral (it starts
+
+        empty and production state is never read or written), `context.stopFlow()` is a no-op and
+
+        `context.sendSignal()` throws. Use `options.maxDepth` to stop the run before components with
+
+        side effects.
+
+
+        **Trigger data resolution.** When no `payload`/`inputData` is provided, the engine resolves
+
+        the trigger''s test data using a fallback chain and labels the entry component''s
+
+        `component:output` events with a `dataSource` attribute: `real` (the trigger''s real logic ran
+
+        or a live webhook arrived), `logs` (data from past runs found in the flow logs), `dummy`
+
+        (sample data generated from the output port schema) or `manual` (data supplied in the request).
+
+
+        **SSE events.** `test:start`, `component:start`, `component:output`, `component:response`,
+
+        `component:error`, `component:done`, `component:stop` and `test:done` (carries the overall
+
+        test status). Each event is written as `event: ` followed by `data: `.
+
+
+        Incoming webhook calls to a stopped flow are forwarded to an active test run of that flow.
+
+        Records produced by a test run are logged with a `testRunId` field; filter them with
+
+        `GET /logs?flowId=&testRunId=`.
+
+
+        Server limits: `TEST_MODE_TIMEOUT` (default 60000 ms), `TEST_MODE_MAX_DEPTH` (default 50),
+
+        `TEST_MODE_MAX_TIMEOUT_DELAY` (default 120000 ms, for `context.setTimeout()`).'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                componentId:
+                  type: string
+                  description: The component to start the test run from (typically the flow's trigger).
+                payload:
+                  type: object
+                  additionalProperties: true
+                  description: 'Trigger output data keyed by output port (e.g. `{ "out": {...} }`). When provided,
+
+                    the component''s own logic is not executed.
+
+                    '
+                inputData:
+                  type: object
+                  additionalProperties: true
+                  description: Input data for testing a single component with explicit input.
+                options:
+                  type: object
+                  properties:
+                    timeout:
+                      type: integer
+                      description: Timeout in ms, capped by the `TEST_MODE_TIMEOUT` server setting.
+                    maxDepth:
+                      type: integer
+                      description: 'How many levels of components downstream of the entry component are
+
+                        executed. `0` executes the entry component only and nothing connected to
+
+                        it. Capped by `TEST_MODE_MAX_DEPTH`.
+
+                        '
+                    maxMessages:
+                      type: integer
+                      description: Maximum number of messages delivered to components during the run (default 100).
+                    maxWebhooks:
+                      type: integer
+                      description: Maximum number of incoming webhook calls forwarded into the run (default 1).
+              required:
+              - componentId
+            example:
+              componentId: 76a77abf-d5ec-4b1c-b6e8-031359a6a640
+      responses:
+        '200':
+          description: Stream of test events.
+          content:
+            text/event-stream:
+              schema:
+                type: string
+              example: 'event: test:start
+
+                data: {"testRunId":"1d1f0d02-6f52-4c34-a6b1-7b6f1a9f30aa"}
+
+
+                event: test:done
+
+                data: {"testRunId":"1d1f0d02-6f52-4c34-a6b1-7b6f1a9f30aa","status":"success"}
+
+                '
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /flows/{flowId}/test/{testRunId}:
+    parameters:
+    - $ref: '#/components/parameters/FlowIdParam'
+    - name: testRunId
+      in: path
+      required: true
+      description: ID of the test run, delivered in the `test:start` SSE event.
+      schema:
+        type: string
+    delete:
+      tags:
+      - Flows
+      summary: Abort Test Run
+      operationId: abortFlowTestRun
+      description: Abort a running test. The `testRunId` is delivered in the `test:start` SSE event.
+      responses:
+        '200':
+          description: Abort requested.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  testRunId:
+                    type: string
+                  status:
+                    type: string
+                    const: abort-requested
+              example:
+                testRunId: 1d1f0d02-6f52-4c34-a6b1-7b6f1a9f30aa
+                status: abort-requested
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /flows/{flowId}/components:
+    parameters:
+    - $ref: '#/components/parameters/FlowIdParam'
+    get:
+      tags:
+      - Flows
+      summary: Get Flow Components
+      operationId: getFlowComponents
+      description: 'Return the component manifests of all components used in the flow. Useful for progressively
+
+        loading only the manifests a client actually needs instead of the full `GET /components`
+
+        catalogue. Other query parameters are passed through to the component listing (as with
+
+        `GET /components`).'
+      responses:
+        '200':
+          description: Component manifests.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  description: Component manifest (`component.json`).
+                  additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /flows/{flowId}/coordinator:
+    parameters:
+    - $ref: '#/components/parameters/FlowIdParam'
+    post:
+      tags:
+      - Flows
+      summary: Start/Stop Flow
+      operationId: startStopFlow
+      description: 'Start or stop an existing flow. Requires the `start` or `stop` permission on the flow
+
+        respectively.
+
+
+        For the `stop` command, `background: true` triggers the stop without waiting for it to
+
+        finish; the returned `ticket` can then be used with
+
+        `GET /flows/{flowId}/coordinator/status` to check the status of that operation.'
+      parameters:
+      - name: validate
+        in: query
+        description: '`start` command only. When present (any non-empty value), the flow is validated before it
+
+          is started and a flow with validation errors is not started.
+
+          '
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                command:
+                  type: string
+                  enum:
+                  - start
+                  - stop
+                  description: The command to send to the flow coordinator.
+                background:
+                  type: boolean
+                  description: '`stop` only. Trigger the stop command without waiting for it to finish.'
+                mode:
+                  type: string
+                  enum:
+                  - module
+                onAllClusterNodes:
+                  type: boolean
+              required:
+              - command
+            example:
+              command: start
+      responses:
+        '200':
+          description: Command executed (or, for a background stop, scheduled).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  flowId:
+                    type: string
+                  ticket:
+                    type:
+                    - string
+                    - 'null'
+                    description: Ticket of the background stop operation (equals the flow ID); `null` otherwise.
+                required:
+                - flowId
+              example:
+                flowId: 26544d8c-5209-44ac-9bdf-ef786924b07b
+                ticket: 26544d8c-5209-44ac-9bdf-ef786924b07b
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /flows/{flowId}/coordinator/status:
+    parameters:
+    - $ref: '#/components/parameters/FlowIdParam'
+    get:
+      tags:
+      - Flows
+      summary: Get the status of the stop flow command
+      operationId: getFlowCoordinatorStatus
+      description: Return the status of a background stop operation started with `POST /flows/{flowId}/coordinator`.
+      responses:
+        '200':
+          description: Operation status.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    examples:
+                    - completed
+                    - cancelled
+                  stepsTotal:
+                    type: integer
+                additionalProperties: true
+              example:
+                status: completed
+                stepsTotal: 1
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Flow not found, or no background operation found for the flow.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /flows/{flowId}/components/{componentId}:
+    parameters:
+    - $ref: '#/components/parameters/FlowIdParam'
+    - $ref: '#/components/parameters/FlowComponentIdParam'
+    - $ref: '#/components/parameters/FlowEnqueueOnlyParam'
+    get:
+      tags:
+      - Flows
+      summary: Send GET request to a component
+      operationId: sendGetRequestToComponent
+      description: 'Send an HTTP request (webhook) to a component of a running flow. No access token is needed.
+
+        The request data, query and headers are delivered to the component; the response is whatever
+
+        the component returns (status code, headers and body are controlled by the component).
+
+
+        If the flow is stopped the response is `400` ("Flow stopped."), unless a test run of the flow
+
+        is active, in which case the request is forwarded to it. When the system is in drain mode
+
+        the response is `503`.'
+      security: []
+      responses:
+        '200':
+          description: Response produced by the component.
+          content:
+            application/json:
+              schema: {}
+        '202':
+          description: 'The request was enqueued without waiting for the component''s response
+
+            (`enqueueOnly=true`), or the component needs quota and the request will be processed when
+
+            quota is available.
+
+            '
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: Enqueued.
+        '400':
+          description: The flow is stopped, or the component returned an error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                statusCode: 400
+                error: Bad request
+                message: Flow stopped.
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          description: The system is in drain mode.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+      - Flows
+      summary: Send POST request to a component
+      operationId: sendPostRequestToComponent
+      description: 'Send an HTTP request (webhook) to a component of a running flow. No access token is needed.
+
+        The request data, query and headers are delivered to the component; the response is whatever
+
+        the component returns (status code, headers and body are controlled by the component).
+
+
+        If the flow is stopped the response is `400` ("Flow stopped."), unless a test run of the flow
+
+        is active, in which case the request is forwarded to it. When the system is in drain mode
+
+        the response is `503`.'
+      security: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: {}
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              additionalProperties: true
+          multipart/form-data:
+            schema:
+              type: object
+              additionalProperties: true
+          text/plain:
+            schema:
+              type: string
+          text/xml:
+            schema:
+              type: string
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: Response produced by the component.
+          content:
+            application/json:
+              schema: {}
+        '202':
+          description: 'The request was enqueued without waiting for the component''s response
+
+            (`enqueueOnly=true`), or the component needs quota and the request will be processed when
+
+            quota is available.
+
+            '
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: Enqueued.
+        '400':
+          description: The flow is stopped, or the component returned an error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                statusCode: 400
+                error: Bad request
+                message: Flow stopped.
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          description: The system is in drain mode.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      tags:
+      - Flows
+      summary: Send PUT request to a component
+      operationId: sendPutRequestToComponent
+      description: 'Send an HTTP request (webhook) to a component of a running flow. No access token is needed.
+
+        The request data, query and headers are delivered to the component; the response is whatever
+
+        the component returns (status code, headers and body are controlled by the component).
+
+
+        If the flow is stopped the response is `400` ("Flow stopped."), unless a test run of the flow
+
+        is active, in which case the request is forwarded to it. When the system is in drain mode
+
+        the response is `503`.'
+      security: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: {}
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              additionalProperties: true
+          multipart/form-data:
+            schema:
+              type: object
+              additionalProperties: true
+          text/plain:
+            schema:
+              type: string
+          text/xml:
+            schema:
+              type: string
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: Response produced by the component.
+          content:
+            application/json:
+              schema: {}
+        '202':
+          description: 'The request was enqueued without waiting for the component''s response
+
+            (`enqueueOnly=true`), or the component needs quota and the request will be processed when
+
+            quota is available.
+
+            '
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: Enqueued.
+        '400':
+          description: The flow is stopped, or the component returned an error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                statusCode: 400
+                error: Bad request
+                message: Flow stopped.
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          description: The system is in drain mode.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+      - Flows
+      summary: Send DELETE request to a component
+      operationId: sendDeleteRequestToComponent
+      description: 'Send an HTTP request (webhook) to a component of a running flow. No access token is needed.
+
+        The request data, query and headers are delivered to the component; the response is whatever
+
+        the component returns (status code, headers and body are controlled by the component).
+
+
+        If the flow is stopped the response is `400` ("Flow stopped."), unless a test run of the flow
+
+        is active, in which case the request is forwarded to it. When the system is in drain mode
+
+        the response is `503`.'
+      security: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: {}
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              additionalProperties: true
+          multipart/form-data:
+            schema:
+              type: object
+              additionalProperties: true
+          text/plain:
+            schema:
+              type: string
+          text/xml:
+            schema:
+              type: string
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: Response produced by the component.
+          content:
+            application/json:
+              schema: {}
+        '202':
+          description: 'The request was enqueued without waiting for the component''s response
+
+            (`enqueueOnly=true`), or the component needs quota and the request will be processed when
+
+            quota is available.
+
+            '
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: Enqueued.
+        '400':
+          description: The flow is stopped, or the component returned an error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                statusCode: 400
+                error: Bad request
+                message: Flow stopped.
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '503':
+          description: The system is in drain mode.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    FlowWizardField:
+      type: object
+      description: One field of an Integration Template wizard.
+      properties:
+        type:
+          type: string
+          enum:
+          - inspectorField
+          - account
+          - customField
+          - text
+          - image
+        label:
+          type: string
+        tooltip:
+          type: string
+        placeholder:
+          type: string
+        source:
+          type: string
+          description: Path to the bound component input, `<componentId>.<descriptorPath>`.
+        attrs:
+          type: object
+          description: Type-specific attributes (e.g. `service`, `components`, `sharedAccountId` for `account` fields).
+          additionalProperties: true
+        options:
+          type: object
+          additionalProperties: true
+      additionalProperties: true
+    FlowVersionType:
+      type: string
+      enum:
+      - manual
+      - autosave
+      - publish
+      - restore-point
+    FlowSharedWith:
+      type: object
+      description: Sharing rule. Exactly one of `email`, `domain` or `scope` must be set.
+      properties:
+        email:
+          type: string
+          format: email
+        domain:
+          type: string
+        scope:
+          type: string
+        permissions:
+          type: array
+          items:
+            type: string
+            enum:
+            - read
+            - start
+            - stop
+      required:
+      - permissions
+    FlowNote:
+      type: object
+      description: A note block displayed on the Designer canvas.
+      properties:
+        x:
+          type: number
+          description: Horizontal position on the canvas (pixels, can be negative).
+        y:
+          type: number
+          description: Vertical position on the canvas (pixels, can be negative).
+        width:
+          type: number
+        height:
+          type: number
+        content:
+          type: string
+          description: CommonMark Markdown displayed inside the note block.
+      required:
+      - x
+      - y
+      - width
+      - height
+    FlowCloneResult:
+      type: object
+      properties:
+        cloneId:
+          type: string
+      required:
+      - cloneId
+    FlowVersion:
+      type: object
+      description: 'A flow version snapshot. List Versions returns metadata only; Get Version also includes
+
+        `flow`, `notes`, `customFields` and `wizard`.
+
+        '
+      properties:
+        versionId:
+          type: string
+          format: uuid
+        flowId:
+          type: string
+        userId:
+          type: string
+          description: ID of the flow owner.
+        versionNumber:
+          type: integer
+        type:
+          $ref: '#/components/schemas/FlowVersionType'
+        label:
+          type:
+          - string
+          - 'null'
+        name:
+          type: string
         btime:
           type: string
           format: date-time
-          description: Creation time
+        flow:
+          $ref: '#/components/schemas/FlowDescriptor'
+        notes:
+          $ref: '#/components/schemas/FlowNotes'
+        customFields:
+          type: object
+          additionalProperties: true
+        wizard:
+          $ref: '#/components/schemas/FlowWizard'
+      additionalProperties: true
+    FlowComponent:
+      type: object
+      description: One component of a flow descriptor.
+      properties:
+        type:
+          type: string
+          minLength: 1
+          description: Component type, e.g. `appmixer.utils.email.SendEmail`.
+        label:
+          type: string
+        source:
+          type:
+          - object
+          - 'null'
+          description: 'Input connections, `{ <inputPort>: { <sourceComponentId>: [<outputPort>, ...] } }`.'
+          additionalProperties: true
+        config:
+          type:
+          - object
+          - 'null'
+          description: Component configuration, including `properties` and input `transform`s.
+          additionalProperties: true
+        errorHandling:
+          $ref: '#/components/schemas/FlowComponentErrorHandling'
+        x:
+          type:
+          - number
+          - string
+        y:
+          type:
+          - number
+          - string
+      required:
+      - type
+      additionalProperties: true
+    Error:
+      type: object
+      description: Error response.
+      properties:
+        statusCode:
+          type: integer
+          example: 404
+        error:
+          type: string
+          example: Not Found
+        message:
+          type: string
+          example: Flow not found.
+      required:
+      - statusCode
+      - error
+    FlowType:
+      type: string
+      description: Flow type.
+      enum:
+      - automation
+      - automation-draft
+      - integration-draft
+      - integration-template
+      - integration-instance
+      - custom-integration-instance
+      - integration-instance-draft
+      - integration-test
+    FlowPayload:
+      type: object
+      description: Flow properties accepted by Create Flow and Update Flow.
+      additionalProperties: false
+      properties:
+        flow:
+          $ref: '#/components/schemas/FlowDescriptor'
+        name:
+          type: string
+          description: Name of the flow.
+        customFields:
+          type: object
+          additionalProperties: true
+          description: 'Any custom properties. Useful for storing custom metadata and later filtering flows by it
+
+            (e.g. `filter=customFields.category:healthcare`).
+
+            '
+        thumbnail:
+          type: string
+          description: Flow thumbnail image (data URI).
+        notes:
+          $ref: '#/components/schemas/FlowNotes'
+        wizard:
+          $ref: '#/components/schemas/FlowWizard'
+        sharedWith:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlowSharedWith'
+        type:
+          $ref: '#/components/schemas/FlowType'
+        categories:
+          type: array
+          items:
+            type: string
+          description: Category IDs. Only allowed for `integration-template` and `integration-draft` flows.
+        description:
+          type:
+          - string
+          - 'null'
+        image:
+          type:
+          - string
+          - 'null'
+        mode:
+          type: string
+          enum:
+          - module
+        stage:
+          type: string
+        model:
+          type: string
+        svg:
+          type: string
+        inspector:
+          type: object
+          additionalProperties: true
+        revision:
+          type:
+          - number
+          - 'null'
+        componentIdMap:
+          type: object
+          additionalProperties: true
+        templateId:
+          type: string
+        originFlowId:
+          type: string
+          description: Cannot be changed once set.
+    Flow:
+      type: object
+      description: A flow.
+      properties:
+        flowId:
+          type: string
+        userId:
+          type: string
+          description: ID of the flow owner.
+        name:
+          type: string
+        stage:
+          $ref: '#/components/schemas/FlowStage'
+        type:
+          $ref: '#/components/schemas/FlowType'
+        btime:
+          type: string
+          format: date-time
+          description: Creation time.
         mtime:
           type: string
           format: date-time
-          description: Modification time
+          description: Last modification time.
+        started:
+          type: string
+          format: date-time
+          description: Time the flow was last started.
+        flow:
+          $ref: '#/components/schemas/FlowDescriptor'
+        notes:
+          $ref: '#/components/schemas/FlowNotes'
+        wizard:
+          $ref: '#/components/schemas/FlowWizard'
+        mode:
+          type: string
         thumbnail:
           type: string
         customFields:
           type: object
-          description: Custom metadata for the flow
+          additionalProperties: true
+        sharedWith:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlowSharedWith'
+        categories:
+          type: array
+          items:
+            type: string
+        templateId:
+          type: string
+        originFlowId:
+          type: string
+        componentIdMap:
+          type: object
+          additionalProperties: true
+        revision:
+          type:
+          - number
+          - 'null'
+        description:
+          type:
+          - string
+          - 'null'
+        image:
+          type:
+          - string
+          - 'null'
+        runtimeErrors:
+          type: array
+          description: Get Flow only, running flows only. Recent error log records.
+          items:
+            type: object
+            additionalProperties: true
+        draft:
+          type: object
+          description: Get Flow only, drafts only.
+          properties:
+            hasChanges:
+              type: boolean
+              description: Whether publishing the draft would change the original flow.
+      additionalProperties: true
+    FlowNotes:
+      type: object
+      description: Map of note ID (UUID) to note object.
+      additionalProperties:
+        $ref: '#/components/schemas/FlowNote'
+      example:
+        ec488c75-b240-4b8a-8939-e05ba4af32a4:
+          x: -368
+          y: -128
+          width: 432
+          height: 288
+          content: '## My note
+
+
+            Supports **Markdown** content.'
+    FlowDescriptor:
+      type: object
+      description: The flow descriptor, a map of component ID to component.
+      additionalProperties:
+        $ref: '#/components/schemas/FlowComponent'
+    FlowWizard:
+      type:
+      - object
+      - 'null'
+      description: 'Wizard configuration. A flow with a non-empty `wizard` (and no `templateId`) is an Integration
+
+        Template.
+
+        '
+      properties:
+        fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlowWizardField'
+      additionalProperties: true
+    FlowCreatePayload:
+      description: Create Flow payload. Same as `FlowPayload`, but `flow` is required.
+      allOf:
+      - $ref: '#/components/schemas/FlowPayload'
+      - type: object
+        required:
+        - flow
+    FlowClonePayload:
+      type:
+      - object
+      - 'null'
+      description: Clone options.
+      additionalProperties: false
+      properties:
+        prefix:
+          type: string
+          description: Prefix for the clone's name (the original flow name is used with this prefix).
+        projection:
+          type: string
+          description: Properties not to clone, e.g. `-thumbnail,-sharedWith`.
+        connectAccounts:
+          type: boolean
+          default: false
+          description: 'Connect the accounts connected to the source flow components to the cloned components too.
+
+            Only possible when the owner of the clone is the owner of the original flow.
+
+            '
+        connectSharedAccounts:
+          type: boolean
+        autoConnectAccounts:
+          oneOf:
+          - type: boolean
+          - type: string
+            const: preferred
+          description: See the `autoConnectAccounts` query parameter.
+        isTemplateInstance:
+          type: boolean
+          default: false
+          description: The source flow is an instance of a template (Integrations).
+        setOriginFlowId:
+          type: boolean
+          default: false
+          description: Set the `originFlowId` of the clone to the original flow.
+        setComponentIdMap:
+          type: boolean
+          default: true
+          description: Store a map of the original component IDs to the clone's component IDs (used by Integrations and drafts).
+        includeNotes:
+          type: boolean
+        additional:
+          type: object
+          description: Properties set on the clone.
+          additionalProperties: false
+          properties:
+            sharedWith:
+              type: array
+              items:
+                $ref: '#/components/schemas/FlowSharedWith'
+            type:
+              $ref: '#/components/schemas/FlowType'
+            wizard:
+              $ref: '#/components/schemas/FlowWizard'
+    FlowUpdateResult:
+      type: object
+      properties:
+        flowId:
+          type: string
+        result:
+          type: string
+          examples:
+          - updated
+        flow:
+          $ref: '#/components/schemas/FlowDescriptor'
+      additionalProperties: true
+    FlowComponentErrorHandling:
+      type:
+      - object
+      - 'null'
+      description: 'How an unresolved error (an error that remains after automatic retries) is handled. With
+
+        `onError: errorPort`, the error is routed to a virtual `error` output port that can be wired
+
+        to any downstream component.
+
+        '
+      properties:
+        autoRetry:
+          type: boolean
+          default: true
+          description: Whether the engine retries the failed message automatically.
+        maxRetries:
+          type: integer
+          description: Optional override of the number of retries (bounded by the system retry backoff configuration).
+        onError:
+          type: string
+          enum:
+          - errorPort
+          - stopFlow
+          - storeUnprocessed
+          default: storeUnprocessed
+          description: What happens once retries are exhausted or disabled.
+      additionalProperties: true
+    FlowStage:
+      type: string
+      description: Flow stage (state).
+      enum:
+      - starting
+      - running
+      - stopped
+      - paused
+      - updating
+      - paused-by-user
+  parameters:
+    FlowIdParam:
+      name: flowId
+      in: path
+      required: true
+      description: Flow ID (lowercased by the server).
+      schema:
+        type: string
+      example: 9089f275-f5a5-4796-ba23-365412c5666e
+    FlowEnqueueOnlyParam:
+      name: enqueueOnly
+      in: query
+      description: 'If `true`, the response is returned as soon as the request is enqueued in the engine, without
+
+        waiting for the component to process it. The response code is `202` in this case.
+
+        '
+      schema:
+        type: string
+        enum:
+        - 'true'
+        - 'false'
+        default: 'false'
+    FlowVersionIdParam:
+      name: versionId
+      in: path
+      required: true
+      description: Version ID (UUID v4).
+      schema:
+        type: string
+        format: uuid
+      example: e1a7a2a4-9d5e-4c8f-a1c9-2f7f7f9b1a10
+    FlowAutoConnectAccountsParam:
+      name: autoConnectAccounts
+      in: query
+      description: 'Connect the user''s available account to every component that needs one, after the flow has
+
+        been saved. `true`: assign an account only where exactly one is available. `preferred`: with
+
+        several accounts available, reuse an account already connected to another component of the
+
+        same flow, otherwise take the first one. Never fails the request.
+
+        '
+      schema:
+        type: string
+        enum:
+        - 'true'
+        - preferred
+    FlowComponentIdParam:
+      name: componentId
+      in: path
+      required: true
+      description: ID of the component in the flow descriptor.
+      schema:
+        type: string
+  responses:
+    Forbidden:
+      description: The user does not have the permission (or scope) required for this operation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: The request is invalid, for example it failed payload or query validation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: The access token is missing, invalid or expired.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
-      description: 'Access token obtained from the /user/auth endpoint. Pass as Authorization: Bearer {token} header.'
+      bearerFormat: JWT
+      description: User access token obtained from `POST /user/auth`.
+externalDocs:
+  description: Appmixer documentation
+  url: https://docs.appmixer.com

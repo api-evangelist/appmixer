@@ -1,0 +1,334 @@
+openapi: 3.2.0
+info:
+  title: Appmixer REST Connector Configuration API
+  version: 6.5.5
+  summary: REST API of the Appmixer workflow automation and embedded iPaaS platform.
+  description: 'Appmixer offers a REST API that mirrors the functionality available in its UI. Use it for
+
+    advanced customizations, additional automations and scripting.
+
+
+    **Base URL.** The base URL depends on your Appmixer tenant, for example `https://api-acme.appmixer.ai`
+
+    (newer hosted tenants), `https://api.acme.appmixer.cloud` (older hosted tenants), or the API URL of
+
+    your Self-Managed installation.
+
+
+    **Authentication.** Most endpoints require a user access token sent as `Authorization: Bearer `.
+
+    Get a token by signing in with `POST /user/auth`. Some endpoints also require the user to have
+
+    the `admin` scope; this is noted in their descriptions.
+
+
+    **Errors.** Errors are returned as JSON objects with `statusCode`, `error` and `message` properties.'
+  contact:
+    name: Appmixer
+    url: https://www.appmixer.com
+servers:
+- url: '{tenantApiUrl}'
+  description: Your Appmixer tenant API
+  variables:
+    tenantApiUrl:
+      default: https://api-acme.appmixer.ai
+      description: API URL of your Appmixer tenant, e.g. https://api-acme.appmixer.ai or https://api.acme.appmixer.cloud.
+security:
+- bearerAuth: []
+tags:
+- name: Connector Configuration
+  description: 'Global configuration for your connectors. Values stored for a service are injected into the
+
+    `context.config` object (alias `context.auth`) of every component of that service, and into the
+
+    `context` of its auth module. Only users with the `admin` scope can use these endpoints.'
+paths:
+  /service-config:
+    get:
+      tags:
+      - Connector Configuration
+      summary: Get Services Configuration
+      operationId: getServiceConfigs
+      description: 'Get a list of stored configurations. By default, only system-wide configurations (without a `scope`)
+
+        are returned. Requires the `admin` scope.'
+      parameters:
+      - name: pattern
+        in: query
+        required: false
+        description: A term to filter configurations containing the pattern in their service ID (case-insensitive).
+        schema:
+          type: string
+      - name: sort
+        in: query
+        required: false
+        description: Sorting parameter in the form `property:1` (ascending) or `property:-1` (descending). Example `serviceId:1`.
+        schema:
+          type: string
+        example: serviceId:1
+      - name: offset
+        in: query
+        required: false
+        description: Index of the first item returned. Useful for paging.
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+      - name: limit
+        in: query
+        required: false
+        description: Maximum number of items returned. Useful for paging.
+        schema:
+          type: integer
+          minimum: 0
+          default: 100
+      - name: filter
+        in: query
+        required: false
+        description: Filter in the form `property:value` or `property:!value`. Can be repeated.
+        schema:
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+      - name: scope
+        in: query
+        required: false
+        description: Return only configurations stored for this scope. An empty value returns only system-wide configurations.
+        schema:
+          type: string
+      - name: includeScoped
+        in: query
+        required: false
+        description: If `true`, return system-wide configurations as well as the configurations of all scopes.
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: List of service configurations.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ServiceConfig'
+              example:
+              - serviceId: appmixer:google
+                clientID: my-global-client-id
+                clientSecret: my-global-client-secret
+              - serviceId: appmixer:evernote
+                sandbox: true
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags:
+      - Connector Configuration
+      summary: Create Service Configuration
+      operationId: createServiceConfig
+      description: 'Create a new configuration for a service. The only required property of the payload is `serviceId`.
+
+        The rest of the payload can be any key/value pairs that will be the desired configuration for the
+
+        service. Requires the `admin` scope.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/ServiceConfig'
+              - required:
+                - serviceId
+            example:
+              serviceId: appmixer:google
+              clientID: my-global-client-id
+              clientSecret: my-global-client-secret
+      responses:
+        '200':
+          description: The stored configuration.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceConfig'
+              example:
+                serviceId: appmixer:google
+                clientID: my-global-client-id
+                clientSecret: my-global-client-secret
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /service-config/{serviceId}:
+    get:
+      tags:
+      - Connector Configuration
+      summary: Get Service Configuration
+      operationId: getServiceConfig
+      description: Get the configuration stored for the given service. Requires the `admin` scope.
+      parameters:
+      - $ref: '#/components/parameters/ServiceConfigServiceIdParam'
+      - $ref: '#/components/parameters/ServiceConfigScopeParam'
+      responses:
+        '200':
+          description: The stored configuration. An empty object if there is none.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceConfig'
+              example:
+                serviceId: appmixer:google
+                clientID: my-global-client-id
+                clientSecret: my-global-client-secret
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    put:
+      tags:
+      - Connector Configuration
+      summary: Update Service Configuration
+      operationId: updateServiceConfig
+      description: 'Update the stored configuration for the given service. The payload should contain the whole
+
+        configuration, as the payload content will overwrite the configuration stored under the service.
+
+        Requires the `admin` scope.'
+      parameters:
+      - $ref: '#/components/parameters/ServiceConfigServiceIdParam'
+      - $ref: '#/components/parameters/ServiceConfigScopeParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Any key/value pairs.
+              additionalProperties: true
+            example:
+              clientID: my-global-client-id
+              clientSecret: my-global-client-secret
+      responses:
+        '200':
+          description: The stored configuration.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceConfig'
+              example:
+                serviceId: appmixer:google
+                clientID: my-global-client-id
+                clientSecret: my-global-client-secret
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    delete:
+      tags:
+      - Connector Configuration
+      summary: Delete Service Configuration
+      operationId: deleteServiceConfig
+      description: Remove the configuration of the given service. Requires the `admin` scope.
+      parameters:
+      - $ref: '#/components/parameters/ServiceConfigServiceIdParam'
+      - $ref: '#/components/parameters/ServiceConfigScopeParam'
+      responses:
+        '200':
+          description: The configuration was removed.
+          content:
+            application/json:
+              schema:
+                type: object
+              example: {}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+components:
+  parameters:
+    ServiceConfigServiceIdParam:
+      name: serviceId
+      in: path
+      required: true
+      description: The service ID in the form `vendor:service`, e.g. `appmixer:google`.
+      schema:
+        type: string
+      example: appmixer:google
+    ServiceConfigScopeParam:
+      name: scope
+      in: query
+      required: false
+      description: Target the configuration stored for this scope instead of the system-wide one.
+      schema:
+        type: string
+  responses:
+    Unauthorized:
+      description: The access token is missing, invalid or expired.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: The user does not have the permission (or scope) required for this operation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: The request is invalid, for example it failed payload or query validation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    ServiceConfig:
+      type: object
+      description: Configuration of a service. Besides `serviceId`, it can contain any key/value pairs.
+      additionalProperties: true
+      properties:
+        serviceId:
+          type: string
+          description: The service ID in the form `vendor:service`, e.g. `appmixer:google`.
+        scope:
+          type: string
+          description: Scope the configuration applies to. Missing for system-wide configurations.
+        userId:
+          type: string
+          description: ID of the user the configuration belongs to (user-specific configuration).
+    Error:
+      type: object
+      description: Error response.
+      properties:
+        statusCode:
+          type: integer
+          example: 404
+        error:
+          type: string
+          example: Not Found
+        message:
+          type: string
+          example: Flow not found.
+      required:
+      - statusCode
+      - error
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: User access token obtained from `POST /user/auth`.
+externalDocs:
+  description: Appmixer documentation
+  url: https://docs.appmixer.com
