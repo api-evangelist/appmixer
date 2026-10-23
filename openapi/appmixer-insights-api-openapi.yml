@@ -864,3 +864,9 @@ components:
 externalDocs:
   description: Appmixer documentation
   url: https://docs.appmixer.com
+x-provenance:
+  method: harvested
+  publisher: Appmixer
+  source: https://4113719406-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FzU8KYStPfR8N1iZXsgad%2Fuploads%2Fgit-blob-6433572bd8011e652aa91642ad387d4ab08bc48b%2Fappmixer-openapi.yaml?alt=media
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
