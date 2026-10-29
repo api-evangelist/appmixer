@@ -1,4 +1,4 @@
-# Appmixer (appmixer)
+# Appmixer
 
 <!-- API-EVANGELIST-PROVENANCE:BEGIN -->
 > ### About this repository
@@ -66,98 +66,219 @@
 
 Let your users build powerful agentic workflowsno code, fully white-labeled, and embedded right in your web app.
 
-**APIs.json:** [https://raw.githubusercontent.com/api-evangelist/appmixer/refs/heads/main/apis.yml](https://raw.githubusercontent.com/api-evangelist/appmixer/refs/heads/main/apis.yml)
+**Areas:** AI Agents · Automation · Embedded iPaaS · Integration · Low-Code · Workflows
 
-## Scope
+## Appmixer on APIs.io
 
-- **Type:** Index
-- **Position:** Consumer
-- **Access:** 3rd-Party
+Everything profiled for Appmixer is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/appmixer/](https://apis.io/providers/appmixer/)** — or go straight to one of the APIs or properties below.
 
-## Tags
+### APIs (12)
 
-- Agentic
-- Automation
-- Embedded iPaaS
-- Integrations
-- Low-Code
-- Workflows
+- [Appmixer Accounts API](https://apis.io/apis/appmixer/appmixer-accounts-api/) — Connected third-party account management
+- [Appmixer Apps API](https://apis.io/apis/appmixer/appmixer-apps-api/) — Applications and connectors management
+- [Appmixer Authentication API](https://apis.io/apis/appmixer/appmixer-authentication-api/) — User authentication and token management
+- [Appmixer Files API](https://apis.io/apis/appmixer/appmixer-files-api/) — File management
+- [Appmixer Flows API](https://apis.io/apis/appmixer/appmixer-flows-api/) — Workflow flow management
+- [Appmixer Insights API](https://apis.io/apis/appmixer/appmixer-insights-api/) — Analytics and insights
+- [Appmixer Logs API](https://apis.io/apis/appmixer/appmixer-logs-api/) — Flow execution logs
+- [Appmixer Messages API](https://apis.io/apis/appmixer/appmixer-messages-api/) — Unprocessed message management
+- [Appmixer People Tasks API](https://apis.io/apis/appmixer/appmixer-people-tasks-api/) — Human-in-the-loop task management
+- [Appmixer System API](https://apis.io/apis/appmixer/appmixer-system-api/) — System health and information
+- [Appmixer Users API](https://apis.io/apis/appmixer/appmixer-users-api/) — User account management
+- [Appmixer Datastores API](https://apis.io/apis/appmixer/appmixer-datastores-api/) — Data store management
 
-## Timestamps
+### Published properties
 
-- **Created:** 2025-06-06T00:00:00.000Z
-- **Modified:** 2026-05-19
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
 
-## APIs
+#### Arazzo workflows (9)
 
-### Appmixer API
+Multi-step workflows that chain operations into a business task.
 
-The Appmixer REST API provides programmatic access to manage workflows, users, accounts, apps/connectors, files, data stores, insights, and people tasks within the Appmixer embedded iPaaS platform.
+- [Appmixer Authenticate and List Flows](https://apis.io/arazzos/appmixer/appmixer-authenticate-and-list-flows-workflow/)
+- [Appmixer Clone an Existing Flow](https://apis.io/arazzos/appmixer/appmixer-clone-flow-workflow/)
+- [Appmixer Create and Start a Flow](https://apis.io/arazzos/appmixer/appmixer-create-and-start-flow-workflow/)
+- [Appmixer Disconnect an Invalid Account](https://apis.io/arazzos/appmixer/appmixer-disconnect-invalid-account-workflow/)
+- [Appmixer Onboard a User and Create Their First Flow](https://apis.io/arazzos/appmixer/appmixer-onboard-user-and-create-flow-workflow/)
+- [Appmixer Replay an Unprocessed Message](https://apis.io/arazzos/appmixer/appmixer-reprocess-unprocessed-message-workflow/)
+- [Appmixer Restart a Flow and Inspect Its Logs](https://apis.io/arazzos/appmixer/appmixer-restart-flow-and-inspect-logs-workflow/)
+- [Appmixer Decommission a Flow](https://apis.io/arazzos/appmixer/appmixer-stop-and-delete-flow-workflow/)
+- [Appmixer Update a Flow Safely by Stage](https://apis.io/arazzos/appmixer/appmixer-update-running-flow-workflow/)
 
-- **Human URL:** [https://docs.appmixer.com/getting-started/api](https://docs.appmixer.com/getting-started/api)
+#### MCP servers (1)
 
-#### Tags
+Model Context Protocol servers that expose the API to agents.
 
-- Agentic
-- Automation
-- Integrations
-- Low-Code
-- Workflows
+- [appmixer](https://apis.io/servers/appmixer/appmixer/)
 
-#### Properties
+#### Agentic access (1)
 
-- [Documentation](https://docs.appmixer.com/getting-started/api)
-- [Documentation](https://docs.appmixer.com/api/authentication)
-- [OpenAPI](openapi/appmixer-api-openapi.yml) — [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
-- [Postman Collection](collections/appmixer-api.postman_collection.json) — [Postman Collection 2.1](https://schema.getpostman.com/json/collection/v2.1.0/collection.json)
-- [Open Collection](collections/appmixer-api.opencollection.json) — [Open Collection 1.0](https://schema.opencollection.com/opencollection/v1.0.0.json)
-- [JSON Schema](json-schema/flow.json) — [JSON Schema](https://json-schema.org/specification)
-- [JSON Schema](json-schema/user.json) — [JSON Schema](https://json-schema.org/specification)
-- [JSON Schema](json-schema/account.json) — [JSON Schema](https://json-schema.org/specification)
-- [JSON Schema](json-schema/file.json) — [JSON Schema](https://json-schema.org/specification)
-- [JSON Schema](json-schema/data-store.json) — [JSON Schema](https://json-schema.org/specification)
-- [JSON Schema](json-schema/people-task.json) — [JSON Schema](https://json-schema.org/specification)
-- [JSON-LD](json-ld/appmixer-context.jsonld) — [JSON-LD](https://www.w3.org/TR/json-ld11/)
-- [JSON Structure](json-structure/flow-structure.json)
-- [JSON Structure](json-structure/user-structure.json)
-- [JSON Structure](json-structure/account-structure.json)
-- [JSON Structure](json-structure/file-structure.json)
-- [JSON Structure](json-structure/data-store-structure.json)
-- [JSON Structure](json-structure/people-task-structure.json)
-- [Example](examples/flow-example.json)
-- [Example](examples/user-example.json)
-- [Example](examples/account-example.json)
-- [Example](examples/file-example.json)
-- [Example](examples/data-store-example.json)
-- [Example](examples/people-task-example.json)
-- [Spectral Rules](rules/appmixer-spectral-rules.yml)
-- [Vocabulary](vocabulary/appmixer-vocabulary.yaml)
+Which operations an agent can call, which act, and which need a human in the loop.
 
-## Common Properties
+- [Appmixer Agentic Access](https://apis.io/agentic-access/appmixer/appmixer-agentic-access/)
 
-- [Arazzo Workflows](arazzo/) — [Arazzo Specification](https://spec.openapis.org/arazzo/latest.html)
-- [GitHub Organization](https://github.com/Appmixer-ai)
-- [LinkedIn](https://www.linkedin.com/company/appmixer)
-- [Website](undefined)
+#### JSON Schema (6)
+
+The data models the API reads and writes.
+
+- [Appmixer Account](https://apis.io/schemas/appmixer/account/)
+- [Appmixer Data Store](https://apis.io/schemas/appmixer/data-store/)
+- [Appmixer File](https://apis.io/schemas/appmixer/file/)
+- [Appmixer Flow](https://apis.io/schemas/appmixer/flow/)
+- [Appmixer People Task](https://apis.io/schemas/appmixer/people-task/)
+- [Appmixer User](https://apis.io/schemas/appmixer/user/)
+
+#### JSON Structure (6)
+
+Data models expressed in JSON Structure.
+
+- [Account Structure](https://apis.io/json-structure/appmixer/account-structure/)
+- [Data Store Structure](https://apis.io/json-structure/appmixer/data-store-structure/)
+- [File Structure](https://apis.io/json-structure/appmixer/file-structure/)
+- [Flow Structure](https://apis.io/json-structure/appmixer/flow-structure/)
+- [People Task Structure](https://apis.io/json-structure/appmixer/people-task-structure/)
+- [User Structure](https://apis.io/json-structure/appmixer/user-structure/)
+
+#### JSON-LD (1)
+
+Linked-data contexts for the provider's vocabulary.
+
+- [Appmixer Context](https://apis.io/jsonld/appmixer/appmixer-context/)
+
+#### Vocabulary (1)
+
+The provider's domain terms, defined.
+
+- [Appmixer Vocabulary](https://apis.io/vocabularies/appmixer/appmixer-vocabulary/)
+
+#### Examples (6)
+
+Example requests and responses.
+
+- [Account Example](https://apis.io/examples/appmixer/account-example/)
+- [Data Store Example](https://apis.io/examples/appmixer/data-store-example/)
+- [File Example](https://apis.io/examples/appmixer/file-example/)
+- [Flow Example](https://apis.io/examples/appmixer/flow-example/)
+- [People Task Example](https://apis.io/examples/appmixer/people-task-example/)
+- [User Example](https://apis.io/examples/appmixer/user-example/)
+
+#### Collections (14)
+
+Postman and Open Collection request collections.
+
+- [Appmixer Accounts API](https://apis.io/collections/appmixer/open-appmixer-accounts-api/)
+- [Appmixer API](https://apis.io/collections/appmixer/open-appmixer-api/)
+- [Appmixer Accounts Apps API](https://apis.io/collections/appmixer/open-appmixer-apps-api/)
+- [Appmixer Accounts Authentication API](https://apis.io/collections/appmixer/open-appmixer-authentication-api/)
+- [Appmixer Accounts Data Stores API](https://apis.io/collections/appmixer/open-appmixer-data-stores-api/)
+- [Appmixer Accounts Files API](https://apis.io/collections/appmixer/open-appmixer-files-api/)
+- [Appmixer Accounts Flows API](https://apis.io/collections/appmixer/open-appmixer-flows-api/)
+- [Appmixer Accounts Insights API](https://apis.io/collections/appmixer/open-appmixer-insights-api/)
+- [Appmixer Accounts Logs API](https://apis.io/collections/appmixer/open-appmixer-logs-api/)
+- [Appmixer Accounts Messages API](https://apis.io/collections/appmixer/open-appmixer-messages-api/)
+- [Appmixer Accounts People Tasks API](https://apis.io/collections/appmixer/open-appmixer-people-tasks-api/)
+- [Appmixer Accounts System API](https://apis.io/collections/appmixer/open-appmixer-system-api/)
+- [Appmixer Accounts Users API](https://apis.io/collections/appmixer/open-appmixer-users-api/)
+- [Appmixer API](https://apis.io/collections/appmixer/postman-appmixer-api/)
+
+#### Governance rules (2)
+
+Spectral rulesets for the provider's contracts.
+
+- [Appmixer — jsonschema rules](https://apis.io/rules/appmixer/appmixer-jsonschema-spectral-rules/)
+- [Appmixer API Rules](https://apis.io/rules/appmixer/appmixer-spectral-rules/)
+
+#### Security (2)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Appmixer Authentication](https://apis.io/security/appmixer/appmixer-authentication/)
+- [Appmixer Domain Security](https://apis.io/security/appmixer/appmixer-domain-security/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Appmixer Plans Pricing](https://apis.io/plans/appmixer/appmixer-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Appmixer Rate Limits](https://apis.io/rate-limits/appmixer/appmixer-rate-limits/)
+
+#### FinOps (1)
+
+What the API costs to run, by operation.
+
+- [Appmixer Finops](https://apis.io/finops/appmixer/appmixer-finops/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
 - [Website](https://www.appmixer.com/)
-- [Integrations](https://www.appmixer.com/connectors)
-- [Documentation](https://docs.appmixer.com/?_gl=1*r2dl5*_gcl_au*MTE0OTMzNzAwOC4xNzQ5MTU5NDE1*_ga*NTEwNzE5MjYuMTc0OTE1OTQxNQ..*_ga_60B263RRK5*czE3NDk1MDc4NjAkbzIkZzEkdDE3NDk1MDgzOTckajYwJGwwJGgw)
-- [Authentication](https://docs.appmixer.com/api/authentication)
-- [Getting Started](https://docs.appmixer.com/kb)
-- [Changelog](https://docs.appmixer.com/changelog)
-- [S D Ks](https://docs.appmixer.com/6.0/6.1/getting-started/embed)
-- [C L I](https://docs.appmixer.com/appmixer-cli/appmixer-cli?_gl=1*jj6vs6*_gcl_au*MTE0OTMzNzAwOC4xNzQ5MTU5NDE1*_ga*NTEwNzE5MjYuMTc0OTE1OTQxNQ..*_ga_60B263RRK5*czE3NDk1MDc4NjAkbzIkZzEkdDE3NDk1MDg1ODQkajMkbDAkaDA.)
-- [Blog](https://www.appmixer.com/blog)
-- [Podcast](https://www.appmixer.com/podcast)
-- [e Books](https://www.appmixer.com/e-books)
-- [Customers](https://www.appmixer.com/customer-stories)
+- [Documentation](https://docs.appmixer.com/)
+- [Getting started](https://docs.appmixer.com/kb)
 - [Pricing](https://www.appmixer.com/pricing)
+- [Changelog](https://docs.appmixer.com/changelog)
+- [Blog](https://www.appmixer.com/blog)
 - [Security](https://www.appmixer.com/solutions-pages/cybersecurity)
-- [Privacy Policy](https://www.appmixer.com/privacy-policy)
-- [Terms of Service](https://www.appmixer.com/terms-and-conditions)
-- [L L Ms Txt](https://docs.appmixer.com/llms.txt)
+- [Terms of service](https://www.appmixer.com/terms-and-conditions)
+- [Privacy policy](https://www.appmixer.com/privacy-policy)
+- [GitHub](https://github.com/Appmixer-ai)
 
-## Maintainers
+## API Evangelist rating
 
-**FN:** Kin Lane
-**Email:** kin@apievangelist.com
+**Kin Score 50.5** — developing · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 58.3 |
+| Contract quality | 71.0 |
+| Contract governance | 27.3 |
+| Operational transparency | 36.8 |
+| Developer ergonomics | 51.2 |
+| Access clarity | 39.5 |
+
+**Agent readiness 37.3** — agent-ready
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | — |
+| MCP Server | verified |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | verified |
+| OpenAPI Examples | verified |
+| Rate Limit Signal | derived (partial credit) |
+| Event Surface Described | — |
+| Agent Skills | — |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | — |
+| Operation Distinctiveness | distinct |
+
+**Regulatory alignment 24.5** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/appmixer/](https://apis.io/providers/appmixer/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Appmixer: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/appmixer/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
