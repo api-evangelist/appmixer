@@ -1,0 +1,97 @@
+# Pricing transcribed from the provider's own page — see provenance. Numbers are quoted, not derived.
+generated: '2026-10-28'
+method: searched
+source: https://www.appmixer.com/pricing
+sources:
+- https://www.appmixer.com/pricing
+provenance:
+  tool: engine/economics/harvest_pricing.py
+  run: 20261028T161713
+  grounding: every price_text was found verbatim in the fetched page text
+audience: business-product
+pricing_basis: tiered-subscription
+delivery:
+  delivery: managed+licensed
+  method: page
+  read: '2026-10-28'
+  evidence: Self-Hosted For complete control over critical data Pricing on request Get a quote
+  managed_tier: Starter
+published: true
+note: Cloud tiers plus self-hosted (sold, pricing on request). Overages stated for Starter only.
+plan_count: 5
+currency: USD
+plans:
+- name: Starter
+  price_text: $500/month
+  price: 500
+  currency: USD
+  period: month
+  included_quota: 10 users included; 1000 data messages/month included; Community support; 1 month data
+    retention
+  overage: then $10/user; then $1/1000 messages
+- name: Professional
+  price_text: Starts at $1300/month
+  price: 1300
+  currency: USD
+  period: month
+  included_quota: Custom number of users, custom amount of data messages, all features incl. AI agent
+    tooling, ticketing system, 3 months data retention
+- name: Enterprise
+  price_text: Pricing on request
+  period: none
+  included_quota: Unlimited users and data messages, SSO & Audit logs, dedicated account manager, SOC
+    2 Type II reports
+- name: Self-Hosted / Self-Managed
+  price_text: Pricing on request
+  period: none
+  included_quota: Deployed on your infrastructure, unlimited users, custom data messages, SSO & audit
+    logs
+- name: Dedicated integration engineer (add-on)
+  price_text: $2500/month
+  price: 2500
+  currency: USD
+  period: month
+  included_quota: Available on Professional, Enterprise and Self-Hosted
+x-canonical:
+  generated: '2026-11-01'
+  vocabulary: engine/economics/plans-canonical.yml
+  models:
+  - hybrid
+  - subscription
+  units: []
+  plans:
+  - name: Starter
+    access: other
+    model: hybrid
+    model_how: derived
+    units: []
+    periods:
+    - month
+  - name: Professional
+    access: other
+    model: subscription
+    model_how: derived
+    units: []
+    periods:
+    - month
+  - name: Enterprise
+    access: other
+    model: unstated
+    model_how: derived
+    units: []
+    periods:
+    - none
+  - name: Self-Hosted / Self-Managed
+    access: other
+    model: unstated
+    model_how: derived
+    units: []
+    periods:
+    - none
+  - name: Dedicated integration engineer (add-on)
+    access: other
+    model: subscription
+    model_how: derived
+    units: []
+    periods:
+    - month
