@@ -53,7 +53,7 @@ plans:
   period: month
   included_quota: Available on Professional, Enterprise and Self-Hosted
 x-canonical:
-  generated: '2026-11-06'
+  generated: '2026-11-13'
   vocabulary: engine/economics/plans-canonical.yml
   models:
   - hybrid
